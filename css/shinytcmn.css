@@ -67,9 +67,18 @@ complimentary accent colors
 .wb-logo {
   z-index: -1;
   position: fixed;
-  top: 60px;
-	margin:  10px 0 0;
-	width: 20%;
+  top: 15px;
+	margin:  0 -10px 0;
+	width: 12%;
+}
+
+.wb-logo-big {
+  z-index: -1;
+  position: relative;
+	display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 5rem;
 }
 
 .tcmn-logo {
@@ -81,6 +90,14 @@ complimentary accent colors
   margin-right: auto;
   width: 80%;
   height: 85px;
+}
+
+.tcmn-logo-small {
+  z-index: -1;
+  position: fixed;
+  top: 15px;
+	margin:  0 -10px 0;
+	width: 15%;
 }
 
 #all_summary_out{
@@ -157,13 +174,13 @@ color: white;
 
 .navbar .nav {
   position: absolute;
-  left: 150px;
+  left: 200px;
   z-index: 5;
   text-align: center;
   padding-right: 20px;
   padding-left: 20px;
   border-radius: 0 0 10px 10px;
-  background: black;
+  background: grey;/*black*/
   opacity: 0.9;
   height: 47px;
   font-size: 13px;
@@ -177,17 +194,19 @@ color: white;
   vertical-align: top;
   margin: 0;
   padding: 6px 20px;
-  background-color: black;
+  background-color: black;/*black*/
   height: 44px;
 }
 
 .navbar .nav > .active > a {
-  background: black;
-  color: #009900;
+  background: white;/*black*/
+  color: black;
+  border-radius: 3px 3px 3px 3px;
+  box-shadow: 0 0 1px #B2001D inset;
 }
 .navbar .nav > .active > a:hover {
-  background: black;
-  color: #009900;
+  background: white;/*black*/
+  color: black;
   border-radius: 3px 3px 3px 3px;
   box-shadow: 0 0 1px #B2001D inset;
 }

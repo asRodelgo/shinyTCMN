@@ -22,15 +22,16 @@ tagList(
   shinyjs::useShinyjs(),
   includeCSS("css/shinytcmn.css"),
   # navbarPage(save_and_close, id = "nav", #title = NULL,
-  navbarPage(wb_logo(), id = "wb-logo", #title = NULL,
+  navbarPage(#tcmn_logo(), id = "tcmn-logo", 
+             title = NULL,
              windowTitle = "ShinyTCMN", collapsible = TRUE, 
              inverse = FALSE, position = "fixed-top",
              theme = shinythemes::shinytheme("flatly"),
              
              #### HOME PAGE ####
-             tabPanel(title = strong(style = "color: #009900;", "TCMN home"),
+             tabPanel(title = strong(style = "color: black", "TCMN home"),
                       value = "home",
-                      tcmn_logo(),
+                      wb_and_tcmn_logo(),
                       br(),
                       source(file.path("ui_files", "country_selector_home.R"), local = TRUE)$value,
                       br(),br(),br(),br(),
@@ -61,7 +62,7 @@ tagList(
              ), # End Macro
              
              #### PAGE: Private Sector Views ####
-             tabPanel(title = "Private Sector's Views", icon = icon("coins", lib = "glyphicon"),
+             tabPanel(title = "Private Sector's Views", icon = icon("stats", lib = "glyphicon"),
                       #withMathJax(),
                       tabsetPanel(
                         #### tables ####
@@ -80,7 +81,7 @@ tagList(
              ), # End Private Sector
              
              #### PAGE: Policy Indicators ####
-             tabPanel(title = "Policy Indicators", icon = icon("group", lib = "glyphicon"),
+             tabPanel(title = "Policy Indicators", icon = icon("stats", lib = "glyphicon"),
                       tabsetPanel(  
                         #### tables ####
                         tabPanel("Tables", icon = icon("th-large", lib = "glyphicon"),
@@ -100,8 +101,8 @@ tagList(
                       ) # End tabsetPanel
              ), # End Policy Indicators
              
-             #### MENU: Trade Policy ####
-             tabPanel(title = "Trade Policy",
+             #### PAGE: Trade Policy ####
+             tabPanel(title = "Trade Policy", icon = icon("stats", lib = "glyphicon"),
                         tabsetPanel(  
                            #### tables ####
                            tabPanel("Tables", icon = icon("cargo", lib = "glyphicon"),
@@ -119,6 +120,40 @@ tagList(
                                     helpText(style = "font-size: 12px;", "Use your mouse and trackpad to rotate the plot and zoom in or out.")
                            )
                         ) # End tabsetPanel
-             ) # End Trade Policy
+             ), # End Trade Policy
+             #### MENU: More ####
+             navbarMenu(title = "More",
+                        #### model code ####
+                        tabPanel(title = "Model Code" 
+                                # source(file.path("ui_files", "model_code.R"), local = TRUE)$value
+                        ), 
+                        #### notepad ####
+                        tabPanel(title = "Notepad"
+                                # source(file.path("ui_files", "notepad.R"), local = TRUE)$value
+                        ),
+                        #### about ####
+                        tabPanel(title = "About", 
+                                 logo_and_name()
+                        #         div(style = "margin-top: 75px;",
+                        #             source(file.path("ui_files", "about.R"), local = TRUE)$value
+                        #         )
+                        ),
+                        #### glossary ####
+                        tabPanel(title = "Glossary"
+                        #         div(style = "background-color: white;",
+                        #             h1(style = "text-align: center;", "Glossary"),
+                        #             source(file.path("ui_files", "glossary.R"), local = TRUE)$value,
+                        #             hr(),
+                        #             stan_manual()
+                        #         )
+                        ),
+                        #### help ####
+                        tabPanel(title = "Help"
+                        #         h1(style = "text-align: center;", "Help"),
+                        #         source(file.path("ui_files", "help.R"), local = TRUE)$value
+                        #
+                        )
+             ) # End navbarMenu
+             
   ) # End navbarPage
 ) # End tagList

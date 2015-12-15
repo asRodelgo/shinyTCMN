@@ -40,16 +40,25 @@ logo_and_name <- function() {
   )
 }
 
-tcmn_logo <- function() {
-    div(style = "margin-top: 155px",
+wb_and_tcmn_logo <- function() {
+  div(
+    div(img(src = "WBG_Logo.jpg", 
+            class = "wb-logo-big", width = "20%")),
+    div(style = "margin-top: 50px",
         img(src = "TCMN_logo.png", class = "tcmn-logo"),
-        div(id = "shinytcmn-title", "Select a country and start exploring")
+        div(id = "shinytcmn-title", "Select a country and start exploring"))
+  )
+}
+
+tcmn_logo <- function() {
+    div(img(src = "TCMN_logo.png", class = "tcmn-logo-small"),
+        width = "15%"
     )
 }
 
 wb_logo <- function() {
     div(img(src = "WBG_Logo.jpg", 
-            class = "wb-logo", width = "15%"))
+            class = "wb-logo", width = "10%"))
 }
 
 save_and_close_reminder <- function(id) {
