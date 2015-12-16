@@ -7,6 +7,9 @@
 
 library(shiny)
 library(shinythemes)
+# use javascript
+library(shinyjs)
+library(V8)
 
 #object <- get(".shinystan_temp_object", envir = shinystan:::.sso_env)
 source("global_utils.R", local = TRUE)
@@ -124,12 +127,12 @@ tagList(
              #### MENU: More ####
              navbarMenu(title = "More",
                         #### model code ####
-                        tabPanel(title = "Model Code" 
-                                # source(file.path("ui_files", "model_code.R"), local = TRUE)$value
+                        tabPanel(title = "TSNE", 
+                                source(file.path("ui_files", "tSNE.R"), local = TRUE)$value
                         ), 
                         #### notepad ####
-                        tabPanel(title = "Notepad"
-                                # source(file.path("ui_files", "notepad.R"), local = TRUE)$value
+                        tabPanel(title = "TSNE JS",
+                                source(file.path("ui_files", "tSNE_js.R"), local = TRUE)$value
                         ),
                         #### about ####
                         tabPanel(title = "About", 
