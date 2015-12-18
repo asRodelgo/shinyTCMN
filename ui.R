@@ -127,12 +127,12 @@ tagList(
              #### MENU: More ####
              navbarMenu(title = "More",
                         #### model code ####
-                        tabPanel(title = "TSNE", 
+                        tabPanel(title = "TSNE",
                                 source(file.path("ui_files", "tSNE.R"), local = TRUE)$value
                         ), 
                         #### notepad ####
-                        tabPanel(title = "TSNE JS",
-                                source(file.path("ui_files", "tSNE_js.R"), local = TRUE)$value
+                        tabPanel(title = "TSNE JS"
+                                #source(file.path("ui_files", "tSNE_JS.R"), local = TRUE)$value
                         ),
                         #### about ####
                         tabPanel(title = "About", 

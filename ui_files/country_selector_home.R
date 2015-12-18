@@ -2,6 +2,6 @@
 
 div(id = "country_selector_home",
       fluidRow(     
-        selectInput('inCouSel', NULL, c("Spain","Tunisia","Morocco"), selectize=FALSE),
+        selectInput('inCouSel', NULL, countryNames$Country, selectize=FALSE),
         align="center")
 )

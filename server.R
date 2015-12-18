@@ -33,6 +33,20 @@ function(input, output, session) {
       })
     })
   })
+  # test ------
+#   randomVals <- eventReactive(input$tsne_go, {
+#     runif(input$inNumIter)
+#   })
+  # --------
+  # tSNE plot
+#   plot_tsne <- eventReactive(input$tsne_go, {
+#     runif(input$inNumIter,input$maxNumNeigh)
+#   })
+#   output$tSNE_plot <- renderPlot({
+#     tSNE_plot(plot_tsne())
+#   })
+  
+  
 #   observe({
 #     # Toggle options dropdowns
 #     lapply(seq_along(inputs), function(j){

@@ -1,5 +1,5 @@
 # tsne chart ----------------------------------------------------
-tSNE_plot <- reactive({
+tSNE_plot <- eventReactive(input$tsne_go,{
   #validate(need(input$inCouSel, message = "Loading..."))
   
   do.call(".tSNE_plot", args = list(
@@ -8,5 +8,12 @@ tSNE_plot <- reactive({
 })
 
 output$tSNE_plot <- renderPlot({
-  .tSNE_plot(input$inNumIter, input$maxNumNeigh)
+  
+  input$tsne_go # button reactive 
+  
+  isolate({ # Use isolate() to avoid dependency on input values
+    
+    .tSNE_plot(input$inNumIter,input$maxNumNeigh)
+  })
+  
 }, bg = "transparent")
