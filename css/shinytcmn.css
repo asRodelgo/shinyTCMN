@@ -97,6 +97,15 @@ complimentary accent colors
 	width: 15%;
 }
 
+.flag {
+  z-index: -1;
+  position: fixed;
+  /*top: 15px;*/
+	margin:  0 -10px 0;
+	width: 10%;
+	height: 10%;
+}
+
 #all_summary_out{
   z-index: -1;
 }

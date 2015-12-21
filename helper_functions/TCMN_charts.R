@@ -4,24 +4,6 @@
 # asanchezrodelgo@ifc.org - Nov 2015
 #######################################################
 
-#####
-##### Auxiliary functions
-#####
-
-.getISO2 <- function(cou){
-  
-  couISO2 <- tolower(as.character(countries[countries$CountryCodeISO3==cou,]$CountryCodeISO2))
-  #return(couISO2)
-  
-}
-
-.getCouName <- function(cou){
-  
-  couName <- as.character(countries[countries$CountryCodeISO3==cou,]$Country)
-  #return(couName)
-  
-}
-
 
 #####
 ##### LINE charts
@@ -362,7 +344,7 @@
 
 #############
 
-.macroInd_Big <- function(couName){
+.macroInd_Big_LaTeX <- function(couName){
 
   cou <- .getCountryCode(couName)
   data <- filter(TCMN_data, CountryCode==cou, Subsection=="table2")

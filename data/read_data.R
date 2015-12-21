@@ -26,7 +26,7 @@ indicators <- read.csv("data/IndicatorClassification.csv", stringsAsFactors = FA
 TCMN_sources <- read.csv("data/TCMN_sources.csv", stringsAsFactors = FALSE)
 
 # TCMN specific indicators ----------------------------
-TCMN_indicators <- read.csv("data/TCMN_indicators.csv", stringsAsFactors = FALSE)
+TCMN_indic <- read.csv("data/TCMN_indicators.csv", stringsAsFactors = FALSE)
 
 # WITS Imports ----------------------------
 mWits <- read.csv("data/mWits.csv", colClasses = c(rep("character",3),rep("numeric",2),rep("character",2)))

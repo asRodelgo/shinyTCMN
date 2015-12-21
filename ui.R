@@ -30,7 +30,8 @@ tagList(
       column(9, tcmn_logo())
     ),
     fluidRow(
-      column(3, "Select a country and start exploring"),
+      column(1, div(uiOutput('outFlag'), class = "flag", width="10%")),
+      column(2, "Select a country and start exploring"),
       selectInput('inCouSel', NULL, choices=c("Select a country",countryNames$Country),selectize=FALSE)
     )
   ),
@@ -56,21 +57,28 @@ tagList(
                       navlistPanel(
                         #### tables ####
                         tabPanel("Tables",
-                                 h5("Some tables")
-                                 #source(file.path("ui_files", "country_selector.R"), local = TRUE)$value
+                                 h5("Macroeconomic Indicators"),
+                                 DT::dataTableOutput('table2')
                         ),
                         #### Charts ####
                         tabPanel("Charts",
+                                 #imageOutput('outFlag'),
+                                 #textOutput('outFlag'),
+                                 
                                  splitLayout(
                                   source(file.path("ui_files", "ExpImp_HF.R"), local = TRUE)$value,
                                   source(file.path("ui_files", "GVA_Treemap.R"), local = TRUE)$value)
+                                # splitLayout(
+                                #   source(file.path("ui_files", "ExpImp_HF.R"), local = TRUE)$value,
+                                #   source(file.path("ui_files", "GVA_Treemap.R"), local = TRUE)$value)
                         ),
                         #### Metadata ####
                         tabPanel("Metadata",
                                  h5("Tell me stuff about those indicators")
                         ),
                         tabPanel("Download PDF",
-                                 h5("Tell me stuff about those indicators")
+                                 h5("Download full TCMN report for the selected country"),
+                                 downloadButton('downloadReport', 'PDF report')
                         ),
                         widths = c(3, 9)
                       ) # End navlistPanel

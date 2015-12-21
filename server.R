@@ -39,16 +39,23 @@ function(input, output, session) {
  
   # Home button !! not working globally !! --------------
   observeEvent(input$country_go, {
-    #observe({
-    # Link to first page from home page GO button
-    #if (input$country_go > 0){
-      #local({
-      #updateTabsetPanel(session, "nav", selected = "macro")
+   
       shinyjs::onclick("country_go", updateTabsetPanel(session, "nav", selected = "macro"))
-    #shinyjs::info(input$country_go)
-    #}
   })
-  # test ------
+  # table output -----------------------------
+  output$table2 <- DT::renderDataTable({
+    macroInd_Big <- .macroInd_Big(input$inCouSel)
+    return(macroInd_Big)
+  },options = list(dom = 't')) # disable all the table fancy options  
+  
+  # download PDF -----------------------------
+  output$downloadReport <- downloadHandler(
+    filename = 'pdf/TCMN_report_TUN.pdf',
+    content = function(file) file.copy('pdf/TCMN_report_TUN.pdf', file, overwrite = TRUE),
+    contentType = 'application/pdf'
+  )
+
+      # test ------
 #   randomVals <- eventReactive(input$tsne_go, {
 #     runif(input$inNumIter)
 #   })
