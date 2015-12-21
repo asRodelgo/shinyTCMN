@@ -1,7 +1,7 @@
 # options(shiny.trace=TRUE)
 
 #object <- get(".shinystan_temp_object", envir = shinystan:::.sso_env)
-source("global_utils.R", local = TRUE)
+source("global_utils.R", local = TRUE) #global functions available for the whole session
 #source(file.path("server_files","utilities","extract_sso.R"), local = TRUE) # stan objects
 
 # BEGIN server ------------------------------------------------------
@@ -32,6 +32,21 @@ function(input, output, session) {
         shinyjs::onclick(id, updateTabsetPanel(session, "nav", selected = x))
       })
     })
+  })
+  
+  # output COuntry name --------------------------------
+  output$outCouSel <- renderText(input$inCouSel)  
+ 
+  # Home button !! not working globally !! --------------
+  observeEvent(input$country_go, {
+    #observe({
+    # Link to first page from home page GO button
+    #if (input$country_go > 0){
+      #local({
+      #updateTabsetPanel(session, "nav", selected = "macro")
+      shinyjs::onclick("country_go", updateTabsetPanel(session, "nav", selected = "macro"))
+    #shinyjs::info(input$country_go)
+    #}
   })
   # test ------
 #   randomVals <- eventReactive(input$tsne_go, {

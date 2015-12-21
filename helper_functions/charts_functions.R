@@ -1,12 +1,8 @@
-require(dplyr)
-require(ggplot2)
-
 # Line chart ---------------------------------------------------------
 .ExpImp_HF <- function(couName){
   
   cou <- .getCountryCode(couName)
-  TCMN_data <- fread("/Users/asanchez3/Desktop/Work/TCMN/data/TCMN_data.csv")
-  TCMN_data <- as.data.frame(TCMN_data)
+  #TCMN_data <- as.data.frame(TCMN_data)
   
   data <- filter(TCMN_data, CountryCode==cou, Subsection=="chart1")
   

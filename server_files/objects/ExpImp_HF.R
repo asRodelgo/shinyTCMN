@@ -8,5 +8,8 @@ ExpImp_HF_input <- reactive({
 })
 
 output$ExpImp_HF <- renderPlot({
-  .ExpImp_HF(couName)
+   #input$country_go # button reactive 
+  #isolate({ # Use isolate() to avoid dependency on input values
+    .ExpImp_HF(input$inCouSel)
+  #})
 }, bg = "transparent")

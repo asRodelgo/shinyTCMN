@@ -1,14 +1,8 @@
 # tsne chart ---------------------------------------------------------
 .tSNE_plot <- function(num_iter, max_num_neighbors){
   
-  require(tsne)
-  require(plyr)
-  require(dplyr)
-  require(tidyr)
-  require(data.table)
-  
   ### read the data
-  TCMN_data <- fread("/Users/asanchez3/Desktop/Work/TCMN/data/TCMN_data.csv")
+  #TCMN_data <- fread("data/TCMN_data.csv")
   TCMN_data <- as.data.frame(TCMN_data)
   # rows correspond to countries
   TCMN_data <- spread(TCMN_data, CountryCode, Observation)
@@ -27,8 +21,8 @@
   TCMN_data$CountryCode <- as.factor(TCMN_data$CountryCode)
   set.seed(123)
   # colors by region
-  countries <- read.csv("/Users/asanchez3/Desktop/Work/TCMN/data/CountryClassification.csv")
-  TCMN_data <- merge(TCMN_data, countries[,c("CountryCodeISO3", "Region", "CountryCodeISO2")], 
+  #countries <- read.csv("data/CountryClassification.csv")
+  TCMN_data <- merge(TCMN_data, countries[,c("Country","CountryCodeISO3", "Region", "CountryCodeISO2")], 
                      by.x="CountryCode", by.y="CountryCodeISO3")
   # Further remove regions. ISO2 is empty for regions
   TCMN_data <- filter(TCMN_data, !(CountryCodeISO2==""))
@@ -51,13 +45,13 @@
   ecb2 <- function(x,y){
     #flush.console();
     plot(x=x,t='n', axes=FALSE, frame.plot = FALSE, xlab = "",ylab = ""); 
-    graphics::text(x=x,labels=as.character(TCMN_data$CountryCode), col=colors[as.character(TCMN_data$Region)])
+    graphics::text(x=x,labels=as.character(TCMN_data$Country), col=colors[as.character(TCMN_data$Region)])
     #legend(-50,-1, unique(TCMN_data$Region),fill=colors[as.character(TCMN_data$Region)],
     #       bty="n", cex=0.5)
     #Sys.sleep(.09)
   }
   set.seed(456) # reproducitility again
-  tSNE_plot <- tsne(TCMN_data[,-c(1,ncol(TCMN_data))], epoch_callback = ecb2, 
+  tSNE_plot <- tsne(TCMN_data[,-c(1,ncol(TCMN_data)-1,ncol(TCMN_data))], epoch_callback = ecb2, 
                      max_iter=as.numeric(num_iter), 
                      perplexity=as.numeric(max_num_neighbors), 
                      epoch=num_iter)

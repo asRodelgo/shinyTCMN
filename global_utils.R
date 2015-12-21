@@ -1,15 +1,21 @@
-# give ShinyStan app access to ggplot functions
-# ggplot_fns_file <- if (packageVersion("ggplot2") < "1.0.1.9") # FIXME (change to "1.1.0" when released)
-#   "ggplot_fns_old.rda" else "ggplot_fns.rda"
+# load global packages ----------------------------------------------
+library(plyr) # manipulate data 
+library(dplyr) # manipulate data 
+library(ggplot2) # charts
+library(data.table) # fast operations
+library(tidyr) # transform data
+library(xtable) # LaTeX tables
+library(fmsb) # radar charts
+require(treemap) # treemap charts
+require(tsne) # t-SNE algorithm
 
-# load(ggplot_fns_file)
-# lapply(ggplot_fns, function(f) {
-#   try(assign(f, getFromNamespace(f, "ggplot2"), envir = parent.frame(2)), 
-#       silent = TRUE)
-# })
-
+# global data and functions -----------------------------------------
+# These functions are called before the actual server work. They will be loaded for the
+# session
 helpers <- file.path("helper_functions", list.files("helper_functions", full.names = FALSE))
 for (h in helpers) source(h, local = TRUE)
+# Read the global data available for the whole session. Will be loaded only once
+source("data/read_data.R", local = TRUE)
 #source(file.path("server_files","utilities","ppcheck_names_descriptions.R"), local = TRUE)
 
 # avoid conflict with inline::code if rstan is loaded
@@ -51,7 +57,7 @@ wb_and_tcmn_logo <- function() {
 }
 
 tcmn_logo <- function() {
-    div(img(src = "TCMN_logo.png", class = "tcmn-logo-small"),
+    div(img(src = "TCMN_logo.png", class = "tcmn-logo"),
         width = "15%"
     )
 }
