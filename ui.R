@@ -30,9 +30,10 @@ tagList(
       column(9, tcmn_logo())
     ),
     fluidRow(
-      column(1, div(uiOutput('outFlag'), class = "flag", width="10%")),
-      column(2, "Select a country and start exploring"),
+      column(1, div(uiOutput('outFlag'), class = "flag")),
+      column(2, h5("Explore by country:"),
       selectInput('inCouSel', NULL, choices=c("Select a country",countryNames$Country),selectize=FALSE)
+      )
     )
   ),
   # navbarPage(save_and_close, id = "nav", #title = NULL,

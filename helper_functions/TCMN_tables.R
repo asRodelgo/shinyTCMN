@@ -10,26 +10,32 @@
 
 .macroInd <- function(couName){
   
-  cou <- .getCountryCode(couName)
-  data <- filter(TCMN_data, CountryCode==cou, Subsection=="table1")
-  # keep the latest period (excluding projections further than 2 years)
-  data <- filter(data, Period <= (as.numeric(thisYear)))
-  data <- data %>%
-    group_by(Key) %>%
-    filter(Period == max(Period))
-  # add Period to Indicator name
-  data$IndicatorShort <- paste(data$IndicatorShort, " (",data$Period,")", sep="")
-  # Scale Observations
-  data <- mutate(data, ObsScaled = Scale*Observation)
-  # format numbers
-  data$ObsScaled <- format(data$ObsScaled, digits=2, decimal.mark=".",
-                           big.mark=",",small.mark=".", small.interval=3)
   
-  data <- arrange(data, Key)
-  data <- data[,c("IndicatorShort", "ObsScaled")] # short indicator name and scaled data
-  data <- as.data.frame(t(data)) # transpose the data
-  
-  return(data)
+    cou <- .getCountryCode(couName)
+    data <- filter(TCMN_data, CountryCode==cou, Subsection=="table1")
+    if (nrow(data)>0){
+      # keep the latest period (excluding projections further than 2 years)
+      data <- filter(data, Period <= (as.numeric(thisYear)))
+      data <- data %>%
+        group_by(Key) %>%
+        filter(Period == max(Period))
+      # add Period to Indicator name
+      data$IndicatorShort <- paste(data$IndicatorShort, " (",data$Period,")", sep="")
+      # Scale Observations
+      data <- mutate(data, ObsScaled = Scale*Observation)
+      # format numbers
+      data$ObsScaled <- format(data$ObsScaled, digits=2, decimal.mark=".",
+                               big.mark=",",small.mark=".", small.interval=3)
+      
+      data <- arrange(data, Key)
+      data <- data[,c("IndicatorShort", "ObsScaled")] # short indicator name and scaled data
+      data <- as.data.frame(t(data)) # transpose the data
+      return(data)
+      
+    } else {
+      
+      return(graphics::text(1.5, 1,"Data not available", col="red", cex=2))
+    }
   
 }
 
