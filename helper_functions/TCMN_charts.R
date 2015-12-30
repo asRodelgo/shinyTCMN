@@ -280,7 +280,6 @@
     data$Observation <- round(as.numeric(data$Observation),2)
     data$color <- rainbow(length(data$IndicatorShort)) # add the color
     data[data$IndicatorShort=="Other",]$Observation <- 100 - sum(data$Observation)
-    
     # format numbers
     data$Observation <- format(data$Observation, digits=0, decimal.mark=".",
                              big.mark=",",small.mark=".", small.interval=3)
@@ -303,6 +302,62 @@
 }
 
 #############
+
+.ImpExp_Treemap <- function(couName, type){
+  
+  cou <- .getCountryCode(couName)
+  if (type=="m"){
+    
+    data <- filter(mWits, CountryCode == cou) #select country, region and world
+  } else {
+    
+    data <- filter(xWits, CountryCode == cou) #select country, region and world
+  }
+  
+  if (nrow(filter(data, CountryCode==cou))>0){
+    # prepare for table
+    data <- select(data, ProductDescription, ProductCode, Period, TradeValue)
+    # keep the latest period
+    data <- filter(data, Period==max(Period))
+    # compute the percentage of total value
+    data <- mutate(data, percTotalValue = 100*TradeValue/sum(TradeValue, na.rm = TRUE))
+    data$percTotalValue <- round(as.numeric(data$percTotalValue),2)
+    
+    data$color <- terrain.colors(length(data$ProductCode)) # add the color
+    if (type=="x"){
+      data$color <- rainbow(length(data$ProductCode)) # add the color
+    }
+    # format numbers
+    # format numbers
+    data$TradeValue <- format(data$TradeValue, digits=0, decimal.mark=".",
+                              big.mark=",",small.mark=".", small.interval=3)
+    data$percTotalValue <- format(data$percTotalValue, digits=0, decimal.mark=".",
+                                  big.mark=",",small.mark=".", small.interval=3)
+    data$percTotalValue <- as.numeric(data$percTotalValue)
+    
+    data <- select(data, -Period)
+    
+    if (type=="x"){
+      data <- head(arrange(data, desc(TradeValue)),5)
+    }
+    
+    treemap(data,
+            index=c("ProductDescription","percTotalValue"),
+            vSize="percTotalValue",
+            fontsize.labels=c(24, 24), 
+            align.labels=list(c("left", "top"), c("right","bottom")),
+            lowerbound.cex.labels=0.5,
+            vColor="color",
+            type="color",
+            title="")
+  } else {
+    plot(c(1,1),type="n", frame.plot = FALSE, axes=FALSE, ann=FALSE)
+    graphics::text(1.5, 1,"Data not available", col="red", cex=2)
+  }  
+  
+}
+#############
+
 
 
 #####

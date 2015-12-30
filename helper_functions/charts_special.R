@@ -1,9 +1,10 @@
 # tsne chart ---------------------------------------------------------
-.tSNE_plot <- function(num_iter, max_num_neighbors){
+.tSNE_plot <- function(num_iter, max_num_neighbors, period){
   
   ### read the data
   #TCMN_data <- fread("data/TCMN_data.csv")
-  TCMN_data <- as.data.frame(TCMN_data)
+  TCMN_data <- as.data.frame(TCMN_data, stringsAsFactors=FALSE)
+  TCMN_data <- filter(TCMN_data, Period == period)# filter by period
   # rows correspond to countries
   TCMN_data <- spread(TCMN_data, CountryCode, Observation)
   TCMN_data <- as.data.frame(t(TCMN_data), stringsAsFactors = FALSE)

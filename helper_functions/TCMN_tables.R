@@ -90,6 +90,62 @@
 
 #############
 
+.macroInd_Big_Spark <- function(couName){
+  
+  cou <- .getCountryCode(couName)
+  data <- filter(TCMN_data, CountryCode==cou, Subsection=="table2")
+  # keep the latest period (excluding projections further than 2 years)
+  data <- filter(data, Period <= (as.numeric(thisYear) + 1))
+  # remove NAs rows
+  data <- filter(data, !is.na(Observation))
+  # calculate average for 1st column
+  data_avg <- data %>%
+    group_by(Key) %>%
+    filter(Period < (as.numeric(thisYear)-3)) %>%
+    mutate(historical_avg = mean(Observation))
+  # add average as one of the time periods
+  data_avg <- mutate(data_avg, Period = paste("Avg ",as.numeric(thisYear)-13,"-",as.numeric(thisYear)-4,sep=""),
+                     Observation = historical_avg, ObsScaled = Scale*historical_avg)
+  
+  data_avg <- data_avg[!duplicated(data_avg$Key),] # remove duplicates
+  data_avg <- select(data_avg, -historical_avg, -ObsScaled) # remove some variables
+  
+  #keep only periods of interest in data
+  #data <- filter(data, Period > (as.numeric(thisYear) - 4))
+  data <- rbind(data, data_avg) # add rows to data
+  # Scale Observations
+  data <- mutate(data, ObsScaled = Scale*Observation)
+  data <- arrange(data, Key)
+  data <- select(data, Key, IndicatorShort, Period, ObsScaled)
+  # format numbers
+  data$ObsScaled <- format(data$ObsScaled, digits=2, decimal.mark=".",
+                           big.mark=",",small.mark=".", small.interval=3)
+  
+  # Add notes references (automate it using TCMN_indic "Note" field
+  #TCMN_indic <- read.csv("TCMN_Indicators.csv", stringsAsFactors = FALSE)
+  
+  # add sparkline column
+  dataSpark <- data %>% 
+    group_by(Key) %>%
+    summarise(Trend = paste(ObsScaled, collapse = ","))
+  
+  data <- merge(data, dataSpark, by="Key")
+  
+  # final table format
+  data <- spread(data, Period, ObsScaled)
+  data <- data[,-1] #drop the Key column
+  data <- data[,c(1,ncol(data),3:(ncol(data)-1),2)] # reorder columns
+  # keep only columns I want to show
+  data <- data[,c(1,2,(ncol(data)-5):ncol(data))]
+  # substitute NAs for "---" em-dash
+  data[is.na(data)] <- "---"
+  
+  return(data)
+  
+}
+
+#############
+
 
 .ESTable <- function(couName){
   
@@ -132,17 +188,27 @@
   
   # prepare for table
   data <- select(data, IndicatorShort, Period, Observation)
+  data <- arrange(data, Period)
   # format numbers
   data$Observation <- format(data$Observation, digits=0, decimal.mark=".",
                              big.mark=",",small.mark=".", small.interval=3)
   
   data$Observation <- as.numeric(data$Observation)
+  
+  # add sparkline column
+#   dataSpark <- data %>% 
+#     group_by(IndicatorShort) %>%
+#     mutate(Trend = paste(Observation, collapse = ","))
+#   
+#  data <- merge(data, dataSpark, by="IndicatorShort")
+  
   data <- spread(data, Period, Observation)
-  
-  
-  # calculate difference in Rank
-  data$ChangeRank <- data[,2] - data[,3]
-  
+  data$trend <- data[,2] - data[,3]
+  data <- data %>%
+    group_by(IndicatorShort) %>%
+    mutate(trend = paste0("0,",trend))
+    
+
   names(data) <- c("",paste("DB",names(data)[2],"Rank"),paste("DB",names(data)[3],"Rank"),"Change in Rank")
   
   # substitute NAs for "---" em-dash
@@ -245,4 +311,59 @@
   
   return(data)
   
+}
+
+#############
+
+.GVA_Table <- function(couName){
+  
+  cou <- .getCountryCode(couName)
+  data <- filter(TCMN_data, CountryCode==cou, Subsection=="chart2")
+  if (nrow(filter(data, CountryCode==cou))>0){
+    #data <- filter(data, Period==max(Period))
+    data <- select(data, IndicatorShort, Period, Observation)
+    data <- filter(data, !(IndicatorShort=="Industry")) # remove "industry" category
+    # Create the "Other" category
+    data <- data %>%
+      group_by(Period) %>%
+      mutate(Other = 100 - sum(Observation))
+    
+    dataOther <- select(data, Period, Other)
+    dataOther <- dataOther[!duplicated(dataOther),]
+    dataOther <- mutate(dataOther, IndicatorShort = "Other")
+    dataOther <- select(dataOther, IndicatorShort, Period, Observation = Other)
+    data <- select(data, -Other)
+    data <- rbind(data, dataOther)
+      
+    data$Observation <- round(as.numeric(data$Observation),2)
+    # format numbers
+    data$Observation <- format(data$Observation, digits=0, decimal.mark=".",
+                               big.mark=",",small.mark=".", small.interval=3)
+    data$Observation <- as.numeric(data$Observation)
+    
+    # add sparkline column
+    dataSpark <- data %>%
+      group_by(IndicatorShort) %>%
+      arrange(Period) %>%
+      summarise(Trend = paste(Observation, collapse = ","))
+    
+    data <- merge(data, dataSpark, by="IndicatorShort")
+    # final table format
+    data <- spread(data, Period, Observation)
+    aux <- names(data)[ncol(data)]
+    names(data)[ncol(data)] <- "Percent"
+    data <- arrange(data, desc(Percent)) # order desc by the bigger sector
+    names(data)[ncol(data)] <- aux
+    
+    data <- data[,c(1,(ncol(data)-3):ncol(data),2)] # reorder columns and keep only columns I want to show
+    # substitute NAs for "---" em-dash
+    data[is.na(data)] <- "---"
+    names(data)[1] <- "Sector"
+    
+    return(data)
+    
+  } else {
+    plot(c(1,1),type="n", frame.plot = FALSE, axes=FALSE, ann=FALSE)
+    graphics::text(1.5, 1,"Data not available", col="red", cex=2)
+  }
 }

@@ -57,31 +57,49 @@ tagList(
              tabPanel(title = "Macro Indicators", icon = icon("stats", lib = "glyphicon"),
                       navlistPanel(
                         #### tables ####
-                        tabPanel("Tables",
+                        tabPanel("Macro tables",
                                  h5("Macroeconomic Indicators"),
-                                 DT::dataTableOutput('table2')
+                                 tags$style(HTML("
+                                                 .jqstooltip{
+                                                 box-sizing: content-box;
+                                                 }")), # adjust tooltips in datatables
+                                 dataTableOutput('tableSpark')
+                                 #DT::dataTableOutput('table2')
                         ),
-                        #### Charts ####
-                        tabPanel("Charts",
-                                 #imageOutput('outFlag'),
-                                 #textOutput('outFlag'),
-                                 
-                                 splitLayout(
-                                  source(file.path("ui_files", "ExpImp_HF.R"), local = TRUE)$value,
-                                  source(file.path("ui_files", "GVA_Treemap.R"), local = TRUE)$value)
-                                # splitLayout(
-                                #   source(file.path("ui_files", "ExpImp_HF.R"), local = TRUE)$value,
-                                #   source(file.path("ui_files", "GVA_Treemap.R"), local = TRUE)$value)
+                        #### GVA ####
+                        tabPanel("Gross Value Added",
+                                  source(file.path("ui_files", "GVA_Treemap.R"), local = TRUE)$value,
+                                  br(),
+                                  source(file.path("ui_files", "GVA_Table.R"), local = TRUE)$value
                         ),
-                        #### Metadata ####
-                        tabPanel("Metadata",
-                                 h5("Tell me stuff about those indicators")
+                        #### Imp/Exp ####
+                        tabPanel("Imports and Exports",
+                                 h5("Imports and Exports"),
+                                 source(file.path("ui_files", "ExpImp_HF.R"), local = TRUE)$value,
+                                 fluidRow(
+                                   column(7,DT::dataTableOutput('expTable')),
+                                   column(5,source(file.path("ui_files", "top_Export.R"), local = TRUE)$value)
+                                 ),
+                                 fluidRow(
+                                   column(7,DT::dataTableOutput('impTable')),
+                                   column(5,source(file.path("ui_files", "top_Import.R"), local = TRUE)$value)
+                                 )
                         ),
-                        tabPanel("Download PDF",
-                                 h5("Download full TCMN report for the selected country"),
-                                 downloadButton('downloadReport', 'PDF report')
+                        tabPanel("Doing Business",
+                                   h5("Doing Business Ranks"),
+                                   tags$style(HTML("
+                                                   .jqstooltip{
+                                                   box-sizing: content-box;
+                                                   }")), # adjust tooltips in datatables
+                                   dataTableOutput('db_Table')
+#                                  h5("Download full TCMN report for the selected country"),
+#                                  downloadButton('downloadReport', 'PDF report')
                         ),
-                        widths = c(3, 9)
+                        tabPanel("Competitiveness Indicators",
+                                 source(file.path("ui_files", "compet_Indic.R"), local = TRUE)$value
+                                 ),
+                        tabPanel("Logistic Performance Indicators"
+                        )
                       ) # End navlistPanel
              ), # End Macro
              

@@ -42,11 +42,6 @@ function(input, output, session) {
    
       shinyjs::onclick("country_go", updateTabsetPanel(session, "nav", selected = "macro"))
   })
-  # table output -----------------------------
-  output$table2 <- DT::renderDataTable({
-    macroInd_Big <- .macroInd_Big(input$inCouSel)
-    return(macroInd_Big)
-  },options = list(dom = 't')) # disable all the table fancy options  
   
   # download PDF -----------------------------
   output$downloadReport <- downloadHandler(

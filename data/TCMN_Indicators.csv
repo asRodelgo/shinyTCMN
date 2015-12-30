@@ -86,8 +86,8 @@ M20,PX.REX.REER,Real effective exchange rate index (2010 = 100),Macro,other,Real
 M21,FP.CPI.TOTL.ZG,"Inflation, consumer prices (annual %)",Macro,other,"Inflation, consumer prices (annual %)",1,WDI,WDI,
 M24,NV.SRV.TETC.ZS,"Services, etc., value added (% of GDP)",Macro,chart2,Services,1,WDI,WDI,
 M25,NV.IND.TOTL.ZS,"Industry, value added (% of GDP)",Macro,chart2,Industry,1,WDI,WDI,
-M26,NV.IND.MANF.ZS,"Manufacturing, value added (% of GDP)",Macro,chart2,Manufacturing,1,WDI,WDI,
-M27,NV.AGR.TOTL.ZS,"Agriculture, value added (% of GDP)",Macro,chart2,Agriculture,1,WDI,WDI,
+M26,NV.IND.MANF.ZS,"Manufacturing, value added (% of GDP)",Macro,chart2,Manufact.,1,WDI,WDI,
+M27,NV.AGR.TOTL.ZS,"Agriculture, value added (% of GDP)",Macro,chart2,Agricult.,1,WDI,WDI,
 P12,CC.EST,Control of Corruption: Estimate,Policy,chart6,Control of Corruption,1,WDI,WGI,
 P13,GE.EST,Government Effectiveness: Estimate,Policy,chart6,Government Effectiveness,1,WDI,WGI,
 P14,PV.EST,Political Stability and Absence of Violence/Terrorism: Estimate,Policy,chart6,Stability & Absence of Violence,1,WDI,WGI,
@@ -137,5 +137,5 @@ TP03,MTNNAGR_MFN_SimpleAverage,MFN Tariff (Non-Agriculture),TradePolicy,table5,M
 TP04,Total_MFN_StDeviation,Dispersion (Standard Deviation),TradePolicy,table5,Dispersion (Standard Deviation),1,WITS_TARIFF,WITS_TARIFF,
 TP05,Total_AHS_SimpleAverage,Applied Tariff (Including Preferences and Trade-Weighted),TradePolicy,table5,Applied Tariff (Incl. Prefers. and Trade-Weighted),1,WITS_TARIFF,WITS_TARIFF,
 TP06,Total_BND_Binding,Binding (%),TradePolicy,table5,Binding (%),1,WITS_TARIFF,WITS_TARIFF,
-TP07,WTO_M_D_PERC,"Import Duties, % of Imports",TradePolicy,table5,"Import Duties, % of Imports",1,WTO,WTO,
-TP08,WTO_SS_GATS,Services Sectors with GATS Commitments,TradePolicy,table5,Services Sectors with GATS Commitments,1,WTO,WTO,
+TP07,WTO_M_D_PERC,"Import Duties, % of Imports",TradePolicy,table5,"Import Duties, % of Imports",1,WTO,WTO,1
+TP08,WTO_SS_GATS,Services Sectors with GATS Commitments,TradePolicy,table5,Services Sectors with GATS Commitments,1,WTO,WTO,1
