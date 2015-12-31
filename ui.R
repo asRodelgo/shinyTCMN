@@ -97,8 +97,23 @@ tagList(
                         ),
                         tabPanel("Competitiveness Indicators",
                                  source(file.path("ui_files", "compet_Indic.R"), local = TRUE)$value
-                                 ),
-                        tabPanel("Logistic Performance Indicators"
+                        ),
+                        tabPanel("Logistic Performance Indicators",
+                                 source(file.path("ui_files", "LPI.R"), local = TRUE)$value
+                        ),
+                        tabPanel("World Governance Indicators",
+                                 source(file.path("ui_files", "WGI.R"), local = TRUE)$value
+                        ),
+                        tabPanel("Trade Policy",
+                                 h5("Trade Policy Indicators"),
+                                 tags$style(HTML("
+                                                 .jqstooltip{
+                                                 box-sizing: content-box;
+                                                 }")), # adjust tooltips in datatables
+                                 dataTableOutput('tradePolicy_Table')
+                        ),
+                        tabPanel("Private Sector's Views",
+                                 source(file.path("ui_files", "privateSector.R"), local = TRUE)$value
                         )
                       ) # End navlistPanel
              ), # End Macro

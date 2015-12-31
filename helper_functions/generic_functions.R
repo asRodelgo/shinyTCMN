@@ -16,6 +16,12 @@
   #return(countryISO2)
 }
 
+.getRegion <- function(couName){
+  
+  cou <- .getCountryCode(couName)
+  region <- as.character(countries[countries$CountryCodeISO3==cou,]$RegionShort) 
+}
+
 .getCountryCode <- function(couName){
   
   countryCode <- filter(countries, Country==couName)$CountryCodeISO3

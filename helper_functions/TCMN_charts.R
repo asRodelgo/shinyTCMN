@@ -55,16 +55,16 @@
     
     ggplot(data, aes(x=factor(IndicatorShort), y=Observation)) +
       geom_bar(fill="blue",stat="identity") +
-      geom_text(aes(label=Observation,y=Observation + max(Observation)*.06),
-                size=6) + 
-      coord_flip()+
+      geom_text(aes(label=Observation,y=Observation - max(Observation)*.1),
+                size=5,colour="white") + 
+      coord_flip() +
       theme(legend.key=element_blank(),
             legend.title=element_blank(),
             panel.border = element_blank(),
             panel.background = element_blank(),plot.title = element_text(lineheight=.5),
             axis.ticks.x = element_blank(),
             axis.text.x = element_blank(),
-            axis.text.y = element_text(size = 15)) + 
+            axis.text.y = element_text(size = 12)) + 
             labs(x="",y=""#,title="Top 5 constraints according to 2013 Enterprise Survey (in percent)"
                  )
   } else {
@@ -90,9 +90,9 @@
     
     
     ggplot(data, aes(x=factor(IndicatorShort), y=Observation)) +
-      geom_bar(fill="blue",stat="identity") +
-      geom_text(aes(label=Observation,y=Observation + max(Observation)*.06),
-                size=6) + 
+      geom_bar(fill="green",stat="identity") +
+      geom_text(aes(label=Observation,y=Observation - max(Observation)*.1),
+                size=5) + 
       coord_flip()+
       theme(legend.key=element_blank(),
             legend.title=element_blank(),
@@ -100,7 +100,7 @@
             panel.background = element_blank(),plot.title = element_text(lineheight=.5),
             axis.ticks.x = element_blank(),
             axis.text.x = element_blank(),
-            axis.text.y = element_text(size = 15)) + 
+            axis.text.y = element_text(size = 12)) + 
       labs(x="",y=""#,title="Top 5 constraints according to 2013 Enterprise Survey (in percent)"
       )
   } else {
@@ -113,30 +113,50 @@
 ######################
 
 
-.WGIindicators <- function(couName){ # This chart needs to query neighbouring countries also
-  
+.WGIindicators <- function(couName, neighbor){ # This chart needs to query neighbouring countries also
+  #"topRegion"
+  #"topIncome"
   cou <- .getCountryCode(couName)
-  couRegion <- countries[countries$CountryCodeISO3==cou,]$RegionCodeALL  # obtain the region for the selected country
-  #neighbors <- countries[countries$RegionCodeALL==couRegion,]$CountryCodeISO3 # retrieve all countries in that region
-  #neighbors <- as.character(neighbors[!(neighbors==cou)]) # exclude the selected country
   
-  # hardcode for now
-  neighbors <- c("DZA","JOR","MAR","EGY","TUN")
-  
-  data <- filter(TCMN_data, CountryCode %in% c(cou,neighbors), Subsection=="chart6")
-  
-  if (nrow(filter(data, CountryCode==cou))>0){
+  if (neighbor=="topRegion"){ # only same region countries
+    couRegion <- countries[countries$CountryCodeISO3==cou,]$RegionCodeALL  # obtain the region for the selected country
+    neighbors <- countries[countries$RegionCodeALL==couRegion,]$CountryCodeISO3 # retrieve all countries in that region
+    neighbors <- as.character(neighbors[!(neighbors==cou)]) # exclude the selected country
+    data <- filter(TCMN_data, CountryCode %in% c(cou,neighbors), Subsection=="chart6")
     
     data <- merge(data, countries[,c("Country","CountryCodeISO3")], by.x="CountryCode", by.y="CountryCodeISO3") # add country name
     data <- filter(data, Period == max(Period))
-    # select 5 countries from the neighborhood (to avoid cluttering the space too much)
-    topNeighbors <- c(cou, neighbors[1:5])
-    data <- filter(data, CountryCode %in% topNeighbors)
+    # select top 4 countries from the neighborhood based on their income level
+    income <- filter(TCMN_data, CountryCode %in% neighbors, Subsection=="table1", Key=="M03")
+    income <- filter(income, Period == thisYear)
+    
+    topNeighbors <- head(arrange(income, desc(Observation)),4)$CountryCode
+    data <- filter(data, CountryCode %in% c(cou,neighbors))
     
     # order the factors
     data$Country = factor(as.character(data$Country), 
-                                 levels = c(unique(as.character(data[data$CountryCode==cou,]$Country)), 
-                                            as.character(unique(data[data$CountryCode %in% neighbors[1:5],]$Country))))
+                          levels = c(unique(as.character(data[data$CountryCode==cou,]$Country)), 
+                                     as.character(unique(data[data$CountryCode %in% topNeighbors,]$Country))))
+    
+  } else { # all countries
+    data <- filter(TCMN_data, Subsection=="chart6") 
+    
+    data <- merge(data, countries[,c("Country","CountryCodeISO3")], by.x="CountryCode", by.y="CountryCodeISO3") # add country name
+    data <- filter(data, Period == max(Period))
+    # select top 4 countries from the neighborhood based on their income level
+    income <- filter(TCMN_data, Subsection=="table1", Key=="M03")
+    income <- filter(income, Period == thisYear)
+    
+    topNeighbors <- head(arrange(income, desc(Observation)),4)$CountryCode
+    data <- filter(data, CountryCode %in% c(cou,topNeighbors))
+    
+    # order the factors
+    data$Country = factor(as.character(data$Country), 
+                          levels = c(unique(as.character(data[data$CountryCode==cou,]$Country)), 
+                                     as.character(unique(data[data$CountryCode %in% topNeighbors,]$Country))))
+  }
+  
+  if (nrow(filter(data, CountryCode==cou))>0){
     
     ggplot(data, aes(x=Country,y=Observation,fill=Country)) +
       geom_bar(position="dodge",stat="identity") +
@@ -150,18 +170,17 @@
             axis.text.x = element_blank()) + 
       labs(x="",y="")+#,title="World Governance Indicators")+
       scale_fill_manual(values = c("darkblue", "lightblue", "orange", "yellow","lightgreen"))
-
+    
   } else {
     plot(c(1,1),type="n", frame.plot = FALSE, axes=FALSE, ann=FALSE)
-    graphics::text(1.5, 1,"Data not available", col="red", cex=2)
+    text(1.5, 1,"Data not available", col="red", cex=2)
   }
-  
 }
 
 ######################
 
 
-.LPIindicators <- function(couName){
+.LPIindicators <- function(couName, couName2){
   
   cou <- .getCountryCode(couName)
   data <- filter(TCMN_data, CountryCode==cou, Subsection=="chart8")
@@ -200,65 +219,111 @@
 #####
 
 
-.WEFradar <- function(couName){ # This chart needs to query neighbouring countries also
+.WEFradar <- function(couName, couName2){ # This chart needs to query neighbouring countries also
   
   cou <- .getCountryCode(couName)
+  cou2 <- .getCountryCode(couName2) # country to compare 
   couRegion <- as.character(countries[countries$CountryCodeISO3==cou,]$RegionCodeALL)  # obtain the region for the selected country
   neighbors <- countries[countries$RegionCodeALL==couRegion,]$CountryCodeISO3 # retrieve all countries in that region
   neighbors <- as.character(neighbors[!(neighbors==cou)]) # exclude the selected country
   
   # country and Region descriptors
-  country <- as.character(countries[countries$CountryCodeISO3==cou,]$Country)
+  country <- couName
+  country2 <- couName2
   region <- as.character(countries[countries$CountryCodeISO3==cou,]$RegionShort) 
   
   # filter the data
   data <- filter(TCMN_data, CountryCode %in% c(cou,neighbors), Subsection=="chart7")
+  data2 <- filter(TCMN_data, CountryCode == cou2, Subsection=="chart7")
   
-  if (nrow(filter(data, CountryCode==cou))>0){  
-    # calculate the average for the region
-    data <- data %>%
-      group_by(Key) %>%
-      mutate(regionAvg = mean(Observation, na.rm=TRUE))
+  if (nrow(data2)>0){ # there is data for the comparing country
+    #print("c2 true")
+    if (nrow(filter(data, CountryCode==cou))>0){ # data for the main country
+      #print("c1 true from c2 true")
+      # calculate the average for the region
+      data <- data %>%
+        group_by(Key) %>%
+        mutate(regionAvg = mean(Observation, na.rm=TRUE))
+      # remove all countries except cou
+      data <- filter(data, CountryCode==cou)
+      # Keep last period
+      data <- filter(data, Period == max(Period))
+      # add the country to be compared to
+      data2 <- select(data2, Key, compCou = Observation)
+      data <- merge(data, data2, by="Key")
+      # I must add the max and min columns to make it work:
+      max<-7
+      min <-1
+      data <- cbind(data,max,min)
+      
+      # order labels ad-hoc:
+      order <- c(8,10,6,4,7,3,1,9,5,2,11,12)
+      data <- cbind(data,order)
+      data <- arrange(data,order)
+      data <- select(data, -order)# drop order
+      
+      # final tweaking
+      data <- select(data, IndicatorShort, max, min, Observation, regionAvg, compCou)
+      
+      # transpose the data for radarchart to read
+      dataTrans <- as.data.frame(t(data[,2:ncol(data)]))
+      
+      radarchart(dataTrans, axistype=1, caxislabels=seq(from=1,to=max,by=1),
+                 plty=c(1,2,1),plwd=c(6,3,4),pcol=c("darkblue","red","green"),pdensity=c(0, 0, 0),
+                 cglwd=2,axislabcol="navy", vlabels=data$IndicatorShort, cex.main=1,cex=2.5)
+      #title="WEF Competitiveness Indicators, stage of development (1-7)",
+      #legend(-2.1,1.4, legend=c(region), seg.len=0.5, pch=3, 
+      #       bty="n" ,lwd=4, y.intersp=1.5, horiz=FALSE, col=c("red"))
+      
+    } else {
+      #print("c1 false")
+      plot(c(1,1),type="n", frame.plot = FALSE, axes=FALSE, ann=FALSE)
+      graphics::text(1.5, 1,"Data not available", col="red", cex=2)
+    }
     
-    # remove all countries except cou
-    data <- filter(data, CountryCode==cou)
-    
-    # Keep last period
-    data <- filter(data, Period == max(Period))
-    
-    # as.numeric
-    #countries <- names(data[,3:ncol(data)])
-    #data <- data %>% mutate_each_(funs(as.character), countries) %>% mutate_each_(funs(as.numeric), countries)
-    
-    # I must add the max and min columns to make it work:
-    max<-7
-    min <-1
-    data <- cbind(data,max,min)
-    
-    # order labels ad-hoc:
-    order <- c(8,10,6,4,7,3,1,9,5,2,11,12)
-    data <- cbind(data,order)
-    data <- arrange(data,order)
-    data <- select(data, -order)# drop order
-    
-    # final tweaking
-    data <- select(data, IndicatorShort, max, min, Observation, regionAvg)
-    
-    # transpose the data for radarchart to read
-    dataTrans <- as.data.frame(t(data[,2:ncol(data)]))
-    
-    radarchart(dataTrans, axistype=1, caxislabels=seq(from=1,to=max,by=1),
-               plty=c(1,2),plwd=c(6,3),pcol=c("darkblue","red"),pdensity=c(0, 0),
-               cglwd=2,axislabcol="navy", vlabels=data$IndicatorShort, cex.main=1,cex=2.5)
-    #title="WEF Competitiveness Indicators, stage of development (1-7)",
-    legend(-2.1,-0.8, legend=c(country,region), seg.len=0.5, pch=3, 
-           bty="n" ,lwd=3, y.intersp=1.5, horiz=FALSE, col=c("darkblue","red"))
-    
-  } else {
-    plot(c(1,1),type="n", frame.plot = FALSE, axes=FALSE, ann=FALSE)
-    graphics::text(1.5, 1,"Data not available", col="red", cex=2)
+  } else { # NO data for the comparing country
+    #print("c2 false")
+    if (nrow(filter(data, CountryCode==cou))>0){ # data for the main country  
+      #print("c1 true from c2 false")
+      # calculate the average for the region
+      data <- data %>%
+        group_by(Key) %>%
+        mutate(regionAvg = mean(Observation, na.rm=TRUE))
+      # remove all countries except cou
+      data <- filter(data, CountryCode==cou)
+      # Keep last period
+      data <- filter(data, Period == max(Period))
+      # I must add the max and min columns to make it work:
+      max<-7
+      min <-1
+      data <- cbind(data,max,min)
+      
+      # order labels ad-hoc:
+      order <- c(8,10,6,4,7,3,1,9,5,2,11,12)
+      data <- cbind(data,order)
+      data <- arrange(data,order)
+      data <- select(data, -order)# drop order
+      
+      # final tweaking
+      data <- select(data, IndicatorShort, max, min, Observation, regionAvg)
+      
+      # transpose the data for radarchart to read
+      dataTrans <- as.data.frame(t(data[,2:ncol(data)]))
+      
+      radarchart(dataTrans, axistype=1, caxislabels=seq(from=1,to=max,by=1),
+                 plty=c(1,2),plwd=c(6,3),pcol=c("darkblue","red"),pdensity=c(0, 0),
+                 cglwd=2,axislabcol="navy", vlabels=data$IndicatorShort, cex.main=1,cex=2.5)
+      #title="WEF Competitiveness Indicators, stage of development (1-7)",
+      #legend(-2.1,1.4, legend=c(country,region), seg.len=0.5, pch=3, 
+      #       bty="n" ,lwd=3, y.intersp=1.5, horiz=FALSE, col=c("darkblue","red"))
+      #legend(-2.1,1.4, legend=c(region), seg.len=0.5, pch=3, 
+      #       bty="n" ,lwd=3, y.intersp=1.5, horiz=FALSE, col=c("red"))
+    } else {
+      #print("c1 false from c2 false")
+      plot(c(1,1),type="n", frame.plot = FALSE, axes=FALSE, ann=FALSE)
+      graphics::text(1.5, 1,"Data not available", col="red", cex=2)
+    }  
   }  
-  
 }
 
 #############

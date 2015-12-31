@@ -203,6 +203,7 @@
 #  data <- merge(data, dataSpark, by="IndicatorShort")
   
   data <- spread(data, Period, Observation)
+  # this part creates the sparkline structure for the last column of the table
   data$trend <- data[,2] - data[,3]
   data <- data %>%
     group_by(IndicatorShort) %>%
@@ -227,15 +228,27 @@
   data <- filter(TCMN_data, CountryCode == cou, Subsection=="table5") #select country, region and world
   
   # prepare for table
-  data <- select(data, IndicatorShort, Period, Observation)
+  data <- mutate(data, ObsScaled = Scale*Observation)
+  data <- select(data, Key,IndicatorShort, Period, ObsScaled)
+  data <- arrange(data, Key, Period)
   # format numbers
-  data$Observation <- format(data$Observation, digits=2, decimal.mark=".",
+  data$ObsScaled <- format(data$ObsScaled, digits=2, decimal.mark=".",
                              big.mark=",",small.mark=".", small.interval=3)
   
-  data$Observation <- as.numeric(data$Observation)
-  data <- filter(data, Period %in% c(min(Period),max(Period)))
+  data$ObsScaled <- as.numeric(data$ObsScaled)
   
-  data <- spread(data, Period, Observation)
+  #data <- filter(data, Period %in% c(min(Period),max(Period)))
+  
+  # add sparkline column
+  dataSpark <- data %>% 
+    group_by(Key) %>%
+    summarise(Trend = paste(ObsScaled, collapse = ","))
+  
+  data <- merge(data, dataSpark, by="Key")
+  
+  data <- spread(data, Period, ObsScaled)
+  data <- data[,-1] #drop the Key column
+  data <- data[,c(1,3:ncol(data),2)] # reorder columns
   
   names(data)[1] <- ""
   

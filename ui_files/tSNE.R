@@ -17,7 +17,8 @@ div(id = "tsne",
           ),
         mainPanel(
           #column(10, 
-                 plotOutput('tSNE_plot',height=600)
+                 plotOutput('tSNE_plot',height=600),
+                 dataTableOutput('tSNE_table')
         )
     )
 )

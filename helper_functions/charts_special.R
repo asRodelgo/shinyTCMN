@@ -1,5 +1,5 @@
 # tsne chart ---------------------------------------------------------
-.tSNE_plot <- function(num_iter, max_num_neighbors, period){
+.tSNE_plot <- function(couName, num_iter, max_num_neighbors, period){
   
   ### read the data
   #TCMN_data <- fread("data/TCMN_data.csv")
@@ -56,7 +56,17 @@
                      max_iter=as.numeric(num_iter), 
                      perplexity=as.numeric(max_num_neighbors), 
                      epoch=num_iter)
-  
+  # calculate the euclidean distance between the selected country and the rest
+  dist_mat <- cbind(tSNE_plot,TCMN_data$Country)
+  dist_mat <- as.data.frame(dist_mat, stringsAsFactors=FALSE)
+  dist_mat$V1 <- as.numeric(dist_mat$V1)
+  dist_mat$V2 <- as.numeric(dist_mat$V2)
+  distCou1 <- dist_mat[dist_mat$V3==couName,1]
+  distCou2 <- dist_mat[dist_mat$V3==couName,2]
+  dist_mat <- mutate(dist_mat, dist = sqrt((V1-distCou1)^2+(V2-distCou2)^2))
+  # order by less distance to selected country
+  dist_mat <- head(arrange(dist_mat, dist)[,c(3,4)])
+  return(dist_mat)
 }  
 
 

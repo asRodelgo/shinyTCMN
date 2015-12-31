@@ -35,7 +35,9 @@ function(input, output, session) {
   })
   
   # output COuntry name --------------------------------
-  output$outCouSel <- renderText(input$inCouSel)  
+  output$outCouSel <- renderText(input$inCouSel) 
+  output$outCouSel2 <- renderText(input$inCouSel2)
+  output$outRegSel <- renderText({.getRegion(input$inCouSel)})
  
   # Home button !! not working globally !! --------------
   observeEvent(input$country_go, {
