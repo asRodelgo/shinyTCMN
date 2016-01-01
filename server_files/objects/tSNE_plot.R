@@ -29,7 +29,7 @@ output$tSNE_table <- renderDataTable({
     
   })
   
-},options = list(dom = 't')) # disable all the table fancy options  
+})#,options = list(dom = 't')) # disable all the table fancy options  
 
 
 

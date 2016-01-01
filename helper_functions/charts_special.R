@@ -65,7 +65,7 @@
   distCou2 <- dist_mat[dist_mat$V3==couName,2]
   dist_mat <- mutate(dist_mat, dist = sqrt((V1-distCou1)^2+(V2-distCou2)^2))
   # order by less distance to selected country
-  dist_mat <- head(arrange(dist_mat, dist)[,c(3,4)])
+  dist_mat <- arrange(dist_mat, dist)[,c(3,4)]
   return(dist_mat)
 }  
 
