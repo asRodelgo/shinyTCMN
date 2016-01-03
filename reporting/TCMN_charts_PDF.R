@@ -6,14 +6,14 @@
 # Each R code chunk LaTeX will read is delimited by: ## ---- label ----
 
 ## ---- test ----
-2+2
+#2+2
 
 ## ---- parameters ----
 #source(file.path("helper_functions","generic_functions.R"),local=TRUE)
 # init_Params <- function(){
 #   #library(knitr)
-#   #couName <- "Tunisia"
-#   #cou <- "ALG"
+couName <- "Afghanistan"
+#cou <- ""
 #   #couISO2 <- .getISO2(input$inCouSel)
 #   #cou <- .getCountryCode(input$inCouSel)
 #   couISO2 <- .getISO2(couName)
@@ -26,8 +26,9 @@
 #init_Params()
 
 ## ---- ExpImp_HF ----
-ExpImp_HF <- function(cou){
+ExpImp_HF <- function(couName){
   
+  cou <- .getCountryCode(couName)
   data <- filter(TCMN_data, CountryCode==cou, Subsection=="chart1")
   
   if (nrow(data)>0){
@@ -50,11 +51,12 @@ ExpImp_HF <- function(cou){
   
   
 }
-ExpImp_HF(cou)
+ExpImp_HF(couName)
 
 ## ---- top5constraintsES ----
-top5constraintsES <- function(cou){
+top5constraintsES <- function(couName){      
   
+  cou <- .getCountryCode(couName)
   data <- filter(TCMN_data, CountryCode==cou, Subsection=="chart3")
   
   if (nrow(data)>0){
@@ -85,11 +87,12 @@ top5constraintsES <- function(cou){
   }
           
 }
-top5constraintsES(cou)
+top5constraintsES(couName)
 
 ## ---- top5constraintsWEF ----
-top5constraintsWEF <- function(cou){
+top5constraintsWEF <- function(couName){      
   
+  cou <- .getCountryCode(couName)
   data <- filter(TCMN_data, CountryCode==cou, Subsection=="chart4")
   
   if (nrow(data)>0){
@@ -120,10 +123,12 @@ top5constraintsWEF <- function(cou){
   }
   
 }
-top5constraintsWEF(cou)
+top5constraintsWEF(couName)
 
 ## ---- WGIindicators ----
-WGIindicators <- function(cou){ # This chart needs to query neighbouring countries also
+WGIindicators <- function(couName){      
+  
+  cou <- .getCountryCode(couName) # This chart needs to query neighbouring countries also
   
   couRegion <- countries[countries$CountryCodeISO3==cou,]$RegionCodeALL  # obtain the region for the selected country
   neighbors <- countries[countries$RegionCodeALL==couRegion,]$CountryCodeISO3 # retrieve all countries in that region
@@ -169,10 +174,12 @@ WGIindicators <- function(cou){ # This chart needs to query neighbouring countri
   }
   
 }
-WGIindicators(cou)
+WGIindicators(couName)
 
 ## ---- LPIindicators ----
-LPIindicators <- function(cou){
+LPIindicators <- function(couName){      
+  
+  cou <- .getCountryCode(couName)
   
   data <- filter(TCMN_data, CountryCode==cou, Subsection=="chart8")
 
@@ -202,10 +209,12 @@ LPIindicators <- function(cou){
 }
   
 }
-LPIindicators(cou)
+LPIindicators(couName)
 
 ## ---- WEFradar ----
-WEFradar <- function(cou){ # This chart needs to query neighbouring countries also
+WEFradar <- function(couName){      
+  
+  cou <- .getCountryCode(couName) # This chart needs to query neighbouring countries also
   
   couRegion <- as.character(countries[countries$CountryCodeISO3==cou,]$RegionCodeALL)  # obtain the region for the selected country
   neighbors <- countries[countries$RegionCodeALL==couRegion,]$CountryCodeISO3 # retrieve all countries in that region
@@ -264,10 +273,12 @@ WEFradar <- function(cou){ # This chart needs to query neighbouring countries al
   }  
   
 }
-WEFradar(cou)
+WEFradar(couName)
 
 ## ---- GVA_Treemap ----
-GVA_Treemap <- function(cou){
+GVA_Treemap <- function(couName){      
+  
+  cou <- .getCountryCode(couName)
   
   data <- filter(TCMN_data, CountryCode==cou, Subsection=="chart2")
   if (nrow(filter(data, CountryCode==cou))>0){
@@ -299,11 +310,12 @@ GVA_Treemap <- function(cou){
   }  
   
 }
-GVA_Treemap(cou)
+GVA_Treemap(couName)
 
 ## ---- ImpExp_Treemap-1 ----
-ImpExp_Treemap <- function(cou, type){
+ImpExp_Treemap <- function(couName, type){
   
+  cou <- .getCountryCode(couName)
   if (type=="m"){
     
     data <- filter(mWits, CountryCode == cou) #select country, region and world
@@ -354,11 +366,12 @@ ImpExp_Treemap <- function(cou, type){
   }  
 
 }
-ImpExp_Treemap(cou,"m")
+ImpExp_Treemap(couName,"m")
 
 ## ---- ImpExp_Treemap-2 ----
-ImpExp_Treemap <- function(cou, type){
+ImpExp_Treemap <- function(couName, type){
   
+  cou <- .getCountryCode(couName)
   if (type=="m"){
     
     data <- filter(mWits, CountryCode == cou) #select country, region and world
@@ -409,10 +422,12 @@ ImpExp_Treemap <- function(cou, type){
   }  
   
 }
-ImpExp_Treemap(cou,"x")
+ImpExp_Treemap(couName,"x")
 
 ## ---- macroInd ----
-macroInd <- function(cou){
+macroInd <- function(couName){      
+  
+  cou <- .getCountryCode(couName)
   
   data <- filter(TCMN_data, CountryCode==cou, Subsection=="table1")
   # keep the latest period (excluding projections further than 2 years)
@@ -443,10 +458,12 @@ macroInd <- function(cou){
         booktabs = FALSE, table.placement="", hline.after = NULL ,latex.environments = "center")
   
 }
-macroInd(cou)
+macroInd(couName)
 
 ## ---- macroInd_Big ----
-macroInd_Big <- function(cou){
+macroInd_Big <- function(couName){      
+  
+  cou <- .getCountryCode(couName)
 
   data <- filter(TCMN_data, CountryCode==cou, Subsection=="table2")
   # keep the latest period (excluding projections further than 2 years)
@@ -506,10 +523,12 @@ macroInd_Big <- function(cou){
         sanitize.text.function = function(x){x}) # include sanitize to control formats
   
 }
-macroInd_Big(cou)
+macroInd_Big(couName)
 
 ## ---- createSparklines ----
-createSparklines <- function(cou){
+createSparklines <- function(couName){      
+  
+  cou <- .getCountryCode(couName)
   ## Examples like Edward Tufte's sparklines:
   
   data <- filter(TCMN_data, CountryCode==cou, Subsection=="table2")
@@ -545,10 +564,12 @@ createSparklines <- function(cou){
     points(x=c(tmin,tmax),y=c(ymin,ymax),pch=19,col=c("red","green"),cex=5) # add coloured points at max and min
   }
 }
-createSparklines(cou)
+createSparklines(couName)
 
 ## ---- ESTable ----
-ESTable <- function(cou){
+ESTable <- function(couName){      
+  
+  cou <- .getCountryCode(couName)
   
   couRegion <- as.character(countries[countries$CountryCodeISO3==cou,]$RegionCodeES)  # obtain the region for the selected country
   data <- filter(TCMN_data, CountryCode %in% c(cou,couRegion, "RWe") & Subsection=="table3") #select country, region and world
@@ -586,10 +607,12 @@ ESTable <- function(cou){
         booktabs = FALSE, table.placement="", hline.after = c(0) ,latex.environments = "center")
   
 }
-ESTable(cou)
+ESTable(couName)
 
 ## ---- PolicyTable ----
-PolicyTable <- function(cou){
+PolicyTable <- function(couName){      
+  
+  cou <- .getCountryCode(couName)
   
   data <- filter(TCMN_data, CountryCode == cou, Subsection=="table4") #select country, region and world
   
@@ -627,10 +650,12 @@ PolicyTable <- function(cou){
         sanitize.text.function = function(x){x}) # include sanitize to control format like colors
   
 }
-PolicyTable(cou)
+PolicyTable(couName)
 
 ## ---- PolicyFacilTable ----
-PolicyFacilTable <- function(cou){
+PolicyFacilTable <- function(couName){      
+  
+  cou <- .getCountryCode(couName)
   
   data <- filter(TCMN_data, CountryCode == cou, Subsection=="table5") #select country, region and world
   
@@ -673,10 +698,12 @@ PolicyFacilTable <- function(cou){
         sanitize.text.function = function(x){x}) # include sanitize to control formats
   
 }
-PolicyFacilTable(cou)
+PolicyFacilTable(couName)
 
 ## ---- topExportsTable ----
-topExportsTable <- function(cou){
+topExportsTable <- function(couName){      
+  
+  cou <- .getCountryCode(couName)
   
   data <- filter(xWits, CountryCode == cou) #select country, region and world
   
@@ -715,10 +742,12 @@ topExportsTable <- function(cou){
         booktabs = FALSE, table.placement="", hline.after = c(0) ,latex.environments = "center")
   
 }
-topExportsTable(cou)
+topExportsTable(couName)
 
 ## ---- topImportsTable ----
-topImportsTable <- function(cou){
+topImportsTable <- function(couName){      
+  
+  cou <- .getCountryCode(couName)
   
   data <- filter(mWits, CountryCode == cou) #select country, region and world
   
@@ -755,7 +784,7 @@ topImportsTable <- function(cou){
         booktabs = FALSE, table.placement="", hline.after = c(0) ,latex.environments = "center")
   
 }
-topImportsTable(cou)
+topImportsTable(couName)
 
 
 

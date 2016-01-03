@@ -11,7 +11,7 @@ require(tsne) # t-SNE algorithm
 library(DT) # customize dataTable javascript library
 library(reshape2) # manipulate data
 library(devtools) # allow install packages from source
-install_github('htmlwidgets/sparkline') # install sparklines
+#install_github('htmlwidgets/sparkline') # install sparklines
 library(sparkline) # sparklines
 library(knitr) # generate LaTeX PDF report
 

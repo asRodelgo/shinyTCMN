@@ -38,7 +38,7 @@ read_chunk("TCMN_charts_PDF.R")
 #source("/Users/asanchez3/shinyTCMN/helper_functions/generic_functions.R")
 #testFunction()
 couName <- input$inCouSel
-cou <- .getCountryCode(couName)
+#cou <- .getCountryCode(couName)
 @
 %%%%%%%%%%%%%%%% PAGE 1 %%%%%%%%%%%%%%%%%%%
 % World Bank logo and TCMN branding
@@ -131,7 +131,8 @@ cou <- .getCountryCode(couName)
    \begin{minipage}[c]{0.44\textwidth} 
     %\vspace*{-0.2cm}
     \begin{minipage}[t]{0.99\textwidth} 
-      {\color{blue!50!black} \textbf{\small Top 5 Exports by \% of Total Value,}} %\Sexpr{expYear}}}
+      {\color{blue!50!black} \textbf{\small Top 5 Exports by \% of Total Value,}} 
+      % \Sexpr{expYear}}}
       %\vspace{3ex}
       \\[6pt]
       \centering
@@ -142,7 +143,8 @@ cou <- .getCountryCode(couName)
       \end{minipage}
       \\[14pt]
       \begin{minipage}[t]{0.99\textwidth} 
-      {\color{blue!50!black} \textbf{\small Imports Categories by \% of Total Value,}} %\Sexpr{impYear}}}
+      {\color{blue!50!black} \textbf{\small Imports Categories by \% of Total Value,}}
+      %\Sexpr{impYear}}}
       \\[6pt]
       \centering
       \resizebox{\textwidth}{!}{%
@@ -174,7 +176,8 @@ cou <- .getCountryCode(couName)
 \vspace{+3ex}
 {\color{blue!50!white}\noindent\makebox[\linewidth]{\rule{18cm}{0.3pt}}} % horiz line
 \begin{minipage}[c]{0.99\textwidth}
-  \hspace*{-0.4cm}\raggedleft{\color{white!40!black} \footnotesize TRADE AND COMPETITIVENESS MONITORING NOTE - UPDATED \Sexpr{month} \Sexpr{year}}
+  \hspace*{-0.4cm}\raggedleft{\color{white!40!black} \footnotesize TRADE AND COMPETITIVENESS MONITORING NOTE - UPDATED} 
+  %\Sexpr{month} \Sexpr{year}}
 \end{minipage}
 
 \newpage
@@ -285,7 +288,8 @@ cou <- .getCountryCode(couName)
 \end{minipage}
 \begin{minipage}[c]{0.65\textwidth}
   \vspace*{-0.4cm}
-  \raggedleft{\color{white!40!black} \footnotesize TRADE AND COMPETITIVENESS MONITORING NOTE - UPDATED \Sexpr{month} \Sexpr{year}}
+  \raggedleft{\color{white!40!black} \footnotesize TRADE AND COMPETITIVENESS MONITORING NOTE - UPDATED} 
+  %\Sexpr{month} \Sexpr{year}}
 \end{minipage}
 
 %%%%%%%%%%%%%%%% END OF DOCUMENT %%%%%%%%%%%%%%%%%%%

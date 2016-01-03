@@ -174,15 +174,18 @@ tagList(
                       tabsetPanel(  
                         #### data sources ####
                         tabPanel("Data Sources",
-                                 dataTableOutput('sourcesTable')
+                                 fluidRow(
+                                   column(12,dataTableOutput('sourcesTable')))
                         ),
                         #### indicators #####
                         tabPanel("Indicators",
-                                 dataTableOutput('indicatorsTable')
+                                 fluidRow(
+                                 column(12,dataTableOutput('indicatorsTable')))
                         ),
                         #### countries #####
-                        tabPanel("Country Classification", 
-                                 dataTableOutput('countriesTable')
+                        tabPanel("Country Classification",
+                                 fluidRow(
+                                 column(12,dataTableOutput('countriesTable')))
                         )
                       ) # End tabsetPanel
              ), # End Policy Indicators
