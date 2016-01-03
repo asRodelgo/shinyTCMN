@@ -1,6 +1,6 @@
 # ExpImp_HF ------------------------------------
-column(12, h5("Top Imports by category"),
+column(12, h5("Imports Categories by % of Total Value"),
        h6("Source: ",
-          a("World Development Indicators (WDI), World Bank", 
-            href = "http://data.worldbank.org/data-catalog/world-development-indicators")),
+          a(TCMN_sources[TCMN_sources$Source=="WITS_TRADE",]$SourceDescription, 
+            href = TCMN_sources[TCMN_sources$Source=="WITS_TRADE",]$url)),
        plotOutput('topImport', height=200))

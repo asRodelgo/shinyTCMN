@@ -48,3 +48,15 @@
   
 }
 
+# Used in PDF report generation ------------------------
+.getImportsPeriod <- function(cou){
+  
+  data <- filter(mWits, CountryCode == cou) #select country, region and world
+  return(max(data$Period))
+}
+
+.getExportsPeriod <- function(cou){
+  
+  data <- filter(xWits, CountryCode == cou) #select country, region and world
+  return(max(data$Period))
+}

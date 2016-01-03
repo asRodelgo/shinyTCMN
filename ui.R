@@ -32,7 +32,7 @@ tagList(
     fluidRow(
       column(1, div(uiOutput('outFlag'), class = "flag")),
       column(2, h5("Explore by country:"),
-      selectInput('inCouSel', NULL, choices=c("Select a country",countryNames$Country),selectize=FALSE)
+      selectInput('inCouSel', NULL, choices=c("Select a country",countryNames$Country), selected = 'Afghanistan', selectize=FALSE)
       )
     )
   ),
@@ -47,22 +47,43 @@ tagList(
                       value = "home",
                       #  source(file.path("ui_files", "country_selector_home.R"), local = TRUE)$value
                       #),
-                      div(style = "margin-top: -10px; height:450px",
-                          img(src = "tSNE_image.png")),
+                      br(),
+                      includeHTML("html/home_page_links.html"),
+                      column(2,''),
+                      column(8,h5("Macroeconomic Indicators"),
+                             h6("Sources: ",
+                                a(TCMN_sources[TCMN_sources$Source=="MFM",]$SourceDescription, 
+                                  href = TCMN_sources[TCMN_sources$Source=="MFM",]$url),"; ",
+                                a(TCMN_sources[TCMN_sources$Source=="WDI",]$SourceDescription, 
+                                  href = TCMN_sources[TCMN_sources$Source=="WDI",]$url),"; ",
+                                a(TCMN_sources[TCMN_sources$Source=="WEO",]$SourceDescription, 
+                                  href = TCMN_sources[TCMN_sources$Source=="WEO",]$url)),
+                             dataTableOutput('tableHome'))
+                      #column(5,div(style = "margin-top: -10px; height:450px",
+                      #    img(src = "tSNE_image.png"))),
                       #br(),
-                      includeHTML("html/home_page_links.html")
+                      
              ),
              
              #### PAGE: Macro ####
-             tabPanel(title = "Macro Indicators", icon = icon("stats", lib = "glyphicon"),
+             tabPanel(title = "Tables and Charts", icon = icon("stats", lib = "glyphicon"),
                       navlistPanel(
                         #### tables ####
                         tabPanel("Macro tables",
                                  h5("Macroeconomic Indicators"),
+                                 h6("Sources: ",
+                                    a(TCMN_sources[TCMN_sources$Source=="MFM",]$SourceDescription, 
+                                      href = TCMN_sources[TCMN_sources$Source=="MFM",]$url),"; ",
+                                    a(TCMN_sources[TCMN_sources$Source=="WDI",]$SourceDescription, 
+                                      href = TCMN_sources[TCMN_sources$Source=="WDI",]$url),"; ",
+                                    a(TCMN_sources[TCMN_sources$Source=="UNCTADSTAT",]$SourceDescription, 
+                                      href = TCMN_sources[TCMN_sources$Source=="UNCTADSTAT",]$url),"; ",
+                                    a(TCMN_sources[TCMN_sources$Source=="WEO",]$SourceDescription, 
+                                      href = TCMN_sources[TCMN_sources$Source=="WEO",]$url)),
                                  tags$style(HTML("
-                                                 .jqstooltip{
-                                                 box-sizing: content-box;
-                                                 }")), # adjust tooltips in datatables
+                                                .jqstooltip{
+                                                box-sizing: content-box;
+                                               }")), # adjust tooltips in datatables
                                  dataTableOutput('tableSpark')
                                  #DT::dataTableOutput('table2')
                         ),
@@ -77,23 +98,24 @@ tagList(
                                  h5("Imports and Exports"),
                                  source(file.path("ui_files", "ExpImp_HF.R"), local = TRUE)$value,
                                  fluidRow(
-                                   column(7,DT::dataTableOutput('expTable')),
-                                   column(5,source(file.path("ui_files", "top_Export.R"), local = TRUE)$value)
+                                   column(6,source(file.path("ui_files", "top_Export.R"), local = TRUE)$value),
+                                   column(6,source(file.path("ui_files", "top_Import.R"), local = TRUE)$value)
                                  ),
                                  fluidRow(
-                                   column(7,DT::dataTableOutput('impTable')),
-                                   column(5,source(file.path("ui_files", "top_Import.R"), local = TRUE)$value)
+                                   column(6,DT::dataTableOutput('expTable')),
+                                   column(6,DT::dataTableOutput('impTable'))
                                  )
                         ),
                         tabPanel("Doing Business",
                                    h5("Doing Business Ranks"),
+                                   h6("Source: ",
+                                    a(TCMN_sources[TCMN_sources$Source=="DB",]$SourceDescription, 
+                                      href = TCMN_sources[TCMN_sources$Source=="DB",]$url)),
                                    tags$style(HTML("
                                                    .jqstooltip{
                                                    box-sizing: content-box;
                                                    }")), # adjust tooltips in datatables
                                    dataTableOutput('db_Table')
-#                                  h5("Download full TCMN report for the selected country"),
-#                                  downloadButton('downloadReport', 'PDF report')
                         ),
                         tabPanel("Competitiveness Indicators",
                                  source(file.path("ui_files", "compet_Indic.R"), local = TRUE)$value
@@ -106,6 +128,11 @@ tagList(
                         ),
                         tabPanel("Trade Policy",
                                  h5("Trade Policy Indicators"),
+                                 h6("Sources: ",
+                                    a(TCMN_sources[TCMN_sources$Source=="WITS_TARIFF",]$SourceDescription, 
+                                      href = TCMN_sources[TCMN_sources$Source=="WITS_TARIFF",]$url),"; ",
+                                    a(TCMN_sources[TCMN_sources$Source=="WTO",]$SourceDescription, 
+                                      href = TCMN_sources[TCMN_sources$Source=="WTO",]$url)),
                                  tags$style(HTML("
                                                  .jqstooltip{
                                                  box-sizing: content-box;
@@ -119,46 +146,48 @@ tagList(
              ), # End Macro
              
              #### PAGE: Private Sector Views ####
-             tabPanel(title = "Private Sector's Views", icon = icon("stats", lib = "glyphicon"),
+             tabPanel(title = "Reports and Downloads", icon = icon("th-large", lib = "glyphicon"),
                       #withMathJax(),
                       tabsetPanel(
                         #### tables ####
-                        tabPanel("Tables",
-                                 h5("Some tables")
+                        tabPanel("Data downloads",
+                                 h5("Bulk download data for all countries:"),
+                                 downloadLink('bulkDownload', 'TCMN dataset'),
+                                 h5("Download Products Imports for all countries:"),
+                                 downloadLink('mWitsDownload', 'WITS imports'),
+                                 h5("Download Products Exports for all countries:"),
+                                 downloadLink('xWitsDownload', 'WITS exports'),
+                                 h5("Download list of indicators:"),
+                                 downloadLink('indicatorsDownload', 'TCMN indicators')
                         ),
                         #### charts ####
-                        tabPanel("Charts",
-                                 h5("Some charts")
-                        ),
-                        #### Metadata ####
-                        tabPanel("Metadata",
-                                 h3("Tell me stuff about those indicators")
-                        )
+                        tabPanel("PDF Country Report",
+                                 h5("Download full TCMN report for the selected country"),
+                                 downloadButton('downloadDynamicReport', 'PDF report')
+                                 
+                        )         
                       ) # End tabsetPanel
              ), # End Private Sector
              
              #### PAGE: Policy Indicators ####
-             tabPanel(title = "Performance Indicators", icon = icon("stats", lib = "glyphicon"),
+             tabPanel(title = "Metadata", icon = icon("th-small", lib = "glyphicon"),
                       tabsetPanel(  
-                        #### tables ####
-                        tabPanel("Tables", icon = icon("th-large", lib = "glyphicon"),
-                                 splitLayout(h5("Left side"), h5("Right side"))
+                        #### data sources ####
+                        tabPanel("Data Sources",
+                                 dataTableOutput('sourcesTable')
                         ),
-                        #### charts #####
-                        tabPanel("charts",icon = icon("stats", lib = "glyphicon"),
-                                helpText(style = "font-size: 11px", "For Stan models using the NUTS algorithm, red points indicate iterations that encountered a divergent transition.",  
-                                         "Yellow points indicate a transition that hit the maximum treedepth",
-                                         "rather than terminated its evolution normally."),
-                                hr()
+                        #### indicators #####
+                        tabPanel("Indicators",
+                                 dataTableOutput('indicatorsTable')
                         ),
-                        #### metadata #####
-                        tabPanel("Metadata", 
-                                helpText(style = "font-size: 12px;", "Use your mouse and trackpad to rotate the plot and zoom in or out.")
+                        #### countries #####
+                        tabPanel("Country Classification", 
+                                 dataTableOutput('countriesTable')
                         )
                       ) # End tabsetPanel
              ), # End Policy Indicators
              #### MENU: More ####
-             navbarMenu(title = "More",
+             navbarMenu(title = "Data Analysis",
                         #### model code ####
                         tabPanel(title = "TSNE",
                                 source(file.path("ui_files", "tSNE.R"), local = TRUE)$value

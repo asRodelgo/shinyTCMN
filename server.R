@@ -18,6 +18,9 @@ function(input, output, session) {
   files <- list.files("server_files", full.names = TRUE, recursive = TRUE)
   for (f in files) source(f, local = TRUE)
   
+  # source PDF tables to make them dynamic on the selected country
+  #source(file.path("reporting","TCMN_charts_PDF.R"))
+  
   # Home page table of contents entries
   toc_entries <- c("Macro", "Private", "Policy", "TradePolicy")
   
@@ -34,9 +37,10 @@ function(input, output, session) {
     })
   })
   
-  # output COuntry name --------------------------------
+  # output Country name --------------------------------
   output$outCouSel <- renderText(input$inCouSel) 
   output$outCouSel2 <- renderText(input$inCouSel2)
+  #output$outCouSelLPI <- renderText(input$inCouSelLPI)
   output$outRegSel <- renderText({.getRegion(input$inCouSel)})
  
   # Home button !! not working globally !! --------------

@@ -1,6 +1,6 @@
-# ExpImp_HF ------------------------------------
-column(12, h5("Net Exports/Imports (billions of current USD)"),
+# GVA Treemap ------------------------------------
+column(12, h5("Gross Value Added by Economic Activity (% GDP)"),
        h6("Source: ",
-          a("World Development Indicators (WDI), World Bank", 
-            href = "http://data.worldbank.org/data-catalog/world-development-indicators")),
+          a(TCMN_sources[TCMN_sources$Source=="WDI",]$SourceDescription, 
+            href = TCMN_sources[TCMN_sources$Source=="WDI",]$url)),
 plotOutput('GVA_Treemap', height=200))

@@ -4,7 +4,7 @@
 output$tableSpark <- renderDataTable({
   
   # define types of sparkline charts
-  line_string <- "type: 'line', lineColor: 'blue', fillColor: 'white', minSpotColor: 'red', 
+  line_string <- "type: 'line', lineColor: 'blue', fillColor: '', minSpotColor: 'red', 
                   maxSpotColor: 'green', highlightLineColor: 'red', highlightSpotColor: 'red',
                   spotRadius: '3', lineWidth: '2', spotColor: ''"
   bar_string <- "type: 'bar', barColor: 'orange', negBarColor: 'purple', highlightColor: 'black'"

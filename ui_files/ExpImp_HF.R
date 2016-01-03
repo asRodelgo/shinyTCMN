@@ -1,6 +1,6 @@
 # ExpImp_HF ------------------------------------
-column(12, h5("Net Exports/Imports (billions of current USD)"),
+column(12, h5("Goods Export and Import, volume growth"),
        h6("Source: ",
-          a("World Development Indicators (WDI), World Bank", 
-            href = "http://data.worldbank.org/data-catalog/world-development-indicators")),
+          a(TCMN_sources[TCMN_sources$Source=="DECPG",]$SourceDescription, 
+            href = TCMN_sources[TCMN_sources$Source=="DECPG",]$url)),
        plotOutput('ExpImp_HF', height=200))

@@ -13,6 +13,7 @@ library(reshape2) # manipulate data
 library(devtools) # allow install packages from source
 install_github('htmlwidgets/sparkline') # install sparklines
 library(sparkline) # sparklines
+library(knitr) # generate LaTeX PDF report
 
 # global data and functions -----------------------------------------
 
@@ -23,6 +24,10 @@ source("data/read_data.R", local = TRUE)
 helpers <- file.path("helper_functions", list.files("helper_functions", full.names = FALSE))
 for (h in helpers) source(h, local = TRUE)
 #source(file.path("server_files","utilities","ppcheck_names_descriptions.R"), local = TRUE)
+
+# PDF report R scripts
+#source("reporting/dynamicPDF.R", local = TRUE)
+source("reporting/TCMN_charts_PDF.R", local = TRUE)
 
 # avoid conflict with inline::code if rstan is loaded
 code <- shiny::code
@@ -328,5 +333,5 @@ stan_manual <- function() {
 # .nChains <- slot(object, "nChains")
 # .nIter <- slot(object, "nIter")
 # .nWarmup <- slot(object, "nWarmup")
-# .model_code <- slot(object, "model_code")
 # .notes <- slot(object, "user_model_info")
+# .model_code <- slot(object, "model_code")

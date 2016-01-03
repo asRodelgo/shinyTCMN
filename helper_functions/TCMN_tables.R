@@ -10,32 +10,39 @@
 
 .macroInd <- function(couName){
   
-  
     cou <- .getCountryCode(couName)
     data <- filter(TCMN_data, CountryCode==cou, Subsection=="table1")
-    if (nrow(data)>0){
+    #if (nrow(data)>0){
       # keep the latest period (excluding projections further than 2 years)
       data <- filter(data, Period <= (as.numeric(thisYear)))
-      data <- data %>%
-        group_by(Key) %>%
-        filter(Period == max(Period))
       # add Period to Indicator name
       data$IndicatorShort <- paste(data$IndicatorShort, " (",data$Period,")", sep="")
       # Scale Observations
       data <- mutate(data, ObsScaled = Scale*Observation)
+      
+      data <- arrange(data, Key)
+      # add sparkline column
+      dataSpark <- data %>% 
+        group_by(Key) %>%
+        summarise(Trend = paste(ObsScaled, collapse = ","))
+      
+      data <- merge(data, dataSpark, by="Key")
       # format numbers
       data$ObsScaled <- format(data$ObsScaled, digits=2, decimal.mark=".",
                                big.mark=",",small.mark=".", small.interval=3)
       
-      data <- arrange(data, Key)
-      data <- data[,c("IndicatorShort", "ObsScaled")] # short indicator name and scaled data
-      data <- as.data.frame(t(data)) # transpose the data
+      data <- data %>%
+        group_by(Key) %>%
+        filter(Period == max(Period))
+      
+      data <- data[,c("IndicatorShort", "Source","ObsScaled","Trend")] # short indicator name and scaled data
+      #data <- as.data.frame(t(data)) # transpose the data
       return(data)
       
-    } else {
-      
-      return(graphics::text(1.5, 1,"Data not available", col="red", cex=2))
-    }
+    #} else {
+    #  
+    #  return(graphics::text(1.5, 1,"Data not available", col="red", cex=2))
+    #}
   
 }
 
@@ -169,7 +176,14 @@
   data <- merge(data, neighbors, by="CountryCode")
   data <- select(data, IndicatorShort, Observation, colName)
   data <- spread(data, colName, Observation)
-  data <- data[,c(1,4,3,2)]# reorder columns
+  
+  if (ncol(data)==4){
+    data <- data[,c(1,4,3,2)]# reorder columns
+  }
+  else {
+    data <- data[,c(1,3,2)]# reorder columns
+  }
+  
   names(data)[1] <-""
   
   # substitute NAs for "---" em-dash
@@ -281,6 +295,8 @@
   data$percTotalValue <- format(data$percTotalValue, digits=0, decimal.mark=".",
                                 big.mark=",",small.mark=".", small.interval=3)
   
+  # filter by latest period
+  data <- filter(data, Period==max(Period))
   # get top 5
   data <- head(arrange(data, desc(TradeValue)),5)
   data <- select(data, -Period)
@@ -314,6 +330,8 @@
   data$percTotalValue <- format(data$percTotalValue, digits=0, decimal.mark=".",
                                 big.mark=",",small.mark=".", small.interval=3)
   
+  # filter by latest period
+  data <- filter(data, Period==max(Period))
   # get top 5
   data <- head(arrange(data, desc(TradeValue)),5)
   data <- select(data, -Period)
