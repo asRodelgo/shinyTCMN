@@ -614,7 +614,8 @@ http://tympanus.net/codrops/licensing/
 	font-weight: 400;
 	text-shadow: 0 0 1px rgba(255,255,255,0.3);
 	font-size: 1.35em;
-	color: #590815;
+	/*color: #590815;*/
+	color: #104E8B;
 	text-align: left;
 }
 

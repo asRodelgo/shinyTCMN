@@ -27,7 +27,8 @@ tagList(
   fluidPage(
     fluidRow(
       column(3,wb_logo()),
-      column(9, tcmn_logo())
+      #column(9, tcmn_logo())
+      column(9, tcmn_banner())
     ),
     fluidRow(
       column(1, div(uiOutput('outFlag'), class = "flag")),
@@ -198,22 +199,6 @@ tagList(
                         #### notepad ####
                         tabPanel(title = "TSNE JS"
                                 #source(file.path("ui_files", "tSNE_JS.R"), local = TRUE)$value
-                        ),
-                        #### about ####
-                        tabPanel(title = "About", 
-                                 logo_and_name()
-                        #         div(style = "margin-top: 75px;",
-                        #             source(file.path("ui_files", "about.R"), local = TRUE)$value
-                        #         )
-                        ),
-                        #### glossary ####
-                        tabPanel(title = "Glossary"
-                        #         div(style = "background-color: white;",
-                        #             h1(style = "text-align: center;", "Glossary"),
-                        #             source(file.path("ui_files", "glossary.R"), local = TRUE)$value,
-                        #             hr(),
-                        #             stan_manual()
-                        #         )
                         ),
                         #### help ####
                         tabPanel(title = "Help"

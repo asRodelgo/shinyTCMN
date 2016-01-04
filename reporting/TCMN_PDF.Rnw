@@ -38,33 +38,34 @@ read_chunk("TCMN_charts_PDF.R")
 #source("/Users/asanchez3/shinyTCMN/helper_functions/generic_functions.R")
 #testFunction()
 couName <- input$inCouSel
+couISO2 <- .getISO2(couName)
 #cou <- .getCountryCode(couName)
 @
 %%%%%%%%%%%%%%%% PAGE 1 %%%%%%%%%%%%%%%%%%%
-% World Bank logo and TCMN branding
-% \begin{figure}
-%   \vspace{-3ex} % move up this figure
-%   \hspace{-7ex} % move left this figure
-%   %\includegraphics[width=5cm]{images/wb_logo_background.png}
-% \end{figure}
-% \begin{figure}
-%   %\begin{minipage}[t]{0.99\textwidth} % top section
-%       \vspace{-30ex}
-%       \hspace{-2ex}
-%       %\raggedright{\includegraphics[width=5.5cm,right]{images/TCMN_banner3.png}}
-%     %{\color{white!70!black}\noindent\makebox[\linewidth]{\rule{20cm}{0.3pt}}} % horiz line
-%   %\end{minipage}
-% \end{figure}
+%World Bank logo and TCMN branding
+\begin{figure}
+  \vspace{-3ex} % move up this figure
+  \hspace{-7ex} % move left this figure
+  \includegraphics[width=5cm]{www/wb_logo_background.png}
+\end{figure}
+\begin{figure}
+  \begin{minipage}[t]{0.99\textwidth} % top section
+      \vspace{-30ex}
+      \hspace{-2ex}
+      \raggedright{\includegraphics[width=5.5cm,right]{www/TCMN_banner3.png}}
+  %  {\color{white!70!black}\noindent\makebox[\linewidth]{\rule{20cm}{0.3pt}}} % horiz line
+  \end{minipage}
+\end{figure}
 %
 %%%% Macro Indicators
 \begin{minipage}[t]{0.99\textwidth} % top section
   \vspace{-0.5cm}
   \begin{minipage}[c]{0.36\textwidth} 
     \begin{minipage}[c]{0.28\textwidth} % flag
-      %\includegraphics[width=1.2cm,height=1.2cm]{www/\Sexpr{couISO2}.png}
+      \includegraphics[width=1.2cm,height=1.2cm]{www/\Sexpr{couISO2}.png}
     \end{minipage}
     \begin{minipage}[c]{0.70\textwidth} % Country name
-      %\section*{\color{blue!40!black}\Sexpr{couName}}
+      \section*{\color{blue!40!black}\Sexpr{couName}}
     \end{minipage}
   \end{minipage}
   \begin{minipage}[c]{0.63\textwidth} % key macro table 
@@ -283,8 +284,8 @@ couName <- input$inCouSel
 
 \vspace{+2ex}
 \begin{minipage}[c]{0.33\textwidth}
-  %\hspace*{+0.3cm} \includegraphics[width=4cm,left]{images/wb_logo.jpg}
-  \hspace*{+0.3cm} \includegraphics[width=4cm,left]{www/wb_logo.png}
+  \hspace*{+0.3cm} \includegraphics[width=4cm,left]{www/wb_logo.jpg}
+  %\hspace*{+0.3cm} \includegraphics[width=4cm,left]{www/wb_logo.png}
 \end{minipage}
 \begin{minipage}[c]{0.65\textwidth}
   \vspace*{-0.4cm}

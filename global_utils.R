@@ -74,8 +74,13 @@ tcmn_logo <- function() {
 }
 
 wb_logo <- function() {
-    div(img(src = "WBG_Logo.jpg", 
+    div(img(src = "wb_logo.jpg", 
             class = "wb-logo", width = "10%"))
+}
+
+tcmn_banner <- function() {
+  div(img(src = "bannerMixedTitle.png", 
+          class = "tcmn-logo", width = "100%"))
 }
 
 save_and_close_reminder <- function(id) {
