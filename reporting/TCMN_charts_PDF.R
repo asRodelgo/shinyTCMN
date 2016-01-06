@@ -5,14 +5,15 @@
 #######################################################
 # Each R code chunk LaTeX will read is delimited by: ## ---- label ----
 
-## ---- test ----
-#2+2
+## ---- loaddata ----
+#country_loop <- c("Tunisia","Spain")
 
 ## ---- parameters ----
 #source(file.path("helper_functions","generic_functions.R"),local=TRUE)
 # init_Params <- function(){
 #   #library(knitr)
-couName <- "Afghanistan"
+#couName <- countryNames[countryNames$Country==c,]$Country
+#couISO2 <- .getISO2(couName)
 #cou <- ""
 #   #couISO2 <- .getISO2(input$inCouSel)
 #   #cou <- .getCountryCode(input$inCouSel)

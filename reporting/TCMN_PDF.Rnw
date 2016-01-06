@@ -39,6 +39,8 @@ read_chunk("TCMN_charts_PDF.R")
 #testFunction()
 couName <- input$inCouSel
 couISO2 <- .getISO2(couName)
+expYear <- .getExportsPeriod(couName)
+impYear <- .getImportsPeriod(couName)
 #cou <- .getCountryCode(couName)
 @
 %%%%%%%%%%%%%%%% PAGE 1 %%%%%%%%%%%%%%%%%%%
@@ -132,24 +134,22 @@ couISO2 <- .getISO2(couName)
    \begin{minipage}[c]{0.44\textwidth} 
     %\vspace*{-0.2cm}
     \begin{minipage}[t]{0.99\textwidth} 
-      {\color{blue!50!black} \textbf{\small Top 5 Exports by \% of Total Value,}} 
-      % \Sexpr{expYear}}}
+      {\color{blue!50!black} \textbf{\small Top 5 Exports by \% of Total Value, \Sexpr{expYear}}}
       %\vspace{3ex}
       \\[6pt]
       \centering
       \resizebox{\textwidth}{!}{%
-    <<ImpExp_Treemap-1,echo=FALSE,message=FALSE,cache=FALSE,warning=FALSE,fig.align='center',fig.height=2.5,fig.width=8,results="asis">>=  
+    <<ImpExp_Treemap-2,echo=FALSE,message=FALSE,cache=FALSE,warning=FALSE,fig.align='center',fig.height=2.5,fig.width=8,results="asis">>=  
       @            
       }
       \end{minipage}
       \\[14pt]
       \begin{minipage}[t]{0.99\textwidth} 
-      {\color{blue!50!black} \textbf{\small Imports Categories by \% of Total Value,}}
-      %\Sexpr{impYear}}}
+      {\color{blue!50!black} \textbf{\small Imports Categories by \% of Total Value, \Sexpr{impYear}}}
       \\[6pt]
       \centering
       \resizebox{\textwidth}{!}{%
-    <<ImpExp_Treemap-2,echo=FALSE,message=FALSE,cache=FALSE,warning=FALSE,fig.align='center',fig.height=1.6,fig.width=8,results="asis">>=  
+    <<ImpExp_Treemap-1,echo=FALSE,message=FALSE,cache=FALSE,warning=FALSE,fig.align='center',fig.height=1.6,fig.width=8,results="asis">>=  
       @            
       }
       \end{minipage}

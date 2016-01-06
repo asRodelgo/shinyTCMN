@@ -49,14 +49,29 @@
 }
 
 # Used in PDF report generation ------------------------
-.getImportsPeriod <- function(cou){
+.getImportsPeriod <- function(couName){
   
+  cou <- .getCountryCode(couName)
   data <- filter(mWits, CountryCode == cou) #select country, region and world
   return(max(data$Period))
 }
 
-.getExportsPeriod <- function(cou){
+.getExportsPeriod <- function(couName){
   
+  cou <- .getCountryCode(couName)
   data <- filter(xWits, CountryCode == cou) #select country, region and world
   return(max(data$Period))
 }
+
+.generatePDFReports <- function(couNameList){
+
+  #for (c in countryNames$Country) {
+  for (c in couNameList) {
+  
+    #knit2pdf('reporting/TCMN_PDF_Local.Rnw', clean = TRUE, 
+    #       output = paste0("reporting/TCMN_",c,".pdf"))
+    print(paste("Report generated successfully for",c))
+  }
+  
+}
+

@@ -26,8 +26,8 @@ for (h in helpers) source(h, local = TRUE)
 #source(file.path("server_files","utilities","ppcheck_names_descriptions.R"), local = TRUE)
 
 # PDF report R scripts
-#source("reporting/dynamicPDF.R", local = TRUE)
-source("reporting/TCMN_charts_PDF.R", local = TRUE)
+source("reporting/ReportGenerator.R", local = TRUE)
+#source("reporting/TCMN_charts_PDF.R", local = TRUE)
 
 # avoid conflict with inline::code if rstan is loaded
 code <- shiny::code

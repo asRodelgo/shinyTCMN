@@ -119,7 +119,7 @@ tagList(
                                    dataTableOutput('db_Table')
                         ),
                         tabPanel("Competitiveness Indicators",
-                                 source(file.path("ui_files", "compet_Indic.R"), local = TRUE)$value
+                                 source(file.path("ui_files", "Compet_Indic.R"), local = TRUE)$value
                         ),
                         tabPanel("Logistic Performance Indicators",
                                  source(file.path("ui_files", "LPI.R"), local = TRUE)$value
@@ -164,7 +164,7 @@ tagList(
                         #### charts ####
                         tabPanel("PDF Country Report",
                                  h5("Download full TCMN report for the selected country"),
-                                 downloadButton('downloadDynamicReport', 'PDF report')
+                                 downloadButton('downloadReport', 'PDF report')
                                  
                         )         
                       ) # End tabsetPanel
@@ -197,8 +197,12 @@ tagList(
                                 source(file.path("ui_files", "tSNE.R"), local = TRUE)$value
                         ), 
                         #### notepad ####
-                        tabPanel(title = "TSNE JS"
-                                #source(file.path("ui_files", "tSNE_JS.R"), local = TRUE)$value
+                        tabPanel(title = "PDF generator",
+                                h5("Generate and Download TCMN country reports (ONLY WORKS LOCALLY)"),
+                                #selectInput('inCouMult', NULL, countryNames$Country, multiple=TRUE,selectize=FALSE),
+                                actionButton('downloadMultipleReports', 'Generate PDF reports')
+                                #uiOutput('downloadMultipleReports', 'Generate PDF reports'),
+                                #textOutput('generatePDF_log')
                         ),
                         #### help ####
                         tabPanel(title = "Help"

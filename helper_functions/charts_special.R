@@ -72,30 +72,30 @@
 
 
 # Rtsne chart ---------------------------------------------------------
-.RtSNE_plot <- function(num_iter, max_num_neighbors){
-  
-  require(Rtsne)
-  require(plyr)
-  require(dplyr)
-  require(tidyr)
-  require(data.table)
-  
-  ### read the data
-  training <- fread("/Users/asanchez3/Desktop/Data Analysis/TauMu/training.csv")
-  training <- as.data.frame(training)
-  training$signal <- as.factor(training$signal)
-  set.seed(123)
-  trainReduced <- sample_n(training,250)
-  colors <- rainbow(length(unique(trainReduced$signal)))
-  names(colors) <- unique(trainReduced$signal)
-  
-  tsne_out <- Rtsne(as.matrix(trainReduced[,c(2:48,50)]),
-                    perplexity = max_num_neighbors,
-                    max_iter = num_iter)
-  
-  plot(tsne_out$Y, t='n')
-  graphics::text(tsne_out$Y, col=colors[trainReduced$signal], labels=as.character(trainReduced$signal))
-  
-  
-}  
+# .RtSNE_plot <- function(num_iter, max_num_neighbors){
+#   
+#   require(Rtsne)
+#   require(plyr)
+#   require(dplyr)
+#   require(tidyr)
+#   require(data.table)
+#   
+#   ### read the data
+#   training <- fread("/Users/asanchez3/Desktop/Data Analysis/TauMu/training.csv")
+#   training <- as.data.frame(training)
+#   training$signal <- as.factor(training$signal)
+#   set.seed(123)
+#   trainReduced <- sample_n(training,250)
+#   colors <- rainbow(length(unique(trainReduced$signal)))
+#   names(colors) <- unique(trainReduced$signal)
+#   
+#   tsne_out <- Rtsne(as.matrix(trainReduced[,c(2:48,50)]),
+#                     perplexity = max_num_neighbors,
+#                     max_iter = num_iter)
+#   
+#   plot(tsne_out$Y, t='n')
+#   graphics::text(tsne_out$Y, col=colors[trainReduced$signal], labels=as.character(trainReduced$signal))
+#   
+#   
+# }  
 

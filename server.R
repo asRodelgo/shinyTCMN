@@ -51,8 +51,8 @@ function(input, output, session) {
   
   # download PDF -----------------------------
   output$downloadReport <- downloadHandler(
-    filename = 'pdf/TCMN_report_TUN.pdf',
-    content = function(file) file.copy('pdf/TCMN_report_TUN.pdf', file, overwrite = TRUE),
+    filename = paste0("pdf/TCMN_",.getCountryCode(input$inCouSel),".pdf"),
+    content = function(file) file.copy(paste0("pdf/TCMN_",.getCountryCode(input$inCouSel),".pdf"), file),
     contentType = 'application/pdf'
   )
 
