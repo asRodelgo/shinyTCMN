@@ -99,11 +99,11 @@ complimentary accent colors
 
 .flag {
   z-index: -1;
-  position: fixed;
+  position: relative;
   /*top: 15px;*/
 	margin:  10px 0 0;
-	width: 15%;
-	height: 15%;
+	/*width: 200%;
+	height: 200%;*/
 }
 
 #all_summary_out{
@@ -169,7 +169,7 @@ color: white;
 /***********************/
 /* NAVBAR */
 .navbar-fixed-top {
-  background-color: transparent;
+  background-color: #3399ff;
   border-top: 5px solid black;
 }
 
@@ -180,28 +180,28 @@ color: white;
 
 .navbar .nav {
   position: relative;
-  left: 280px;
-  top:100px;
+  left: 200;
+  top: 0;
   z-index: 5;
   text-align: center;
-  padding-right: 20px;
-  padding-left: 20px;
+  padding-right: 0;
+  padding-left: 0;
   border-radius: 10px 10px 10px 10px;
   background: #3399ff;/*black*/
   opacity: 0.9;
-  height: 80px;
-  font-size: 13px;
+  /*height: 100%;*/
+  font-size: 12px;
   font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
 }
 
 
 #nav_toggle {
   z-index: 20;
-  display: block;
+  display: none;/*block;*/
   vertical-align: top;
-  margin: 0;
+  margin: 20px;
   padding: 6px 20px;
-  background-color: black;/*black*/
+  background-color: white;/*black*/
   height: 44px;
 }
 
@@ -219,7 +219,7 @@ color: white;
 }
 
 .navbar .nav li {
-  padding-top: 7px;
+  padding-top: 25px;
   color: #ffffff;
   line-height: 1.71429;
   display: inline-block;

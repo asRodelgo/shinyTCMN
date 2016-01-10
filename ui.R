@@ -25,23 +25,24 @@ tagList(
   shinyjs::useShinyjs(),
   includeCSS("css/shinytcmn.css"),
   fluidPage(
+    #fluidRow(
+    #  column(3,wb_logo()),
+    #  #column(9, tcmn_logo())
+    #  column(9, tcmn_banner())
+    #),
     fluidRow(
-      column(3,wb_logo()),
-      #column(9, tcmn_logo())
-      column(9, tcmn_banner())
-    ),
-    fluidRow(
-      column(1, div(uiOutput('outFlag'), class = "flag")),
-      column(2, h5("Explore by country:"),
-      selectInput('inCouSel', NULL, choices=c("Select a country",countryNames$Country), selected = 'Afghanistan', selectize=FALSE)
+      #column(2, h5("Explore by country:")),
+      column(4, h3("Trade and Competitiveness Monitoring Note", style="color:#3399ff")),
+      column(3,h5("Select a country:"),
+             selectInput('inCouSel', NULL, choices=c("Select a country",countryNames$Country), selected = 'Afghanistan', selectize=FALSE)),
+      column(2, div(uiOutput('outFlag'), class = "flag"))
       )
-    )
   ),
   # navbarPage(save_and_close, id = "nav", #title = NULL,
   navbarPage(#tcmn_logo(), id = "tcmn-logo", 
              title = NULL,
              windowTitle = "ShinyTCMN", collapsible = TRUE, 
-             inverse = FALSE, position = "static-top",
+             inverse = FALSE, position = "fixed-top",
              theme = shinythemes::shinytheme("flatly"),
              #### HOME PAGE ####
              tabPanel(title = strong(style = "color: black", "TCMN home"),
