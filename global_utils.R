@@ -14,6 +14,9 @@ library(devtools) # allow install packages from source
 #install_github('htmlwidgets/sparkline') # install sparklines
 library(sparkline) # sparklines
 library(knitr) # generate LaTeX PDF report
+#devtools::install_github("56north/hexamapmaker")
+library(hexamapmaker)
+
 
 # global data and functions -----------------------------------------
 
@@ -79,7 +82,7 @@ wb_logo <- function() {
 }
 
 tcmn_banner <- function() {
-  div(img(src = "bannerMixedTitle.png", 
+  div(img(src = "bannerMixed.png", 
           class = "tcmn-logo", width = "100%"))
 }
 

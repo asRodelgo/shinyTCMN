@@ -41,7 +41,7 @@ tagList(
   navbarPage(#tcmn_logo(), id = "tcmn-logo", 
              title = NULL,
              windowTitle = "ShinyTCMN", collapsible = TRUE, 
-             inverse = FALSE, position = "fixed-top",
+             inverse = FALSE, position = "static-top",
              theme = shinythemes::shinytheme("flatly"),
              #### HOME PAGE ####
              tabPanel(title = strong(style = "color: black", "TCMN home"),
@@ -147,7 +147,7 @@ tagList(
              ), # End Macro
              
              #### PAGE: Private Sector Views ####
-             tabPanel(title = "Reports and Downloads", icon = icon("th-large", lib = "glyphicon"),
+             tabPanel(title = "Reports and Downloads", icon = icon("file", lib = "glyphicon"),
                       #withMathJax(),
                       tabsetPanel(
                         #### tables ####
@@ -170,8 +170,8 @@ tagList(
                       ) # End tabsetPanel
              ), # End Private Sector
              
-             #### PAGE: Policy Indicators ####
-             tabPanel(title = "Metadata", icon = icon("th-small", lib = "glyphicon"),
+             #### PAGE: Metadata ####
+             tabPanel(title = "Metadata", icon = icon("th-list", lib = "glyphicon"),
                       tabsetPanel(  
                         #### data sources ####
                         tabPanel("Data Sources",
@@ -189,9 +189,29 @@ tagList(
                                  column(12,dataTableOutput('countriesTable')))
                         )
                       ) # End tabsetPanel
-             ), # End Policy Indicators
+             ), # End Metadata
+             #### PAGE: Projects Portfolio ####
+             tabPanel(title = "Projects Portfolio",icon = icon("folder-open", lib = "glyphicon"),
+                      tabsetPanel(  
+                        #### data sources ####
+                        tabPanel("Overview",
+                                 fluidRow(
+                                   column(12,dataTableOutput('projectsTable')))
+                        ),
+                        #### indicators #####
+                        tabPanel("Sectors and Themes"
+                                 #fluidRow(
+                                #   column(12,dataTableOutput('indicatorsTable')))
+                        ),
+                        #### countries #####
+                        tabPanel("Country teams"
+                                 #fluidRow(
+                                #   column(12,dataTableOutput('countriesTable')))
+                        )
+                      ) # End tabsetPanel
+             ), # End Projects Portfolio
              #### MENU: More ####
-             navbarMenu(title = "Data Analysis",
+             navbarMenu(title = "Data Analysis",icon = icon("tasks", lib = "glyphicon"),
                         #### model code ####
                         tabPanel(title = "TSNE",
                                 source(file.path("ui_files", "tSNE.R"), local = TRUE)$value
@@ -205,8 +225,8 @@ tagList(
                                 #textOutput('generatePDF_log')
                         ),
                         #### help ####
-                        tabPanel(title = "Help"
-                        #         h1(style = "text-align: center;", "Help"),
+                        tabPanel(title = "Hexamaps",
+                                 source(file.path("ui_files", "hexamaps.R"), local = TRUE)$value
                         #         source(file.path("ui_files", "help.R"), local = TRUE)$value
                         #
                         )
