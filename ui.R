@@ -197,17 +197,19 @@ tagList(
                         #### data sources ####
                         tabPanel("Overview",
                                  fluidRow(
-                                   column(12,dataTableOutput('projectsTable')))
+                                   column(3,source(file.path("ui_files", "projectsStatus.R"), local = TRUE)$value),
+                                   column(9,dataTableOutput('projectsTable')))
                         ),
                         #### indicators #####
-                        tabPanel("Sectors and Themes"
-                                 #fluidRow(
-                                #   column(12,dataTableOutput('indicatorsTable')))
+                        tabPanel("Sectors and Themes",
+                                 source(file.path("ui_files", "sectorsAndThemes.R"), local = TRUE)$value
                         ),
                         #### countries #####
-                        tabPanel("Country teams"
-                                 #fluidRow(
-                                #   column(12,dataTableOutput('countriesTable')))
+                        tabPanel("Country teams",
+                                 fluidRow(
+                                   column(3,plotOutput('projectsGrades')),
+                                   column(9, h5("T&C and IFC Staff assigned to projects in Active, Pipeline or Closed status that were approved after FY2013"),br(),
+                                          dataTableOutput('projectsPeople')))
                         )
                       ) # End tabsetPanel
              ), # End Projects Portfolio
@@ -225,10 +227,9 @@ tagList(
                                 #uiOutput('downloadMultipleReports', 'Generate PDF reports'),
                                 #textOutput('generatePDF_log')
                         ),
-                        #### help ####
+                        #### hexamaps ####
                         tabPanel(title = "Hexamaps",
                                  source(file.path("ui_files", "hexamaps.R"), local = TRUE)$value
-                        #         source(file.path("ui_files", "help.R"), local = TRUE)$value
                         #
                         )
              ) # End navbarMenu

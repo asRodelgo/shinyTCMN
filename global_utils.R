@@ -15,7 +15,7 @@ library(devtools) # allow install packages from source
 library(sparkline) # sparklines
 library(knitr) # generate LaTeX PDF report
 #devtools::install_github("56north/hexamapmaker")
-library(hexamapmaker)
+library(hexamapmaker) #this package will not work on shinyapps.io
 
 
 # global data and functions -----------------------------------------
