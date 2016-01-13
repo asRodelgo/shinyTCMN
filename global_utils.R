@@ -16,6 +16,7 @@ library(sparkline) # sparklines
 library(knitr) # generate LaTeX PDF report
 #devtools::install_github("56north/hexamapmaker")
 library(hexamapmaker) #this package will not work on shinyapps.io
+library(leaflet) # interactive maps
 
 
 # global data and functions -----------------------------------------

@@ -717,6 +717,8 @@
   
   data$percTotalValue <- format(data$percTotalValue, digits=0, decimal.mark=".",
                             big.mark=",",small.mark=".", small.interval=3)
+  data$percTotalValue <- as.numeric(data$percTotalValue)
+  data$TradeValue <- as.numeric(data$TradeValue)
   
   # get top 5
   data <- head(arrange(data, desc(TradeValue)),5)
@@ -758,6 +760,8 @@
   
   data$percTotalValue <- format(data$percTotalValue, digits=0, decimal.mark=".",
                                 big.mark=",",small.mark=".", small.interval=3)
+  data$TradeValue <- as.numeric(data$TradeValue)
+  data$percTotalValue <- as.numeric(data$percTotalValue)
   
   # get top 5
   data <- head(arrange(data, desc(TradeValue)),5)

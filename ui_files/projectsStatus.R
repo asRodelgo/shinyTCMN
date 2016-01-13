@@ -4,7 +4,7 @@ fluidRow(
               radioButtons('inProjStatusChart',"",
                       c("By number of projects" = "count",
                         "By project amount" = "amount"
-                      ), selected = "count", inline = TRUE)
+                      ), selected = "count", inline = FALSE)
   ),
   column(12, plotOutput('projectsStatus'))
 )

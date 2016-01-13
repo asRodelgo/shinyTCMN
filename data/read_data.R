@@ -19,6 +19,9 @@ countries <- read.csv("data/CountryClassification.csv", stringsAsFactors = FALSE
 countryNames <- filter(countries, !(CountryCodeISO2==""))
 countryNames <- select(countryNames, CountryCodeISO3, Country)# remove CountryISO2
 
+# country Coordinates --------------
+countryCoords <- read.csv("data/countryCoords.csv", stringsAsFactors = FALSE)
+
 # indicator table ----------------------------
 indicators <- read.csv("data/IndicatorClassification.csv", stringsAsFactors = FALSE)
 
@@ -39,5 +42,7 @@ TCprojects <- read.csv("data/TCprojects.csv", stringsAsFactors = FALSE)
                                                              
 # IFC projects portfolio --------------
 IFCprojects <- read.csv("data/IFCprojects.csv", stringsAsFactors = FALSE)
+
+
 
 

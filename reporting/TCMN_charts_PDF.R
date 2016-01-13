@@ -443,6 +443,8 @@ macroInd <- function(couName){
   # format numbers
   data$ObsScaled <- format(data$ObsScaled, digits=2, decimal.mark=".",
                              big.mark=",",small.mark=".", small.interval=3)
+  data$TradeValue <- as.numeric(data$TradeValue)
+  data$percTotalValue <- as.numeric(data$percTotalValue)
   
   data <- arrange(data, Key)
   data <- data[,c("IndicatorShort", "ObsScaled")] # short indicator name and scaled data

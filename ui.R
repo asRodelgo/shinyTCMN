@@ -68,7 +68,7 @@ tagList(
              ),
              
              #### PAGE: Macro ####
-             tabPanel(title = "Tables and Charts", icon = icon("stats", lib = "glyphicon"),
+             tabPanel(title = "Data", icon = icon("stats", lib = "glyphicon"),
                       navlistPanel(
                         #### tables ####
                         tabPanel("Macro tables",
@@ -192,24 +192,23 @@ tagList(
                       ) # End tabsetPanel
              ), # End Metadata
              #### PAGE: Projects Portfolio ####
-             tabPanel(title = "Projects Portfolio",icon = icon("folder-open", lib = "glyphicon"),
+             tabPanel(title = "Operations",icon = icon("folder-open", lib = "glyphicon"),
                       tabsetPanel(  
-                        #### data sources ####
+                        #### projects overview ####
                         tabPanel("Overview",
-                                 fluidRow(
-                                   column(3,source(file.path("ui_files", "projectsStatus.R"), local = TRUE)$value),
-                                   column(9,dataTableOutput('projectsTable')))
+                                 source(file.path("ui_files", "projectsOverview.R"), local = TRUE)$value
                         ),
-                        #### indicators #####
+                        #### sectors and themes #####
                         tabPanel("Sectors and Themes",
                                  source(file.path("ui_files", "sectorsAndThemes.R"), local = TRUE)$value
                         ),
-                        #### countries #####
-                        tabPanel("Country teams",
-                                 fluidRow(
-                                   column(3,plotOutput('projectsGrades')),
-                                   column(9, h5("T&C and IFC Staff assigned to projects in Active, Pipeline or Closed status that were approved after FY2013"),br(),
-                                          dataTableOutput('projectsPeople')))
+                        #### people #####
+                        tabPanel("Project teams",
+                                 source(file.path("ui_files", "projectsTeams.R"), local = TRUE)$value
+                        ),
+                        #### map #####
+                        tabPanel("Map",
+                                 source(file.path("ui_files", "projectsMap.R"), local = TRUE)$value
                         )
                       ) # End tabsetPanel
              ), # End Projects Portfolio
