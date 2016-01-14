@@ -16,7 +16,8 @@
                                      "Advisory Services and Analytics (ASA) IBRD",PROD_LINE_TYPE_NME)),
            ProjectOrder = ifelse(PROJECT_STATUS_NME=="Active",1,ifelse(PROJECT_STATUS_NME=="Pipeline",2,3))) %>%
     select(-IBRD_CMT_USD_AMT, -GRANT_USD_AMT, -IDA_CMT_USD_AMT) %>%
-    filter(PROJECT_STATUS_NME %in% c("Closed","Active","Pipeline"))
+    filter(PROJECT_STATUS_NME %in% c("Closed","Active","Pipeline")) %>%
+    filter(!(tolower(substr(Prod_Line,1,8))=="standard"))
   
   return(dataTC)
 }
@@ -93,6 +94,115 @@
 }
 
 #############
+
+# Country projects table Financing products  ----------------
+.projectsTableFinancing <- function(couName, dateRange){
+  
+  cou <- .getCountryCode(couName)
+  couISO2 <- .getISO2(couName)
+  fromDate <- as.character(dateRange[[1]])
+  toDate <- as.character(dateRange[[2]])
+  
+  ### IBRD T&C projects -----------------
+  dataTC <- .filterTCProjects(couName)
+  # select relevant variables
+  dataTC <- select(dataTC, PROJ_ID, Prod_Line, Project_Name = PROJ_SHORT_NME,
+                   Approval_Date = BD_APPRVL_DATE, Project_Status = PROJECT_STATUS_NME,
+                   Major_Sector = MAJORSECTOR_NAME1,
+                   Major_Theme = MAJORTHEME_NAME1,Project_Amount, ProjectOrder)
+  # Financing products
+  dataTC <- filter(dataTC, Prod_Line == "Financing")
+  # filter by date range
+  dataTC <- filter(dataTC, (Approval_Date >= fromDate) & (Approval_Date <= toDate))
+  # arrange
+  dataTC <- arrange(as.data.frame(dataTC), desc(Prod_Line), ProjectOrder)
+  dataTC <- select(dataTC,-ProjectOrder, -Prod_Line) # drop ProjectOrder
+  # remove duplicates
+  data <- dataTC[!duplicated(dataTC$PROJ_ID),]
+  # format Amount
+  data$Project_Amount <- format(data$Project_Amount, digits=0, decimal.mark=".",
+                                big.mark=",",small.mark=".", small.interval=3)
+  
+  # substitute NAs for "---" em-dash
+  data[is.na(data)] <- "---"
+  names(data) <- c("Project ID", "Project Name", "Approval Date", "Status", "Major Sector", "Major Theme", "Amount (in US$)")
+  
+  return(data)
+}
+
+#############
+
+# Country projects table ASA products ----------------
+.projectsTableASA <- function(couName, dateRange){
+  
+  cou <- .getCountryCode(couName)
+  couISO2 <- .getISO2(couName)
+  fromDate <- as.character(dateRange[[1]])
+  toDate <- as.character(dateRange[[2]])
+  
+  ### IBRD T&C projects -----------------
+  dataTC <- .filterTCProjects(couName)
+  # select relevant variables
+  dataTC <- select(dataTC, PROJ_ID, Prod_Line, Project_Name = PROJ_SHORT_NME,
+                   Approval_Date = BD_APPRVL_DATE, Project_Status = PROJECT_STATUS_NME,
+                   Major_Sector = MAJORSECTOR_NAME1,
+                   Major_Theme = MAJORTHEME_NAME1,Project_Amount, ProjectOrder)
+  # Advisory (ASA) products
+  dataTC <- filter(dataTC, substr(Prod_Line,1,3) == "Adv")
+  # filter by date range
+  dataTC <- filter(dataTC, (Approval_Date >= fromDate) & (Approval_Date <= toDate))
+  # arrange
+  dataTC <- arrange(as.data.frame(dataTC), desc(Prod_Line), ProjectOrder)
+  dataTC <- select(dataTC,-ProjectOrder, -Prod_Line) # drop ProjectOrder
+  # remove duplicates
+  data <- dataTC[!duplicated(dataTC$PROJ_ID),]
+  # format Amount
+  data$Project_Amount <- format(data$Project_Amount, digits=0, decimal.mark=".",
+                                big.mark=",",small.mark=".", small.interval=3)
+  # substitute NAs for "---" em-dash
+  data[is.na(data)] <- "---"
+  names(data) <- c("Project ID","Project Name", "Approval Date", "Status", "Major Sector", "Major Theme", "Amount (in US$)")
+  
+  return(data)
+}
+
+#############
+
+
+# Country projects table ASA IFC ----------------
+.projectsTableASA_IFC <- function(couName, dateRange){
+  
+  cou <- .getCountryCode(couName)
+  couISO2 <- .getISO2(couName)
+  fromDate <- as.character(dateRange[[1]])
+  toDate <- as.character(dateRange[[2]])
+  
+  ### IFC projects ----------
+  dataIFC <- .filterIFCProjects(couName)
+  # keep relevant columns
+  dataIFC <- select(dataIFC, PROJ_ID, Prod_Line, Project_Name = PROJECT_NAME,
+                    Approval_Date = ASIP_APPROVAL_DATE, Project_Status, Project_Amount = TOTAL_FUNDS_MANAGED_BY_IFC,
+                    ProjectOrder
+  )
+  # projects within 3 fiscal years in the past
+  dataIFC <- filter(dataIFC, (Approval_Date >= fromDate) & (Approval_Date <= toDate)) #select country
+  # arrange
+  dataIFC <- arrange(as.data.frame(dataIFC), ProjectOrder)
+  dataIFC <- select(dataIFC,-ProjectOrder, -Prod_Line) # drop ProjectOrder
+  # remove duplicates
+  data <- dataIFC[!duplicated(dataIFC$PROJ_ID),]
+  # format Amount
+  data$Project_Amount <- format(data$Project_Amount, digits=0, decimal.mark=".",
+                                big.mark=",",small.mark=".", small.interval=3)
+  # substitute NAs for "---" em-dash
+  data[is.na(data)] <- "---"
+  names(data) <- c("Project ID", "Project Name", "Approval Date", "Status","Amount (in US$)")
+  
+  return(data)
+}
+
+#############
+
 
 .projectsStatus <- function(couName, count_type, dateRange){
   
