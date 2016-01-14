@@ -7,6 +7,7 @@
 
 library(shiny)
 library(shinythemes)
+library(shinyBS)
 # use javascript
 library(shinyjs)
 library(V8)
@@ -21,7 +22,7 @@ source("global_utils.R", local = TRUE)
 # _________________________________________________________________________
 tagList(
   tags$noscript(style = "color: orange; font-size: 30px; text-align: center;", 
-                "Please enable JavaScript to use shinytcmn."),
+                "Please enable JavaScript to use Trade and Competitiveness Monitoring note and Operations."),
   shinyjs::useShinyjs(),
   includeCSS("css/shinytcmn.css"),
   fluidPage(
@@ -32,7 +33,7 @@ tagList(
     #),
     fluidRow(
       #column(2, h5("Explore by country:")),
-      column(4, h3("Trade and Competitiveness Monitoring Note", style="color:#3399ff")),
+      column(4, h3("Trade and Competitiveness Monitoring Note and Operations", style="color:#3399ff")),
       column(3,h5("Select a country:"),
              selectInput('inCouSel', NULL, choices=c("Select a country",countryNames$Country), selected = 'Afghanistan', selectize=FALSE)),
       column(2, div(uiOutput('outFlag'), class = "flag"))
@@ -68,7 +69,7 @@ tagList(
              ),
              
              #### PAGE: Macro ####
-             tabPanel(title = "Data", icon = icon("stats", lib = "glyphicon"),
+             tabPanel(title = "Data Categories", icon = icon("stats", lib = "glyphicon"),
                       navlistPanel(
                         #### tables ####
                         tabPanel("Macro tables",
@@ -146,51 +147,6 @@ tagList(
                         )
                       ) # End navlistPanel
              ), # End Macro
-             
-             #### PAGE: Private Sector Views ####
-             tabPanel(title = "Reports and Downloads", icon = icon("file", lib = "glyphicon"),
-                      #withMathJax(),
-                      tabsetPanel(
-                        #### tables ####
-                        tabPanel("Data downloads",
-                                 h5("Bulk download data for all countries:"),
-                                 downloadLink('bulkDownload', 'TCMN dataset'),
-                                 h5("Download Products Imports for all countries:"),
-                                 downloadLink('mWitsDownload', 'WITS imports'),
-                                 h5("Download Products Exports for all countries:"),
-                                 downloadLink('xWitsDownload', 'WITS exports'),
-                                 h5("Download list of indicators:"),
-                                 downloadLink('indicatorsDownload', 'TCMN indicators')
-                        ),
-                        #### charts ####
-                        tabPanel("PDF Country Report",
-                                 h5("Download full TCMN report for the selected country"),
-                                 downloadButton('downloadReport', 'PDF report')
-                                 
-                        )         
-                      ) # End tabsetPanel
-             ), # End Private Sector
-             
-             #### PAGE: Metadata ####
-             tabPanel(title = "Metadata", icon = icon("th-list", lib = "glyphicon"),
-                      tabsetPanel(  
-                        #### data sources ####
-                        tabPanel("Data Sources",
-                                 fluidRow(
-                                   column(12,dataTableOutput('sourcesTable')))
-                        ),
-                        #### indicators #####
-                        tabPanel("Indicators",
-                                 fluidRow(
-                                 column(12,dataTableOutput('indicatorsTable')))
-                        ),
-                        #### countries #####
-                        tabPanel("Country Classification",
-                                 fluidRow(
-                                 column(12,dataTableOutput('countriesTable')))
-                        )
-                      ) # End tabsetPanel
-             ), # End Metadata
              #### PAGE: Projects Portfolio ####
              tabPanel(title = "Operations",icon = icon("folder-open", lib = "glyphicon"),
                       tabsetPanel(  
@@ -212,26 +168,71 @@ tagList(
                         )
                       ) # End tabsetPanel
              ), # End Projects Portfolio
-             #### MENU: More ####
+             #### MENU: Data Analysis ####
              navbarMenu(title = "Data Analysis",icon = icon("tasks", lib = "glyphicon"),
                         #### model code ####
                         tabPanel(title = "TSNE",
-                                source(file.path("ui_files", "tSNE.R"), local = TRUE)$value
+                                 source(file.path("ui_files", "tSNE.R"), local = TRUE)$value
                         ), 
                         #### notepad ####
                         tabPanel(title = "PDF generator",
-                                h5("Generate and Download TCMN country reports (ONLY WORKS LOCALLY)"),
-                                #selectInput('inCouMult', NULL, countryNames$Country, multiple=TRUE,selectize=FALSE),
-                                actionButton('downloadMultipleReports', 'Generate PDF reports')
-                                #uiOutput('downloadMultipleReports', 'Generate PDF reports'),
-                                #textOutput('generatePDF_log')
+                                 h5("Generate and Download TCMN country reports (ONLY WORKS LOCALLY)"),
+                                 #selectInput('inCouMult', NULL, countryNames$Country, multiple=TRUE,selectize=FALSE),
+                                 actionButton('downloadMultipleReports', 'Generate PDF reports')
+                                 #uiOutput('downloadMultipleReports', 'Generate PDF reports'),
+                                 #textOutput('generatePDF_log')
                         ),
                         #### hexamaps ####
                         tabPanel(title = "Hexamaps",
                                  source(file.path("ui_files", "hexamaps.R"), local = TRUE)$value
-                        #
+                                 #
                         )
-             ) # End navbarMenu
+             ), # End navbarMenu
+             #### PAGE: Downloads ####
+             tabPanel(title = "Downloads", icon = icon("file", lib = "glyphicon"),
+                      #withMathJax(),
+                      tabsetPanel(
+                        #### tables ####
+                        tabPanel("Data downloads",
+                                 h5("Bulk download data for all countries:"),
+                                 downloadLink('bulkDownload', 'TCMN dataset'),
+                                 h5("Download Products Imports for all countries:"),
+                                 downloadLink('mWitsDownload', 'WITS imports'),
+                                 h5("Download Products Exports for all countries:"),
+                                 downloadLink('xWitsDownload', 'WITS exports'),
+                                 h5("Download list of indicators:"),
+                                 downloadLink('indicatorsDownload', 'TCMN indicators')
+                        ),
+                        #### charts ####
+                        tabPanel("PDF Country Report",
+                                 h5("Download full TCMN report for the selected country"),
+                                 downloadButton('downloadReport', 'PDF report')
+                                 
+                        )         
+                      ) # End tabsetPanel
+             ), # End Downloads
+             #### PAGE: Metadata ####
+             tabPanel(title = "Metadata", icon = icon("th-list", lib = "glyphicon"),
+                      tabsetPanel(  
+                        #### data sources ####
+                        tabPanel("Data Sources",
+                                 fluidRow(
+                                   column(12,dataTableOutput('sourcesTable')))
+                        ),
+                        #### indicators #####
+                        tabPanel("Indicators",
+                                 fluidRow(
+                                 column(12,dataTableOutput('indicatorsTable')))
+                        ),
+                        #### countries #####
+                        tabPanel("Country Classification",
+                                 fluidRow(
+                                 column(12,dataTableOutput('countriesTable')))
+                        )
+                      ) # End tabsetPanel
+             ), # End Metadata
+             #### PAGE: Projects Portfolio ####
+             tabPanel(title = "Contact")
              
   ) # End navbarPage
 ) # End tagList

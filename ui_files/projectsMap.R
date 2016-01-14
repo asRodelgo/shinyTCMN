@@ -1,6 +1,9 @@
 # leaflet world map based on ----------------------------------------------------
 # https://github.com/rstudio/shiny-examples/blob/master/063-superzip-example/ui.R
-leafletOutput("projectsMap", width="100%", height="100%")
+fluidPage(
+  
+  leafletOutput("projectsMap",height=500)
+)
 # absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
 #               draggable = TRUE, top = 60, left = "auto", right = 20, bottom = "auto",
 #               width = 330, height = "auto",
