@@ -127,7 +127,7 @@
     data <- merge(data, countries[,c("Country","CountryCodeISO3")], by.x="CountryCode", by.y="CountryCodeISO3") # add country name
     data <- filter(data, Period == max(Period))
     # select top 4 countries from the neighborhood based on their income level
-    income <- filter(TCMN_data, CountryCode %in% neighbors, Subsection=="table1", Key=="M03")
+    income <- filter(TCMN_data, CountryCode %in% neighbors, Subsection=="table2head", Key=="M03")
     income <- filter(income, Period == thisYear)
     
     topNeighbors <- head(arrange(income, desc(Observation)),4)$CountryCode
@@ -144,7 +144,7 @@
     data <- merge(data, countries[,c("Country","CountryCodeISO3")], by.x="CountryCode", by.y="CountryCodeISO3") # add country name
     data <- filter(data, Period == max(Period))
     # select top 4 countries from the neighborhood based on their income level
-    income <- filter(TCMN_data, Subsection=="table1", Key=="M03")
+    income <- filter(TCMN_data, Subsection=="table2head", Key=="M03")
     income <- filter(income, Period == thisYear)
     
     topNeighbors <- head(arrange(income, desc(Observation)),4)$CountryCode
@@ -216,11 +216,9 @@
 }
 
 
-
 #####
 ##### RADAR charts
 #####
-
 
 .WEFradar <- function(couName, couName2){ # This chart needs to query neighbouring countries also
   
@@ -352,10 +350,11 @@
     data$Observation <- format(data$Observation, digits=0, decimal.mark=".",
                              big.mark=",",small.mark=".", small.interval=3)
     data$Observation <- as.numeric(data$Observation)
+    data <- mutate(data, ObservationAdj = Observation+5)
     
     treemap(data,
             index=c("IndicatorShort","Observation"),
-            vSize="Observation",
+            vSize="ObservationAdj",
             fontsize.labels=c(24, 24), 
             align.labels=list(c("left", "top"), c("right","bottom")),
             lowerbound.cex.labels=0.5,
@@ -407,11 +406,13 @@
     
     if (type=="x"){
       data <- head(arrange(data, desc(TradeValue)),5)
+      data$ProductDescription <- substr(data$ProductDescription,1,15)
     }
+    data <- mutate(data, percTotalValueAdj = percTotalValue+5)
     
     treemap(data,
             index=c("ProductDescription","percTotalValue"),
-            vSize="percTotalValue",
+            vSize="percTotalValueAdj",
             fontsize.labels=c(24, 24), 
             align.labels=list(c("left", "top"), c("right","bottom")),
             lowerbound.cex.labels=0.5,

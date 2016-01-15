@@ -4,9 +4,9 @@
 output$GVA_Table <- renderDataTable({
   
   # define types of sparkline charts
-  line_string <- "type: 'line', lineColor: 'blue', fillColor: '#ccc', highlightLineColor: 'red', highlightSpotColor: 'red'"
-  bar_string <- "type: 'bar', barColor: 'orange', negBarColor: 'purple', highlightColor: 'black'"
-  box_string <- "type: 'box', lineColor: 'black', whiskerColor: 'black', outlierFillColor: 'black', outlierLineColor: 'black', medianColor: 'black', boxFillColor: 'orange', boxLineColor: 'black'"
+  line_string <- "type: 'line', lineColor: 'blue', fillColor: '', minSpotColor: 'red', 
+  maxSpotColor: 'green', highlightLineColor: 'red', highlightSpotColor: 'red',
+  spotRadius: '3', lineWidth: '2', spotColor: ''"
   
   # here's the data
   dataSpark <- .GVA_Table(input$inCouSel)
@@ -18,7 +18,7 @@ output$GVA_Table <- renderDataTable({
   # callback functions to create sparklines
   cb = JS(paste0("function (oSettings, json) {
                  $('.spark:not(:has(canvas))').sparkline('html', { ",
-                 bar_string,
+                 line_string,
                  " });
                  }"))
   #cb = JS(paste0("function (oSettings, json) {$('.spark:not(:has(canvas))').sparkline('html', { ", 

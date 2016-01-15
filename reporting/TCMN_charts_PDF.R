@@ -295,10 +295,11 @@ GVA_Treemap <- function(couName){
     data$Observation <- format(data$Observation, digits=0, decimal.mark=".",
                              big.mark=",",small.mark=".", small.interval=3)
     data$Observation <- as.numeric(data$Observation)
+    data <- mutate(data, ObservationAdj = Observation+10)
     
     treemap(data,
             index=c("IndicatorShort","Observation"),
-            vSize="Observation",
+            vSize="ObservationAdj",
             fontsize.labels=c(24, 24), 
             align.labels=list(c("left", "top"), c("right","bottom")),
             lowerbound.cex.labels=0.5,

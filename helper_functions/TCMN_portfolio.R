@@ -119,12 +119,13 @@
   dataTC <- select(dataTC,-ProjectOrder, -Prod_Line) # drop ProjectOrder
   # remove duplicates
   data <- dataTC[!duplicated(dataTC$PROJ_ID),]
+  # substitute NAs for "---" em-dash
+  data[is.na(data)] <- "---"
+  
   # format Amount
   data$Project_Amount <- format(data$Project_Amount, digits=0, decimal.mark=".",
                                 big.mark=",",small.mark=".", small.interval=3)
   
-  # substitute NAs for "---" em-dash
-  data[is.na(data)] <- "---"
   names(data) <- c("Project ID", "Project Name", "Approval Date", "Status", "Major Sector", "Major Theme", "Amount (in US$)")
   
   return(data)
@@ -156,11 +157,12 @@
   dataTC <- select(dataTC,-ProjectOrder, -Prod_Line) # drop ProjectOrder
   # remove duplicates
   data <- dataTC[!duplicated(dataTC$PROJ_ID),]
+  # substitute NAs for "---" em-dash
+  data[is.na(data)] <- "---"
   # format Amount
   data$Project_Amount <- format(data$Project_Amount, digits=0, decimal.mark=".",
                                 big.mark=",",small.mark=".", small.interval=3)
-  # substitute NAs for "---" em-dash
-  data[is.na(data)] <- "---"
+  
   names(data) <- c("Project ID","Project Name", "Approval Date", "Status", "Major Sector", "Major Theme", "Amount (in US$)")
   
   return(data)
@@ -191,11 +193,11 @@
   dataIFC <- select(dataIFC,-ProjectOrder, -Prod_Line) # drop ProjectOrder
   # remove duplicates
   data <- dataIFC[!duplicated(dataIFC$PROJ_ID),]
+  # substitute NAs for "---" em-dash
+  data[is.na(data)] <- "---"
   # format Amount
   data$Project_Amount <- format(data$Project_Amount, digits=0, decimal.mark=".",
                                 big.mark=",",small.mark=".", small.interval=3)
-  # substitute NAs for "---" em-dash
-  data[is.na(data)] <- "---"
   names(data) <- c("Project ID", "Project Name", "Approval Date", "Status","Amount (in US$)")
   
   return(data)
@@ -237,28 +239,37 @@
   dataIFC$PROJ_ID <- as.character(dataIFC$PROJ_ID)
   # arrange
   dataIFC <- arrange(as.data.frame(dataIFC), ProjectOrder)
-  dataIFC <- select(dataIFC,-ProjectOrder) # drop ProjectOrder
+  dataIFC <- select(dataIFC,-ProjectOrder,-Project_Name, -Approval_Date) # drop ProjectOrder
   
   # Append both -----------------------
   data <- rbind_list(dataTC, dataIFC)
+  
+  data[is.na(data)] <- "0"
   # remove duplicates
   data <- data[!duplicated(data$PROJ_ID),]
+  
+  data$Prod_Line <- as.character(data$Prod_Line)
+  data <- mutate(data, Prod_Line=ifelse(substr(Prod_Line,nchar(Prod_Line)-2,nchar(Prod_Line))=="IFC",
+                                          "ASA IFC","ASA IBRD"))
+  data$Prod_Line <- as.factor(data$Prod_Line)
+  
+  data <- data %>%
+    group_by(Prod_Line,Project_Status) %>%
+    mutate(totalAmount = sum(as.numeric(Project_Amount), na.rm=TRUE)/1000, 
+           countProjects = n_distinct(PROJ_ID)) %>%
+    select(-PROJ_ID,-Project_Amount)
+  data <- data[!duplicated(data),]
   # format Amount
-  data$Project_Amount <- format(data$Project_Amount, digits=0, decimal.mark=".",
+  data$totalAmount <- format(data$totalAmount, digits=0, decimal.mark=".",
                                 big.mark=",",small.mark=".", small.interval=3)
   # generate plot
   if (nrow(data)>0){
     # Faceted chart
-    # order the factors
-    data$Prod_Line <- as.factor(data$Prod_Line)
-    data$Project_Status <- as.factor(data$Project_Status)
-    data$Prod_Line <- substr(data$Prod_Line,1,9)
-    
     if (count_type=="count"){ # plot number of projects
       
-      ggplot(data, aes(x=Project_Status, fill=Project_Status)) +
-        geom_bar(stat="bin")+ #stat="identity") +
-        facet_wrap(~ Prod_Line)+
+      ggplot(data, aes(x=Project_Status, y=countProjects,fill=Project_Status)) +
+        geom_bar(stat="identity")+ #stat="identity") +
+        facet_grid(~ Prod_Line)+
         theme(legend.key=element_blank(),
               legend.title=element_blank(),
               legend.position="top",
@@ -269,20 +280,26 @@
       
     } else{ # plot $ amount of projects
       
-      ggplot(data, aes(x=Project_Status, y=Project_Amount, fill=Project_Status)) +
-        geom_bar(stat="identity") +
-        facet_wrap(~ Prod_Line)+
-        theme(legend.key=element_blank(),
-              legend.title=element_blank(),
-              legend.position="top",
-              panel.border = element_blank(),
-              panel.background = element_blank(),
-              plot.title = element_text(lineheight=.5)) + 
-        labs(x="",y="")
+      data <- filter(data, !(trimws(totalAmount)=="0"))
+      if (nrow(data)>0){
+        ggplot(data, aes(x=Project_Status, y=totalAmount, fill=Project_Status)) +
+          geom_bar(stat="identity") +
+          facet_wrap(~ Prod_Line)+
+          theme(legend.key=element_blank(),
+                legend.title=element_blank(),
+                legend.position="top",
+                panel.border = element_blank(),
+                panel.background = element_blank(),
+                plot.title = element_text(lineheight=.5)) + 
+          labs(x="",y="")
+      } else {
+          plot(c(1,1),type="n", frame.plot = FALSE, axes=FALSE, ann=FALSE)
+          graphics::text(1.5, 1,"No data available", col="red", cex=1.5)    
+      }
     }
   } else {
     plot(c(1,1),type="n", frame.plot = FALSE, axes=FALSE, ann=FALSE)
-    graphics::text(1.5, 1,"Data not available", col="red", cex=2)
+    graphics::text(1.5, 1,"No data available", col="red", cex=1.5)
   }
   
 }
@@ -402,6 +419,27 @@
   
 }
 
+.sectThemesTable <- function(couName,sectTheme){
+  
+  if (sectTheme=="sector"){
+    data <- .projectsSectors(couName) 
+    
+  } else {
+    data <- .projectsThemes(couName) 
+  }
+  
+  names(data) <- c("Name","PctTotal","Pct")
+  data <- select(data, -PctTotal)
+  # format numbers
+  data$Pct <- data$Pct*100
+  data$Pct <- format(data$Pct, digits=1, decimal.mark=".",
+                     big.mark=",",small.mark=".", small.interval=3)
+  data$Pct <- as.numeric(data$Pct)
+  
+  return(data)
+  
+}
+
 ######################
 
 # Country projects table ----------------
@@ -414,7 +452,8 @@
   dataTC <- .filterTCProjects(couName)
   dataTC <- select(dataTC, Staff_Name = FULL_NAME, job_title, 
                    Location = CITY_NAME, Role = UPI_ROLE_DESC, PROJ_ID, Prod_Line, Project_Name = PROJ_SHORT_NME,
-                   Project_Status=PROJECT_STATUS_NME, grade, duty_country, practice,ProjectOrder)
+                   Project_Status=PROJECT_STATUS_NME, grade, duty_country, practice,
+                   ProjectOrder,WORK_ALPHA)
 
   dataTC <- filter(dataTC, practice == "TAC", grade %in% c("GF","GG","GH","EC1","EC2","EC3")) #, position_type == "PRIMARY"
   dataTC <- select(dataTC, -grade,-duty_country,-practice, -Prod_Line, -Project_Status)
@@ -426,7 +465,7 @@
   dataIFC <- select(dataIFC, Staff_Name = FULL_NAME,job_title, 
                     Location = CITY_NAME, Role = UPI_ROLE_DESC, PROJ_ID, Prod_Line, Project_Name = PROJECT_NAME,
                     Project_Status, grade, duty_country, practice, emplyment_type,
-                    Approval_Date = ASIP_APPROVAL_DATE,ProjectOrder)
+                    Approval_Date = ASIP_APPROVAL_DATE,ProjectOrder,WORK_ALPHA)
   # projects within 3 fiscal years in the past
   dataIFC <- filter(dataIFC, Approval_Date >= "2013-07-01") #select country
   # make PROJ_ID character
@@ -438,9 +477,10 @@
   
   # Append both --------------------------
   data <- rbind_list(dataTC, dataIFC)
+  data <- filter(data, tolower(substr(WORK_ALPHA,1,3))=="gtc")
   # arrange
   data <- arrange(as.data.frame(data), grade, Staff_Name, PROJ_ID, ProjectOrder)
-  data <- select(as.data.frame(data), -ProjectOrder, -grade)
+  data <- select(as.data.frame(data), -ProjectOrder, -grade, -WORK_ALPHA)
   # substitute NAs for "---" em-dash
   data[is.na(data)] <- "---"
   # make sure staff info appear only once

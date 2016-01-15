@@ -29,3 +29,16 @@ output$themesTreemap <- renderPlot({
   .projectsTreemap(input$inCouSel,"theme")
   #})
 }, bg = "transparent")
+
+# sectors table ----------------------------
+output$sectorsTable <- renderDataTable({
+  sectorsTable <- .sectThemesTable(input$inCouSel,"sector")
+  return(sectorsTable)
+},options = list(dom = 't'))
+
+# themes table ----------------------------
+output$themesTable <- renderDataTable({
+  themesTable <- .sectThemesTable(input$inCouSel,"theme")
+  return(themesTable)
+},options = list(dom = 't'))
+

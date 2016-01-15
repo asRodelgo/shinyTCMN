@@ -100,7 +100,7 @@
 .macroInd_Big_Spark <- function(couName){
   
   cou <- .getCountryCode(couName)
-  data <- filter(TCMN_data, CountryCode==cou, Subsection=="table2")
+  data <- filter(TCMN_data, CountryCode==cou, substr(Subsection,1,6)=="table2")
   # keep the latest period (excluding projections further than 2 years)
   data <- filter(data, Period <= (as.numeric(thisYear) + 1))
   # remove NAs rows
@@ -153,41 +153,106 @@
 
 #############
 
-
-.ESTable <- function(couName){
+.macroInd_Spark_Split <- function(couName, table){
   
   cou <- .getCountryCode(couName)
-  couRegion <- as.character(countries[countries$CountryCodeISO3==cou,]$RegionCodeES)  # obtain the region for the selected country
-  data <- filter(TCMN_data, CountryCode %in% c(cou,couRegion, "RWe") & Subsection=="table3") #select country, region and world
-  
-  # country, Region, World descriptors
-  country <- as.character(countries[countries$CountryCodeISO3==cou,]$Country)
-  region <- as.character(countries[countries$CountryCodeISO3==cou,]$Region) 
-  world <- "All Countries"
-  
-  neighbors <- data.frame(CountryCode=c(cou,couRegion,"RWe"),colName=c(country,region,world), stringsAsFactors = FALSE)
-  
+  data <- filter(TCMN_data, CountryCode==cou, Subsection==table)
   # keep the latest period (excluding projections further than 2 years)
   data <- filter(data, Period <= (as.numeric(thisYear) + 1))
   # remove NAs rows
   data <- filter(data, !is.na(Observation))
+  # calculate average for 1st column
+  data_avg <- data %>%
+    group_by(Key) %>%
+    filter(Period < (as.numeric(thisYear)-3)) %>%
+    mutate(historical_avg = mean(Observation))
+  # add average as one of the time periods
+  data_avg <- mutate(data_avg, Period = paste("Avg ",as.numeric(thisYear)-13,"-",as.numeric(thisYear)-4,sep=""),
+                     Observation = historical_avg, ObsScaled = Scale*historical_avg)
   
-  # prepare for table
-  data <- merge(data, neighbors, by="CountryCode")
-  data <- select(data, IndicatorShort, Observation, colName)
-  data <- spread(data, colName, Observation)
+  data_avg <- data_avg[!duplicated(data_avg$Key),] # remove duplicates
+  data_avg <- select(data_avg, -historical_avg, -ObsScaled) # remove some variables
   
-  if (ncol(data)==4){
-    data <- data[,c(1,4,3,2)]# reorder columns
-  }
-  else {
-    data <- data[,c(1,3,2)]# reorder columns
-  }
+  #keep only periods of interest in data
+  #data <- filter(data, Period > (as.numeric(thisYear) - 4))
+  data <- rbind(data, data_avg) # add rows to data
+  # Scale Observations
+  data <- mutate(data, ObsScaled = Scale*Observation)
+  data <- arrange(data, Key)
+  data <- select(data, Key, IndicatorShort, Period, ObsScaled)
   
-  names(data)[1] <-""
+  # add sparkline column
+  dataSpark <- data %>% 
+    group_by(Key) %>%
+    summarise(Trend = paste(ObsScaled, collapse = ","))
+  # merge
+  data <- merge(data, dataSpark, by="Key")
   
+  # format numbers
+  data <- mutate(data, ObsScaled = ifelse(Key=="M05b",format(ObsScaled, digits=0, decimal.mark=".",
+                                                   big.mark=",",small.mark=".", small.interval=3),
+                                                    format(ObsScaled, digits=1, decimal.mark=".",
+                                                           big.mark=",",small.mark=".", nsmall=1)))
+  
+  # Add notes references (automate it using TCMN_indic "Note" field
+  #TCMN_indic <- read.csv("TCMN_Indicators.csv", stringsAsFactors = FALSE)
+  
+  # final table format
+  data <- spread(data, Period, ObsScaled)
+  data <- data[,-1] #drop the Key column
+  data <- data[,c(1,ncol(data),3:(ncol(data)-1),2)] # reorder columns
+  # keep only columns I want to show
+  data <- data[,c(1,2,(ncol(data)-5):ncol(data))]
   # substitute NAs for "---" em-dash
   data[is.na(data)] <- "---"
+  names(data)[1] <- "Indicator"
+  
+  return(data)
+  
+}
+
+#############
+
+
+
+.ESTable <- function(couName){
+  
+  cou <- .getCountryCode(couName)
+  data <- filter(TCMN_data, CountryCode==cou & Subsection=="table3") #select country, region and world
+  if (nrow(data[data$CountryCode==cou,])>0){
+    couRegion <- as.character(countries[countries$CountryCodeISO3==cou,]$RegionCodeES)  # obtain the region for the selected country
+    data <- filter(TCMN_data, CountryCode %in% c(cou,couRegion, "RWe") & Subsection=="table3") #select country, region and world
+    
+    # country, Region, World descriptors
+    country <- as.character(countries[countries$CountryCodeISO3==cou,]$Country)
+    region <- as.character(countries[countries$CountryCodeISO3==cou,]$Region) 
+    world <- "All Countries"
+    neighbors <- data.frame(CountryCode=c(cou,couRegion,"RWe"),colName=c(country,region,world), stringsAsFactors = FALSE)
+    
+#     # for column reordering purposes
+#     world <- "Z All Countries"
+#     neighbors$colName <- paste(substr(neighbors$CountryCode,2,2),neighbors$colName)
+#     neighbors <- mutate(neighbors, colName = ifelse(substr(colName,2,4)==" Z ",colName=="Z All Countries",colName))
+    # keep the latest period (excluding projections further than 2 years)
+    data <- filter(data, Period <= (as.numeric(thisYear) + 1))
+    # remove NAs rows
+    data <- filter(data, !is.na(Observation))
+    
+    # prepare for table
+    data <- merge(data, neighbors, by="CountryCode")
+    data <- select(data, IndicatorShort, Observation, colName)
+    data <- spread(data, colName, Observation)
+    
+    data <- data[,c(1,4,3,2)]
+    
+    names(data)[1] <-""
+    
+    # substitute NAs for "---" em-dash
+    data[is.na(data)] <- "---"
+  } else{
+    
+    data[!is.na(data)] <- ""
+  } 
   
   return(data)
 }
@@ -284,7 +349,8 @@
   
   # prepare for table
   data <- select(data, ProductDescription, ProductCode, Period, TradeValue)
-  
+  # filter by latest period
+  data <- filter(data, Period==max(Period))
   # compute the percentage of total value
   data <- mutate(data, percTotalValue = 100*TradeValue/sum(TradeValue, na.rm = TRUE))
   
@@ -295,8 +361,6 @@
   data$percTotalValue <- format(data$percTotalValue, digits=0, decimal.mark=".",
                                 big.mark=",",small.mark=".", small.interval=3)
   
-  # filter by latest period
-  data <- filter(data, Period==max(Period))
   # get top 5
   data <- head(arrange(data, desc(TradeValue)),5)
   data <- select(data, -Period)
@@ -320,6 +384,8 @@
   # prepare for table
   data <- select(data, ProductDescription, ProductCode, Period, TradeValue)
   
+  # filter by latest period
+  data <- filter(data, Period==max(Period))
   # compute the percentage of total value
   data <- mutate(data, percTotalValue = 100*TradeValue/sum(TradeValue, na.rm = TRUE))
   
@@ -330,8 +396,6 @@
   data$percTotalValue <- format(data$percTotalValue, digits=0, decimal.mark=".",
                                 big.mark=",",small.mark=".", small.interval=3)
   
-  # filter by latest period
-  data <- filter(data, Period==max(Period))
   # get top 5
   data <- head(arrange(data, desc(TradeValue)),5)
   data <- select(data, -Period)

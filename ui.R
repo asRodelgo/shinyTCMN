@@ -72,23 +72,8 @@ tagList(
              tabPanel(title = "Data Categories", icon = icon("stats", lib = "glyphicon"),
                       navlistPanel(
                         #### tables ####
-                        tabPanel("Macro tables",
-                                 h5("Macroeconomic Indicators"),
-                                 h6("Sources: ",
-                                    a(TCMN_sources[TCMN_sources$Source=="MFM",]$SourceDescription, 
-                                      href = TCMN_sources[TCMN_sources$Source=="MFM",]$url),"; ",
-                                    a(TCMN_sources[TCMN_sources$Source=="WDI",]$SourceDescription, 
-                                      href = TCMN_sources[TCMN_sources$Source=="WDI",]$url),"; ",
-                                    a(TCMN_sources[TCMN_sources$Source=="UNCTADSTAT",]$SourceDescription, 
-                                      href = TCMN_sources[TCMN_sources$Source=="UNCTADSTAT",]$url),"; ",
-                                    a(TCMN_sources[TCMN_sources$Source=="WEO",]$SourceDescription, 
-                                      href = TCMN_sources[TCMN_sources$Source=="WEO",]$url)),
-                                 tags$style(HTML("
-                                                .jqstooltip{
-                                                box-sizing: content-box;
-                                               }")), # adjust tooltips in datatables
-                                 dataTableOutput('tableSpark')
-                                 #DT::dataTableOutput('table2')
+                        tabPanel("Macroeconomic indicators",
+                                 source(file.path("ui_files", "macroTables.R"), local = TRUE)$value
                         ),
                         #### GVA ####
                         tabPanel("Gross Value Added",
@@ -161,11 +146,11 @@ tagList(
                         #### people #####
                         tabPanel("Project teams",
                                  source(file.path("ui_files", "projectsTeams.R"), local = TRUE)$value
-                        ),
+                        )#,
                         #### map #####
-                        tabPanel("Map",
-                                 source(file.path("ui_files", "projectsMap.R"), local = TRUE)$value
-                        )
+                        #tabPanel("Map",
+                        #         source(file.path("ui_files", "projectsMap.R"), local = TRUE)$value
+                        #)
                       ) # End tabsetPanel
              ), # End Projects Portfolio
              #### MENU: Data Analysis ####
