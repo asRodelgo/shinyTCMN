@@ -35,8 +35,10 @@ tagList(
       #column(2, h5("Explore by country:")),
       column(4, h3("Trade and Competitiveness Monitoring Note and Operations", style="color:#3399ff")),
       column(3,h5("Select a country:"),
-             selectInput('inCouSel', NULL, choices=c("Select a country",countryNames$Country), selected = 'Afghanistan', selectize=FALSE)),
-      column(2, div(uiOutput('outFlag'), class = "flag"))
+             selectInput('inCouSel', NULL, choices=c("Select a country",countryNames$Country), selected = 'Select a country', selectize=FALSE)),
+      column(2, div(uiOutput('outFlag'), class = "flag")),
+      column(3, h5("Download PDF for the selected country:"),
+             downloadButton('downloadReportHome', 'PDF report'))
       )
   ),
   # navbarPage(save_and_close, id = "nav", #title = NULL,
@@ -46,31 +48,35 @@ tagList(
              inverse = FALSE, position = "fixed-top",
              theme = shinythemes::shinytheme("flatly"),
              #### HOME PAGE ####
-             tabPanel(title = strong(style = "color: black", "TCMN home"),
-                      value = "home",
-                      #  source(file.path("ui_files", "country_selector_home.R"), local = TRUE)$value
-                      #),
-                      br(),
-                      includeHTML("html/home_page_links.html"),
-                      column(2,''),
-                      column(8,h5("Macroeconomic Indicators"),
-                             h6("Sources: ",
-                                a(TCMN_sources[TCMN_sources$Source=="MFM",]$SourceDescription, 
-                                  href = TCMN_sources[TCMN_sources$Source=="MFM",]$url),"; ",
-                                a(TCMN_sources[TCMN_sources$Source=="WDI",]$SourceDescription, 
-                                  href = TCMN_sources[TCMN_sources$Source=="WDI",]$url),"; ",
-                                a(TCMN_sources[TCMN_sources$Source=="WEO",]$SourceDescription, 
-                                  href = TCMN_sources[TCMN_sources$Source=="WEO",]$url)),
-                             dataTableOutput('tableHome'))
-                      #column(5,div(style = "margin-top: -10px; height:450px",
-                      #    img(src = "tSNE_image.png"))),
-                      #br(),
-                      
-             ),
-             
+#              tabPanel(title = strong(style = "color: black", "TCMN home"),
+#                       value = "home",
+#                       #  source(file.path("ui_files", "country_selector_home.R"), local = TRUE)$value
+#                       #),
+#                       br(),
+#                       includeHTML("html/home_page_links.html"),
+#                       column(2,''),
+#                       column(8,h5("Macroeconomic Indicators"),
+#                              h6("Sources: ",
+#                                 a(TCMN_sources[TCMN_sources$Source=="MFM",]$SourceDescription, 
+#                                   href = TCMN_sources[TCMN_sources$Source=="MFM",]$url),"; ",
+#                                 a(TCMN_sources[TCMN_sources$Source=="WDI",]$SourceDescription, 
+#                                   href = TCMN_sources[TCMN_sources$Source=="WDI",]$url),"; ",
+#                                 a(TCMN_sources[TCMN_sources$Source=="WEO",]$SourceDescription, 
+#                                   href = TCMN_sources[TCMN_sources$Source=="WEO",]$url)),
+#                              dataTableOutput('tableHome'))
+#                       #column(5,div(style = "margin-top: -10px; height:450px",
+#                       #    img(src = "tSNE_image.png"))),
+#                       #br(),
+#                       
+#              ),
+#              
              #### PAGE: Macro ####
              tabPanel(title = "Data Categories", icon = icon("stats", lib = "glyphicon"),
                       navlistPanel(
+                        #### TCMN home ####
+                        tabPanel("T&C Monitoring note and Operations",
+                                 source(file.path("ui_files", "TC_Home.R"), local = TRUE)$value
+                        ),
                         #### tables ####
                         tabPanel("Macroeconomic indicators",
                                  source(file.path("ui_files", "macroTables.R"), local = TRUE)$value
@@ -83,7 +89,7 @@ tagList(
                         ),
                         #### Imp/Exp ####
                         tabPanel("Imports and Exports",
-                                 h5("Imports and Exports"),
+                                 h4("Imports and Exports"),
                                  source(file.path("ui_files", "ExpImp_HF.R"), local = TRUE)$value,
                                  fluidRow(
                                    column(6,source(file.path("ui_files", "top_Export.R"), local = TRUE)$value),
@@ -95,7 +101,7 @@ tagList(
                                  )
                         ),
                         tabPanel("Doing Business",
-                                   h5("Doing Business Ranks"),
+                                   h4("Doing Business Ranks"),
                                    h6("Source: ",
                                     a(TCMN_sources[TCMN_sources$Source=="DB",]$SourceDescription, 
                                       href = TCMN_sources[TCMN_sources$Source=="DB",]$url)),
@@ -115,7 +121,7 @@ tagList(
                                  source(file.path("ui_files", "WGI.R"), local = TRUE)$value
                         ),
                         tabPanel("Trade Policy",
-                                 h5("Trade Policy Indicators"),
+                                 h4("Trade Policy Indicators"),
                                  h6("Sources: ",
                                     a(TCMN_sources[TCMN_sources$Source=="WITS_TARIFF",]$SourceDescription, 
                                       href = TCMN_sources[TCMN_sources$Source=="WITS_TARIFF",]$url),"; ",
@@ -160,13 +166,13 @@ tagList(
                                  source(file.path("ui_files", "tSNE.R"), local = TRUE)$value
                         ), 
                         #### notepad ####
-                        tabPanel(title = "PDF generator",
-                                 h5("Generate and Download TCMN country reports (ONLY WORKS LOCALLY)"),
-                                 #selectInput('inCouMult', NULL, countryNames$Country, multiple=TRUE,selectize=FALSE),
-                                 actionButton('downloadMultipleReports', 'Generate PDF reports')
-                                 #uiOutput('downloadMultipleReports', 'Generate PDF reports'),
-                                 #textOutput('generatePDF_log')
-                        ),
+#                         tabPanel(title = "PDF generator",
+#                                  h5("Generate and Download TCMN country reports (ONLY WORKS LOCALLY)"),
+#                                  #selectInput('inCouMult', NULL, countryNames$Country, multiple=TRUE,selectize=FALSE),
+#                                  actionButton('downloadMultipleReports', 'Generate PDF reports')
+#                                  #uiOutput('downloadMultipleReports', 'Generate PDF reports'),
+#                                  #textOutput('generatePDF_log')
+#                         ),
                         #### hexamaps ####
                         tabPanel(title = "Hexamaps",
                                  source(file.path("ui_files", "hexamaps.R"), local = TRUE)$value
@@ -186,7 +192,11 @@ tagList(
                                  h5("Download Products Exports for all countries:"),
                                  downloadLink('xWitsDownload', 'WITS exports'),
                                  h5("Download list of indicators:"),
-                                 downloadLink('indicatorsDownload', 'TCMN indicators')
+                                 downloadLink('indicatorsDownload', 'TCMN indicators'),
+                                 h5("Download IBRD T&C operations:"),
+                                 downloadLink('projectsTCDownload', 'IBRD T&C operations'),
+                                 h5("Download IFC operations:"),
+                                 downloadLink('projectsIFCDownload', 'IFC operations')
                         ),
                         #### charts ####
                         tabPanel("PDF Country Report",
@@ -217,7 +227,9 @@ tagList(
                       ) # End tabsetPanel
              ), # End Metadata
              #### PAGE: Projects Portfolio ####
-             tabPanel(title = "Contact")
+             tabPanel(title = "Contact",
+                      source(file.path("ui_files", "contact.R"), local = TRUE)$value
+                      )
              
   ) # End navbarPage
 ) # End tagList

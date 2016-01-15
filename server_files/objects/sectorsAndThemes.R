@@ -31,14 +31,14 @@ output$themesTreemap <- renderPlot({
 }, bg = "transparent")
 
 # sectors table ----------------------------
-output$sectorsTable <- renderDataTable({
+output$sectorsTable <- DT::renderDataTable({
   sectorsTable <- .sectThemesTable(input$inCouSel,"sector")
   return(sectorsTable)
-},options = list(dom = 't'))
+},options = list(dom = 't')) # disable all the table fancy options 
 
 # themes table ----------------------------
-output$themesTable <- renderDataTable({
+output$themesTable <- DT::renderDataTable({
   themesTable <- .sectThemesTable(input$inCouSel,"theme")
   return(themesTable)
-},options = list(dom = 't'))
+},options = list(dom = 't')) # disable all the table fancy options 
 

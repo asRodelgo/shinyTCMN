@@ -1,6 +1,6 @@
 # LPI indicators ----------------------------------------
 fluidRow(
-  column(12,h5("Logistic Performance Indicators"),
+  column(12,h4("Logistic Performance Indicators"),
          h6("Source: ",
             a(TCMN_sources[TCMN_sources$Source=="WDI",]$SourceDescription, 
               href = TCMN_sources[TCMN_sources$Source=="WDI",]$url)),

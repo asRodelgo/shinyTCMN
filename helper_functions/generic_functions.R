@@ -39,7 +39,7 @@
   iso <- .getISO2(couName)  
   if (paste0(iso,".png")==".png"){
     
-    tags$img(src="world.png", width="40%")  
+    tags$img(src="white.png", width="40%")  
     
   } else{
     

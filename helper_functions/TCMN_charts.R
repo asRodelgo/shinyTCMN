@@ -173,7 +173,7 @@
     
   } else {
     plot(c(1,1),type="n", frame.plot = FALSE, axes=FALSE, ann=FALSE)
-    text(1.5, 1,"Data not available", col="red", cex=2)
+    graphics::text(1.5, 1,"Data not available", col="red", cex=2)
   }
 }
 

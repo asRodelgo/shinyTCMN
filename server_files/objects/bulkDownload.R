@@ -34,5 +34,23 @@ output$indicatorsDownload <- downloadHandler(
     write.csv(TCMN_indic, file)
   }
 )
+# -----
+output$projectsTCDownload <- downloadHandler(
+  filename = function() { 
+    paste("TCprojects", '.csv', sep='') 
+  },
+  content = function(file) {
+    write.csv(TCprojects, file)
+  }
+)
+# -----
+output$projectsIFCDownload <- downloadHandler(
+  filename = function() { 
+    paste("IFCprojects", '.csv', sep='') 
+  },
+  content = function(file) {
+    write.csv(IFCprojects, file)
+  }
+)
 
 

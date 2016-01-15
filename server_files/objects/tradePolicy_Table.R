@@ -14,8 +14,8 @@ output$tradePolicy_Table <- renderDataTable({
   dataSpark <- .PolicyFacilTable(input$inCouSel)
   
   # column definitions: column #20, javascript starts arrays on 0
-  cd <- list(list(targets = c(ncol(dataSpark)), 
-                  render = JS("function(data, type, full){ return '<span class=spark>' + data + '</span>' }"))) 
+  cd <- list(list(className = 'dt-right', targets = c(1:(ncol(dataSpark)-2))),
+             list(targets = c(ncol(dataSpark)-1), render = JS("function(data, type, full){ return '<span class=spark>' + data + '</span>' }"))) 
   
   # callback functions to create sparklines
   cb = JS(paste0("function (oSettings, json) {
@@ -31,7 +31,7 @@ output$tradePolicy_Table <- renderDataTable({
     destroy = TRUE,
     dom = 't',
     pageLength = 10
-  ))
+  ), rownames = FALSE)
   
   # add sparkline dependencies                        
   macroSpark$dependencies <- append(macroSpark$dependencies, htmlwidgets:::getDependency("sparkline"))

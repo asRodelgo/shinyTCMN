@@ -1,5 +1,5 @@
 fluidRow(
-  column(12,h5("World Governance indicators (Std. score, High=best)"),
+  column(12,h4("World Governance indicators (Std. score, High=best)"),
          h6("Source: ",
             a(TCMN_sources[TCMN_sources$Source=="WDI",]$SourceDescription, 
               href = TCMN_sources[TCMN_sources$Source=="WDI",]$url)),

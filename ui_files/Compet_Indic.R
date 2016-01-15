@@ -5,7 +5,7 @@
 #             href = "http://data.worldbank.org/data-catalog/world-development-indicators")),
 #        plotOutput('compet_Indic'))
 fluidRow(
-  column(12, h5("WEF Competitiveness Indicators (Scale 1-5, 5=best)"),
+  column(12, h4("WEF Competitiveness Indicators (Scale 1-5, 5=best)"),
          h6("Source: ",
                a(TCMN_sources[TCMN_sources$Source=="WEF_GCREP",]$SourceDescription, 
                  href = TCMN_sources[TCMN_sources$Source=="WEF_GCREP",]$url)),
