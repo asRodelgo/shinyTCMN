@@ -12,10 +12,10 @@ library(DT) # customize dataTable javascript library
 library(reshape2) # manipulate data
 library(devtools) # allow install packages from source
 #install_github('htmlwidgets/sparkline') # install sparklines
-#library(sparkline) # sparklines
+library(sparkline) # sparklines
 library(knitr) # generate LaTeX PDF report
 #devtools::install_github("56north/hexamapmaker")
-#library(hexamapmaker) #this package will not work on shinyapps.io
+library(hexamapmaker) #this package will not work on shinyapps.io
 #library(leaflet) # interactive maps
 
 
