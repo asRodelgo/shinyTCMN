@@ -13,8 +13,10 @@
   
   cou <- .getCountryCode(couName)
   data <- filter(TCMN_data, CountryCode==cou, Subsection=="chart1")
+  data <- data[!(is.na(data$Observation)),]
   
   if (nrow(data)>0){
+    data <- arrange(data,Period)
     ggplot(data, aes(x=Period, y=Observation, group=IndicatorShort)) +
       geom_line(aes(linetype=IndicatorShort,colour=IndicatorShort),size=1.5,stat="identity") +
       scale_linetype_manual(values = c(1,2))+

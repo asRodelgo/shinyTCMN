@@ -10,16 +10,30 @@
 # coordinates <- data.frame(couISO3 = wrld_simpl$ISO3,Long = wrld_simpl$LON,Lat = wrld_simpl$LAT)
 # write.csv(coordinates, "data/countryCoords.csv",row.names=FALSE)
 
-.projectsMap <- function(couName){
-  
-  cou <- .getCountryCode(couName)
-  
-  leaflet(data = countryCoords) %>%
-    addTiles() %>%
-    addMarkers(lng = ~Long, lat = ~Lat, popup = .showPopup(couName)) %>%
-    setView(lng = 0, lat = 0, zoom = 2)
-
-}
+# .projectsMap <- function(couName,status,dateRange){
+#   
+#   library(rgdal)
+#   # From http://data.okfn.org/data/datasets/geo-boundaries-world-110m
+#   # downloaded geojson file and kept it in data folder
+#   countries <- readOGR("data/countries.geojson", "OGRGeoJSON")
+#   map <- leaflet(countries)
+#   
+#   #cou <- .getCountryCode(couName)
+#   data <- .projectsTable(couName,dateRange)
+#   #library(rgdal) # to read .shp files containing country shapes
+#   #library(maps)
+#   #leaflet(data = countryCoords) %>%
+#   leaflet(data = map) %>%  
+#     addTiles() %>%
+#     #addMarkers(lng = ~Long, lat = ~Lat, popup = .showPopup(couName)) %>%
+#     addPolygons(fillColor = data[status, 
+#                 fillOpacity = 0.8, 
+#                 color = "#BDBDC3", 
+#                 weight = 1, 
+#                 popup = .showPopup(couName)) %>%
+#     setView(lng = 0, lat = 0, zoom = 2)
+# 
+# }
 
 # Show a popup at the given location ----------------
 .showPopup <- function(couName) {

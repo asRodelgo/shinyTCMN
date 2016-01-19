@@ -110,11 +110,11 @@
     \centering
     \resizebox{\textwidth}{!}{
 % latex table generated in R 3.2.2 by xtable 1.7-4 package
-% Tue Jan  5 16:49:13 2016
+% Mon Jan 18 18:16:26 2016
 {\LARGE
-\begin{tabular}{>{\centering}p{1.5in}>{\centering}p{1.5in}>{\centering}p{1.5in}>{\centering}p{1.5in}>{\centering}p{1.5in}>{\centering}p{1.5in}l}
-  GDP (US\$ billions) (2015) & Population (millions) (2015) & Income per capita (current US\$) (2015) & Poverty rate (2010) & Unemployment rate (2015) & Ease of Doing Business Rank (2015) &  \\ 
-     28 &    16 & 1,698 &    64 &    NA &    91 &  \\ 
+\begin{tabular}{>{\centering}p{1.5in}>{\centering}p{1.5in}>{\centering}p{1.5in}>{\centering}p{1.5in}>{\centering}p{1.5in}>{\centering}p{1.5in}>{\centering}p{1.5in}l}
+  GDP (US\$ billions) (2016) & Population (millions) (2016) & Income per capita (current US\$) (2016) & Poverty rate (2010) & Unemployment rate (2014) &  &  &  \\ 
+     29 &    17 & 1,757 &    64 &    13 &  &  &  \\ 
   \end{tabular}
 }
 
@@ -126,60 +126,140 @@
   %\vspace*{0.5cm}
   %\vspace{+3ex}
   \begin{minipage}[t]{0.99\textwidth}
+%'     \begin{minipage}[c]{0.875\textwidth}
+%'       \begin{flushleft}  
+%'       {\color{blue!50!black} \textbf{\small Macro Indicators}}
+%'       \end{flushleft} 
+%'       \vspace*{-0.4cm}
+%'       % Table 2
+%'       \centering
+%'       \resizebox{\textwidth}{!}{
+%'     <<macroInd_Big,echo=FALSE,message=FALSE,cache=FALSE,warning=FALSE,fig.align='center',results="asis">>=  
+%'       @      
+%'       }
+%'       \end{minipage}
+%'       \begin{minipage}[c]{0.12\textwidth}
+%'       \vspace*{+0.9cm}
+%'           <<createSparklines,echo=FALSE,message=FALSE,cache=FALSE,warning=FALSE,fig.align='center',fig.height=11,fig.width=4,results="asis">>=  
+%'       @
+%'       \vspace*{-0.4cm}
+%'       \end{minipage}
+ 
     \begin{minipage}[c]{0.875\textwidth}
       \begin{flushleft}  
-      {\color{blue!50!black} \textbf{\small Macro Indicators}}
+      {\color{white!30!blue} \textbf{\small Macro Indicators}}
       \end{flushleft} 
       \vspace*{-0.4cm}
       % Table 2
       \centering
       \resizebox{\textwidth}{!}{
 % latex table generated in R 3.2.2 by xtable 1.7-4 package
-% Tue Jan  5 16:49:13 2016
+% Mon Jan 18 18:16:27 2016
 {\Large
-\begin{tabular}{lr>{\raggedleft}p{0.8in}>{\raggedleft}p{0.8in}>{\raggedleft}p{0.8in}>{\raggedleft}p{0.8in}>{\raggedleft}p{0.8in}l}
+\begin{tabular}{>{\raggedright}p{6in}r>{\raggedleft}p{0.8in}>{\raggedleft}p{0.8in}>{\raggedleft}p{0.8in}>{\raggedleft}p{0.8in}>{\raggedleft}p{0.8in}l}
   & Avg 2002-2011 & 2012 & 2013 & 2014 & 2015 & 2016 &  \\ 
   \hline
 GDP growth (annual \%) &   7.36 &   6.73 &   6.71 &   5.60 &   4.00 &   5.30 &  \\ 
   Current account balance & -19.92 &   2.91 &  -1.32 &   1.83 &  -0.26 &   1.06 &  \\ 
-  Cash surplus/deficit (\% of GDP) &  -0.87 &  -2.39 &  -5.84 &  -5.15 &  -6.71 &  -6.10 &  \\ 
-  Gross Fixed Investment (\% GDP) &  26.85 &  32.33 &  34.58 &  33.18 &  33.35 &  33.73 &  \\ 
-  Gross capital formation (\% of GDP) \large{[1]} &  29.88 & --- & --- & --- & --- & --- &  \\ 
-  Foreign direct investment, net inflows (\% of GDP) \large{[2]} &   6.36 &  11.81 &   8.09 &  11.00 & --- & --- &  \\ 
-  Private capital flows, total (\% of GDP) \large{[2]} &  34.18 &  30.34 & --- & --- & --- & --- &  \\ 
-  Total Trade in Goods and Services (\% of GDP, real terms) &  63.67 &  70.50 &  74.60 &  71.10 &  67.91 &  68.70 &  \\ 
-  Trade balance (\% GDP, real terms) &  -2.18 &   5.90 &   6.00 &   5.70 &   4.71 &   7.30 &  \\ 
-  Exports, Goods and Services, annual percent change (real terms) &  12.39 &   7.10 &  12.58 &   0.62 &  -1.67 &  10.21 &  \\ 
-  Imports, Goods and Services, annual percent change (real terms) &   6.44 &   8.25 &  13.32 &   0.67 &   0.50 &   2.30 &  \\ 
-  Personal remittances, received (\% of GDP) \large{[1]} &   0.45 &   0.29 &   0.20 &   0.22 & --- & --- &  \\ 
-  General government gross debt \large{[3]} &  20.77 &  25.47 &  28.63 &  35.24 &  41.89 &  44.87 &  \\ 
-  Total reserves in months of imports \large{[1]} &   2.87 &   3.80 &   2.65 &   3.14 & --- & --- &  \\ 
+  Fiscal balance (\% of GDP) &  -0.87 &  -2.39 &  -5.84 &  -5.15 &  -6.71 &  -6.10 &  \\ 
+  Remittances, received (\% of GDP) \large{[1]} &   0.45 &   0.29 &   0.20 &   0.22 & --- & --- &  \\ 
   Real Effective Exchange Rate (2010=100) &  94.61 &  99.19 & 101.98 &  94.86 &  95.81 &  95.61 &  \\ 
   Consumer Price Index, annual percent change &  14.70 &   6.22 &   7.00 &   7.80 &   7.50 &   7.70 &  \\ 
   \end{tabular}
 }
 
       }
-      \end{minipage}
-      \begin{minipage}[c]{0.12\textwidth}
-      \vspace*{+0.9cm}
-\begin{kframe}
+    \end{minipage}
+    \begin{minipage}[c]{0.11\textwidth}
+      \vspace*{+0.8cm}
 
 
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in plot.window(...): need finite 'ylim' values}}\end{kframe}
+{\centering \includegraphics[width=\maxwidth]{figure/createSparklines_macro-1} 
 
-{\centering \includegraphics[width=\maxwidth]{figure/createSparklines-1} 
+}
+
+
+
+      \vspace*{-0.5cm}
+    \end{minipage}
+    
+    %\vspace*{-0.4cm}
+    \begin{minipage}[c]{0.875\textwidth}
+      \begin{flushleft}  
+      {\color{white!30!blue} \textbf{\small Investment indicators}}
+      \end{flushleft} 
+      \vspace*{-0.4cm}
+      % Table 2
+      \centering
+      \resizebox{\textwidth}{!}{
+% latex table generated in R 3.2.2 by xtable 1.7-4 package
+% Mon Jan 18 18:16:27 2016
+{\Large
+\begin{tabular}{>{\raggedright}p{6in}r>{\raggedleft}p{0.8in}>{\raggedleft}p{0.8in}>{\raggedleft}p{0.8in}>{\raggedleft}p{0.8in}>{\raggedleft}p{0.8in}l}
+  & Avg 2002-2011 & 2012 & 2013 & 2014 & 2015 & 2016 &  \\ 
+  \hline
+Gross domestic investment (\% GDP) & 26.9 & 32.3 & 34.6 & 33.2 & 33.4 & 33.7 &  \\ 
+  Gross domestic investment, of w: Private investment (\% GDP) \large{[1]} & 29.9 & --- & --- & --- & --- & --- &  \\ 
+  Inward FDI (\% of GDP) \large{[2]} &  6.4 & 11.8 &  8.1 & 11.0 & --- & --- &  \\ 
+  Inward FDI, \% of private investment \large{[2]} & 34.2 & 30.3 &   NA & --- & --- & --- &  \\ 
+  \end{tabular}
+}
+
+      }
+    \end{minipage}
+    \begin{minipage}[c]{0.11\textwidth}
+      \vspace*{+0.8cm}
+
+
+{\centering \includegraphics[width=\maxwidth]{figure/createSparklines_invest-1} 
+
+}
+
+
+
+      \vspace*{-0.5cm}
+    \end{minipage}
+    
+    %\vspace*{-0.4cm}
+    \begin{minipage}[c]{0.875\textwidth}
+      \begin{flushleft}  
+      {\color{white!30!blue} \textbf{\small Trade Indicators}}
+      \end{flushleft} 
+      \vspace*{-0.4cm}
+      % Table 2
+      \centering
+      \resizebox{\textwidth}{!}{
+% latex table generated in R 3.2.2 by xtable 1.7-4 package
+% Mon Jan 18 18:16:27 2016
+{\Large
+\begin{tabular}{>{\raggedright}p{6in}r>{\raggedleft}p{0.8in}>{\raggedleft}p{0.8in}>{\raggedleft}p{0.8in}>{\raggedleft}p{0.8in}>{\raggedleft}p{0.8in}l}
+  & Avg 2002-2011 & 2012 & 2013 & 2014 & 2015 & 2016 &  \\ 
+  \hline
+Total Trade in Goods and Services (\% of GDP, real terms) & 63.67 & 70.50 & 74.60 & 71.10 & 67.91 & 68.70 &  \\ 
+  Trade balance (\% GDP, real terms) & -2.18 &  5.90 &  6.00 &  5.70 &  4.71 &  7.30 &  \\ 
+  Exports, Goods and Services, annual percent change (real terms) & 12.39 &  7.10 & 12.58 &  0.62 & -1.67 & 10.21 &  \\ 
+  Imports, Goods and Services, annual percent change (real terms) &  6.44 &  8.25 & 13.32 &  0.67 &  0.50 &  2.30 &  \\ 
+  Total reserves in months of imports \large{[1]} &  2.87 &  3.80 &  2.65 &  3.14 & --- & --- &  \\ 
+  \end{tabular}
+}
+
+      }
+    \end{minipage}
+    \begin{minipage}[c]{0.11\textwidth}
+      \vspace*{+0.8cm}
+
+
+{\centering \includegraphics[width=\maxwidth]{figure/createSparklines_trade-1} 
 
 }
 
 
 
       \vspace*{-0.4cm}
-      \end{minipage}
- 
-%\hspace*{0.5cm} 
+    \end{minipage}
+  \\[3pt]
 \raggedright{\footnotesize{\href{http://www.worldbank.org/en/topic/macroeconomics/overview}{Sources: MFM note}{,} \href{http://data.worldbank.org/data-catalog/world-development indicators}{[1] World Development Indicators (WDI)}{,} \href{http://unctadstat.unctad.org/wds/ReportFolders/reportFolders.aspx}{[2] UNCTADSTAT}{,} \href{https://www.imf.org/external/pubs/ft/weo/2015/02/weodata/index.aspx}{[3] World Economic Outlook (WEO)}}}
-   \end{minipage} 
+  \end{minipage} 
 %\end{minipage}    
   \begin{minipage}[b]{\textwidth} % macro charts
   \vspace{+3ex}
@@ -225,10 +305,7 @@ GDP growth (annual \%) &   7.36 &   6.73 &   6.71 &   5.60 &   4.00 &   5.30 &  
       \\[6pt]
       \centering
       \resizebox{\textwidth}{!}{%
-\begin{kframe}
 
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in if (rec[3] < rec[4]) \{: missing value where TRUE/FALSE needed}}\end{kframe}
 
 {\centering \includegraphics[width=\maxwidth]{figure/ImpExp_Treemap-2-1} 
 
@@ -267,7 +344,7 @@ GDP growth (annual \%) &   7.36 &   6.73 &   6.71 &   5.60 &   4.00 &   5.30 &  
     \centering
       \resizebox{\textwidth}{!}{%
 % latex table generated in R 3.2.2 by xtable 1.7-4 package
-% Tue Jan  5 16:49:14 2016
+% Mon Jan 18 18:16:28 2016
 {\large
 \begin{tabular}{lrrrr}
   & DB 2015 Rank & DB 2016 Rank & Change in Rank &  \\ 
@@ -362,7 +439,7 @@ Dealing with Construction Permits & 116 & 110 & \color{green}{\Large6} &  \\
     \centering
     \resizebox{\textwidth}{!}{%
 % latex table generated in R 3.2.2 by xtable 1.7-4 package
-% Tue Jan  5 16:49:14 2016
+% Mon Jan 18 18:16:29 2016
 {\Large
 \begin{tabular}{lrrr}
   & 2010 & 2014 &  \\ 
@@ -405,7 +482,7 @@ Applied Tariff (Incl. Prefers. and Trade-Weighted) & 11.2 & --- &  \\
     \centering
     \resizebox{\textwidth}{!}{%
 % latex table generated in R 3.2.2 by xtable 1.7-4 package
-% Tue Jan  5 16:49:14 2016
+% Mon Jan 18 18:16:29 2016
 {\Large
 \begin{tabular}{lrrrl}
   & Zambia & Sub-Saharan Africa & All Countries &  \\ 

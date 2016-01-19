@@ -37,8 +37,9 @@ tagList(
       column(3,h5("Select a country:"),
              selectInput('inCouSel', NULL, choices=c("Select a country",countryNames$Country), selected = 'Select a country', selectize=FALSE)),
       column(2, div(uiOutput('outFlag'), class = "flag")),
-      column(3, h5("Download PDF for the selected country:"),
-             downloadButton('downloadReportHome', 'PDF report'))
+      column(3, h5("Download PDF files for the selected country:"),
+             downloadButton('downloadReportHome', 'Data report'),
+             downloadButton('downloadReportOperHome', 'Operations report'))
       )
   ),
   # navbarPage(save_and_close, id = "nav", #title = NULL,
@@ -154,9 +155,9 @@ tagList(
                                  source(file.path("ui_files", "projectsTeams.R"), local = TRUE)$value
                         )#,
                         #### map #####
-                        #tabPanel("Map",
-                        #         source(file.path("ui_files", "projectsMap.R"), local = TRUE)$value
-                        #)
+#                         tabPanel("Map",
+#                                 source(file.path("ui_files", "projectsMap.R"), local = TRUE)$value
+#                         )
                       ) # End tabsetPanel
              ), # End Projects Portfolio
              #### MENU: Data Analysis ####

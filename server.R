@@ -61,6 +61,12 @@ function(input, output, session) {
     content = function(file) file.copy(paste0("pdf/TCMN_",.getCountryCode(input$inCouSel),".pdf"), file),
     contentType = 'application/pdf'
   )
+  # download Operations PDF home -----------------------------
+  output$downloadReportOperHome <- downloadHandler(
+    filename = paste0("pdf/TCMN_Operations_",.getCountryCode(input$inCouSel),".pdf"),
+    content = function(file) file.copy(paste0("pdf/TCMN_Operations_",.getCountryCode(input$inCouSel),".pdf"), file),
+    contentType = 'application/pdf'
+  )
       # test ------
 #   randomVals <- eventReactive(input$tsne_go, {
 #     runif(input$inNumIter)

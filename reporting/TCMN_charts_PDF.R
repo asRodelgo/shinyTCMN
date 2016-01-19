@@ -12,8 +12,8 @@
 #source(file.path("helper_functions","generic_functions.R"),local=TRUE)
 # init_Params <- function(){
 #   #library(knitr)
-#couName <- countryNames[countryNames$Country==c,]$Country
-#couISO2 <- .getISO2(couName)
+couName <- countryNames[countryNames$Country==c,]$Country
+couISO2 <- .getISO2(couName)
 #cou <- ""
 #   #couISO2 <- .getISO2(input$inCouSel)
 #   #cou <- .getCountryCode(input$inCouSel)
@@ -31,8 +31,9 @@ ExpImp_HF <- function(couName){
   
   cou <- .getCountryCode(couName)
   data <- filter(TCMN_data, CountryCode==cou, Subsection=="chart1")
-  
+  data <- data[!(is.na(data$Observation)),]
   if (nrow(data)>0){
+    data <- arrange(data,Period)
     ggplot(data, aes(x=Period, y=Observation, group=IndicatorShort)) +
       geom_line(aes(linetype=IndicatorShort,colour=IndicatorShort),size=1.5,stat="identity") +
       scale_linetype_manual(values = c(1,2))+
@@ -145,7 +146,7 @@ WGIindicators <- function(couName){
     data <- merge(data, countries[,c("Country","CountryCodeISO3")], by.x="CountryCode", by.y="CountryCodeISO3") # add country name
     data <- filter(data, Period == max(Period))
     # select top 4 countries from the neighborhood based on their income level
-    income <- filter(TCMN_data, CountryCode %in% neighbors, Subsection=="table1", Key=="M03")
+    income <- filter(TCMN_data, CountryCode %in% neighbors, Subsection=="table2head", Key=="M03")
     income <- filter(income, Period == thisYear)
     
     topNeighbors <- head(arrange(income, desc(Observation)),4)$CountryCode
@@ -295,11 +296,10 @@ GVA_Treemap <- function(couName){
     data$Observation <- format(data$Observation, digits=0, decimal.mark=".",
                              big.mark=",",small.mark=".", small.interval=3)
     data$Observation <- as.numeric(data$Observation)
-    data <- mutate(data, ObservationAdj = Observation+10)
     
     treemap(data,
             index=c("IndicatorShort","Observation"),
-            vSize="ObservationAdj",
+            vSize="Observation",
             fontsize.labels=c(24, 24), 
             align.labels=list(c("left", "top"), c("right","bottom")),
             lowerbound.cex.labels=0.5,
@@ -347,10 +347,11 @@ ImpExp_Treemap <- function(couName, type){
                                big.mark=",",small.mark=".", small.interval=3)
     data$percTotalValue <- as.numeric(data$percTotalValue)
     
+    
     data <- select(data, -Period)
     
     if (type=="x"){
-      data <- head(arrange(data, desc(TradeValue)),5)
+      data <- head(arrange(as.data.frame(data), desc(TradeValue)),5)
     }
     
     treemap(data,
@@ -396,12 +397,12 @@ ImpExp_Treemap <- function(couName, type){
       data$color <- rainbow(length(data$ProductCode)) # add the color
     }
     # format numbers
-    # format numbers
     data$TradeValue <- format(data$TradeValue, digits=0, decimal.mark=".",
                               big.mark=",",small.mark=".", small.interval=3)
     data$percTotalValue <- format(data$percTotalValue, digits=0, decimal.mark=".",
                                   big.mark=",",small.mark=".", small.interval=3)
     data$percTotalValue <- as.numeric(data$percTotalValue)
+    data$TradeValue <- as.numeric(data$TradeValue)
     
     data <- select(data, -Period)
     
@@ -431,9 +432,12 @@ macroInd <- function(couName){
   
   cou <- .getCountryCode(couName)
   
-  data <- filter(TCMN_data, CountryCode==cou, Subsection=="table1")
+  tableKeys <- unique(filter(TCMN_data, Subsection=="table2head")[,c("Key","IndicatorShort")])
+  data <- filter(TCMN_data, CountryCode==cou, Subsection=="table2head")
+  #data <- merge(tableKeys,select(data,-IndicatorShort),by="Key",all.x=TRUE)
   # keep the latest period (excluding projections further than 2 years)
-  data <- filter(data, Period <= (as.numeric(thisYear)))
+  data <- filter(data, Period <= (as.numeric(thisYear) + 1))
+  
   data <- data %>%
     group_by(Key) %>%
     filter(Period == max(Period))
@@ -444,13 +448,15 @@ macroInd <- function(couName){
   # format numbers
   data$ObsScaled <- format(data$ObsScaled, digits=2, decimal.mark=".",
                              big.mark=",",small.mark=".", small.interval=3)
-  data$TradeValue <- as.numeric(data$TradeValue)
-  data$percTotalValue <- as.numeric(data$percTotalValue)
   
   data <- arrange(data, Key)
   data <- data[,c("IndicatorShort", "ObsScaled")] # short indicator name and scaled data
   data <- as.data.frame(t(data)) # transpose the data
   # I have to add a dummy column so the alignment works (align)
+  for (j in (ncol(data)+1):6){
+    data[,j] <- ""
+    names(data)[j] <- ""
+  }
   data$dummy <- rep("",nrow(data))
   
   #bold <- function(x) {paste('{\\textbf{',x,'}}', sep ='')}
@@ -503,7 +509,7 @@ macroInd_Big <- function(couName){
                                      paste0(data$IndicatorShort[i]," \\large{[", merge(data,TCMN_indic[TCMN_indic$Subsection=="table2",], by="Key")$Note[i],"]}"),
                                      data$IndicatorShort[i])  
   }
-  # escape ampersands
+  # escape reserved characters
   data$IndicatorShort <- gsub("%", "\\%", data$IndicatorShort, fixed=TRUE)
   
   # final table format
@@ -528,6 +534,249 @@ macroInd_Big <- function(couName){
   
 }
 macroInd_Big(couName)
+
+## ---- macroInd_Big_macro ----
+macroInd_Split <- function(couName,table){      
+  
+  cou <- .getCountryCode(couName)
+  
+  tableKeys <- unique(filter(TCMN_data, Subsection==table)[,c("Key","IndicatorShort")])
+  data <- filter(TCMN_data, CountryCode==cou, Subsection==table)
+  data <- merge(tableKeys,select(data,-IndicatorShort),by="Key",all.x=TRUE)
+  # keep the latest period (excluding projections further than 2 years)
+  data <- mutate(data, Period = ifelse(is.na(Period),max(as.numeric(Period),na.rm=TRUE),Period))
+  data <- filter(data, Period <= (as.numeric(thisYear) + 1))
+  # remove NAs rows
+  #data <- filter(data, !is.na(Observation))
+  # calculate average for 1st column
+  data_avg <- data %>%
+    group_by(Key) %>%
+    filter(Period < (as.numeric(thisYear)-3)) %>%
+    mutate(historical_avg = mean(Observation,na.rm=TRUE))
+  # add average as one of the time periods
+  data_avg <- mutate(data_avg, Period = paste("Avg ",as.numeric(thisYear)-13,"-",as.numeric(thisYear)-4,sep=""),
+                     Observation = historical_avg, ObsScaled = Scale*historical_avg)
+  
+  data_avg <- data_avg[!duplicated(data_avg$Key),] # remove duplicates
+  data_avg <- select(data_avg, -historical_avg, -ObsScaled) # remove some variables
+  
+  #keep only periods of interest in data
+  data <- filter(data, Period > (as.numeric(thisYear) - 4))
+  data <- rbind(data, data_avg) # add rows to data
+  # Scale Observations
+  data <- mutate(data, ObsScaled = Scale*Observation)
+  data <- arrange(data, Key)
+  data <- select(data, Key, IndicatorShort, Period, ObsScaled)
+  
+  # format numbers
+  data$ObsScaled <- format(data$ObsScaled, digits=2, decimal.mark=".",
+                           big.mark=",",small.mark=".", small.interval=3)
+  
+  for (i in 1:nrow(data)){
+    
+    data$IndicatorShort[i] <- ifelse(!is.na(merge(data,TCMN_indic[TCMN_indic$Subsection==table,], by="Key")$Note[i]),
+                                     paste0(data$IndicatorShort[i]," \\large{[", merge(data,TCMN_indic[TCMN_indic$Subsection==table,], by="Key")$Note[i],"]}"),
+                                     data$IndicatorShort[i])  
+  }
+  # escape reserved characters
+  data$IndicatorShort <- gsub("%", "\\%", data$IndicatorShort, fixed=TRUE)
+  data$IndicatorShort <- gsub("&", "\\&", data$IndicatorShort, fixed=TRUE)
+  
+  # final table format
+  data <- spread(data, Period, ObsScaled)
+  data <- data[,-1] #drop the Key column
+  if (ncol(data)>2){
+    data <- data[,c(1,ncol(data),2:(ncol(data)-1))] # reorder columns
+    # rid of characters in numeric columns
+    data[,ncol(data)] <- gsub("NA", "---", data[,ncol(data)], fixed=TRUE)
+  } 
+  
+  # dummy columns in to keep the pdf layout
+  if (ncol(data)<=6){
+    for (j in (ncol(data)+1):7){
+      data[,j] <- "---"
+      names(data)[j] <- as.character(as.numeric(thisYear)-6+j)
+    }
+  }
+  # I have to add a dummy column so the alignment works (align)
+  data$dummy <- rep("",nrow(data))
+  # modify column names
+  names(data) <- c("",names(data)[2:(ncol(data)-1)],"")
+  
+  # substitute NAs for "---" em-dash
+  data[is.na(data)] <- "---"
+  
+  data.table <- xtable(data, digits=rep(1,ncol(data)+1)) #control decimals
+  align(data.table) <- c('l','>{\\raggedright}p{6in}','r',rep('>{\\raggedleft}p{0.8in}',ncol(data.table)-3),'l')
+  print(data.table, include.rownames=FALSE,include.colnames=TRUE, floating=FALSE, 
+        size="\\Large",
+        booktabs = FALSE, table.placement="", hline.after = c(0) ,latex.environments = "center",
+        sanitize.text.function = function(x){x}) # include sanitize to control formats
+  
+}
+macroInd_Split(couName,"table2macro")
+
+## ---- macroInd_Big_invest ----
+macroInd_Split <- function(couName,table){      
+  
+  cou <- .getCountryCode(couName)
+  
+  tableKeys <- unique(filter(TCMN_data, Subsection==table)[,c("Key","IndicatorShort")])
+  data <- filter(TCMN_data, CountryCode==cou, Subsection==table)
+  data <- merge(tableKeys,select(data,-IndicatorShort),by="Key",all.x=TRUE)
+  # keep the latest period (excluding projections further than 2 years)
+  data <- mutate(data, Period = ifelse(is.na(Period),max(as.numeric(Period),na.rm=TRUE),Period))
+  data <- filter(data, Period <= (as.numeric(thisYear) + 1))
+  # remove NAs rows
+  #data <- filter(data, !is.na(Observation))
+  # calculate average for 1st column
+  data_avg <- data %>%
+    group_by(Key) %>%
+    filter(Period < (as.numeric(thisYear)-3)) %>%
+    mutate(historical_avg = mean(Observation,na.rm=TRUE))
+  # add average as one of the time periods
+  data_avg <- mutate(data_avg, Period = paste("Avg ",as.numeric(thisYear)-13,"-",as.numeric(thisYear)-4,sep=""),
+                     Observation = historical_avg, ObsScaled = Scale*historical_avg)
+  
+  data_avg <- data_avg[!duplicated(data_avg$Key),] # remove duplicates
+  data_avg <- select(data_avg, -historical_avg, -ObsScaled) # remove some variables
+  
+  #keep only periods of interest in data
+  data <- filter(data, Period > (as.numeric(thisYear) - 4))
+  data <- rbind(data, data_avg) # add rows to data
+  # Scale Observations
+  data <- mutate(data, ObsScaled = Scale*Observation)
+  data <- arrange(data, Key)
+  data <- select(data, Key, IndicatorShort, Period, ObsScaled)
+  
+  # format numbers
+  data$ObsScaled <- format(data$ObsScaled, digits=2, decimal.mark=".",
+                           big.mark=",",small.mark=".", small.interval=3)
+  
+  for (i in 1:nrow(data)){
+    
+    data$IndicatorShort[i] <- ifelse(!is.na(merge(data,TCMN_indic[TCMN_indic$Subsection==table,], by="Key")$Note[i]),
+                                     paste0(data$IndicatorShort[i]," \\large{[", merge(data,TCMN_indic[TCMN_indic$Subsection==table,], by="Key")$Note[i],"]}"),
+                                     data$IndicatorShort[i])  
+  }
+  # escape reserved characters
+  data$IndicatorShort <- gsub("%", "\\%", data$IndicatorShort, fixed=TRUE)
+  data$IndicatorShort <- gsub("&", "\\&", data$IndicatorShort, fixed=TRUE)
+  
+  # final table format
+  data <- spread(data, Period, ObsScaled)
+  data <- data[,-1] #drop the Key column
+  if (ncol(data)>2){
+    data <- data[,c(1,ncol(data),2:(ncol(data)-1))] # reorder columns
+    # rid of characters in numeric columns
+    data[,ncol(data)] <- gsub("NA", "---", data[,ncol(data)], fixed=TRUE)
+  } 
+  
+  # dummy columns in to keep the pdf layout
+  if (ncol(data)<=6){
+    for (j in (ncol(data)+1):7){
+      data[,j] <- "---"
+      names(data)[j] <- as.character(as.numeric(thisYear)-6+j)
+    }
+  }
+  # I have to add a dummy column so the alignment works (align)
+  data$dummy <- rep("",nrow(data))
+  # modify column names
+  names(data) <- c("",names(data)[2:(ncol(data)-1)],"")
+  
+  # substitute NAs for "---" em-dash
+  data[is.na(data)] <- "---"
+  
+  data.table <- xtable(data, digits=rep(1,ncol(data)+1)) #control decimals
+  align(data.table) <- c('l','>{\\raggedright}p{6in}','r',rep('>{\\raggedleft}p{0.8in}',ncol(data.table)-3),'l')
+  print(data.table, include.rownames=FALSE,include.colnames=TRUE, floating=FALSE, 
+        size="\\Large",
+        booktabs = FALSE, table.placement="", hline.after = c(0) ,latex.environments = "center",
+        sanitize.text.function = function(x){x}) # include sanitize to control formats
+  
+}
+macroInd_Split(couName,"table2invest")
+
+## ---- macroInd_Big_trade ----
+macroInd_Split <- function(couName,table){      
+  
+  cou <- .getCountryCode(couName)
+  
+  tableKeys <- unique(filter(TCMN_data, Subsection==table)[,c("Key","IndicatorShort")])
+  data <- filter(TCMN_data, CountryCode==cou, Subsection==table)
+  data <- merge(tableKeys,select(data,-IndicatorShort),by="Key",all.x=TRUE)
+  # keep the latest period (excluding projections further than 2 years)
+  data <- mutate(data, Period = ifelse(is.na(Period),max(as.numeric(Period),na.rm=TRUE),Period))
+  data <- filter(data, Period <= (as.numeric(thisYear) + 1))
+  # remove NAs rows
+  #data <- filter(data, !is.na(Observation))
+  # calculate average for 1st column
+  data_avg <- data %>%
+    group_by(Key) %>%
+    filter(Period < (as.numeric(thisYear)-3)) %>%
+    mutate(historical_avg = mean(Observation,na.rm=TRUE))
+  # add average as one of the time periods
+  data_avg <- mutate(data_avg, Period = paste("Avg ",as.numeric(thisYear)-13,"-",as.numeric(thisYear)-4,sep=""),
+                     Observation = historical_avg, ObsScaled = Scale*historical_avg)
+  
+  data_avg <- data_avg[!duplicated(data_avg$Key),] # remove duplicates
+  data_avg <- select(data_avg, -historical_avg, -ObsScaled) # remove some variables
+  
+  #keep only periods of interest in data
+  data <- filter(data, Period > (as.numeric(thisYear) - 4))
+  data <- rbind(data, data_avg) # add rows to data
+  # Scale Observations
+  data <- mutate(data, ObsScaled = Scale*Observation)
+  data <- arrange(data, Key)
+  data <- select(data, Key, IndicatorShort, Period, ObsScaled)
+  
+  # format numbers
+  data$ObsScaled <- format(data$ObsScaled, digits=2, decimal.mark=".",
+                           big.mark=",",small.mark=".", small.interval=3)
+  
+  for (i in 1:nrow(data)){
+    
+    data$IndicatorShort[i] <- ifelse(!is.na(merge(data,TCMN_indic[TCMN_indic$Subsection==table,], by="Key")$Note[i]),
+                                     paste0(data$IndicatorShort[i]," \\large{[", merge(data,TCMN_indic[TCMN_indic$Subsection==table,], by="Key")$Note[i],"]}"),
+                                     data$IndicatorShort[i])  
+  }
+  # escape reserved characters
+  data$IndicatorShort <- gsub("%", "\\%", data$IndicatorShort, fixed=TRUE)
+  data$IndicatorShort <- gsub("&", "\\&", data$IndicatorShort, fixed=TRUE)
+  
+  # final table format
+  data <- spread(data, Period, ObsScaled)
+  data <- data[,-1] #drop the Key column
+  if (ncol(data)>2){
+    data <- data[,c(1,ncol(data),2:(ncol(data)-1))] # reorder columns
+    # rid of characters in numeric columns
+    data[,ncol(data)] <- gsub("NA", "---", data[,ncol(data)], fixed=TRUE)
+  } 
+  
+  # dummy columns in to keep the pdf layout
+  if (ncol(data)<=6){
+    for (j in (ncol(data)+1):7){
+      data[,j] <- "---"
+      names(data)[j] <- as.character(as.numeric(thisYear)-6+j)
+    }
+  }
+  # I have to add a dummy column so the alignment works (align)
+  data$dummy <- rep("",nrow(data))
+  # modify column names
+  names(data) <- c("",names(data)[2:(ncol(data)-1)],"")
+  
+  # substitute NAs for "---" em-dash
+  data[is.na(data)] <- "---"
+  
+  data.table <- xtable(data, digits=rep(1,ncol(data)+1)) #control decimals
+  align(data.table) <- c('l','>{\\raggedright}p{6in}','r',rep('>{\\raggedleft}p{0.8in}',ncol(data.table)-3),'l')
+  print(data.table, include.rownames=FALSE,include.colnames=TRUE, floating=FALSE, 
+        size="\\Large",
+        booktabs = FALSE, table.placement="", hline.after = c(0) ,latex.environments = "center",
+        sanitize.text.function = function(x){x}) # include sanitize to control formats
+  
+}
+macroInd_Split(couName,"table2trade")
 
 ## ---- createSparklines ----
 createSparklines <- function(couName){      
@@ -570,39 +819,223 @@ createSparklines <- function(couName){
 }
 createSparklines(couName)
 
+## ---- createSparklines_macro ----
+createSparklines_Split <- function(couName,table){      
+  
+  cou <- .getCountryCode(couName)
+  ## Examples like Edward Tufte's sparklines:
+  
+  tableKeys <- unique(filter(TCMN_data, Subsection==table)[,c("Key","IndicatorShort")])
+  data <- filter(TCMN_data, CountryCode==cou, Subsection==table)
+  data <- merge(tableKeys,select(data,-IndicatorShort),by="Key",all.x=TRUE)
+  # keep the latest period (excluding projections further than 2 years)
+  data <- mutate(data, Period = ifelse(is.na(Period),max(as.numeric(Period),na.rm=TRUE),Period))
+  data <- filter(data, Period <= (as.numeric(thisYear) + 1), Period > (as.numeric(thisYear) - 14))
+  #data <- filter(data, !is.na(Observation)) # remove NAs rows
+  # keep relevant columns
+  data <- select(data, Key, Period, Observation)
+  data <- arrange(data, Key, Period)
+  
+  x <- spread(data, Key, Observation)
+  x <- x[,-1] # don't need Period column anymore
+  
+  # impute NAs and standardize so all sparklines are scales
+  for (i in 1:ncol(x)){ # setup for statement to loop over all elements in a list or vector
+    
+    x[is.na(x[,i]),i] <- mean(x[,i],na.rm = TRUE)  #impute NAs to the mean of the column
+    if (sum(x[,i],na.rm = TRUE)==0){ 
+      x[,i] <- 0
+      #x[1,i] <- -10
+      x[nrow(x),i] <- 10
+      }
+  }
+  #x <- scale(x) # standardize x
+  
+  par(mfrow=c(ncol(x)+2,1), #sets number of rows in space to number of cols in data frame x
+      mar=c(1,0,0,0), #sets margin size for the figures
+      oma=c(1,2,1,1)) #sets outer margin
+  
+  for (i in 1:ncol(x)){ # setup for statement to loop over all elements in a list or vector
+    
+    if (sum(x[1:(nrow(x)-1),i])==0){ # paint in white empty rows
+      plot(x[,i], #use col data, not rows from data frame x
+           col="white",lwd=4, #color the line and adjust width
+           axes=F,ylab="",xlab="",main="",type="l"); #suppress axes lines, set as line plot
+      
+      axis(2,yaxp=c(min(x[,i],na.rm = TRUE),max(x[,i],na.rm = TRUE),2),col="white",tcl=0,labels=FALSE)  #y-axis: put a 2nd white axis line over the 1st y-axis to make it invisible
+      ymin<-min(x[,i],na.rm = TRUE); tmin<-which.min(x[,i]);ymax<-max(x[,i], na.rm = TRUE);tmax<-which.max(x[,i]);
+      points(x=c(tmin,tmax),y=c(ymin,ymax),pch=19,col=c("white","white"),cex=5) # add coloured points at max and min# 
+    } else {
+      plot(x[,i], #use col data, not rows from data frame x
+           col="darkgrey",lwd=4, #color the line and adjust width
+           axes=F,ylab="",xlab="",main="",type="l"); #suppress axes lines, set as line plot
+      
+      axis(2,yaxp=c(min(x[,i],na.rm = TRUE),max(x[,i],na.rm = TRUE),2),col="white",tcl=0,labels=FALSE)  #y-axis: put a 2nd white axis line over the 1st y-axis to make it invisible
+      ymin<-min(x[,i],na.rm = TRUE); tmin<-which.min(x[,i]);ymax<-max(x[,i], na.rm = TRUE);tmax<-which.max(x[,i]); # 
+      points(x=c(tmin,tmax),y=c(ymin,ymax),pch=19,col=c("red","green"),cex=5) # add coloured points at max and min
+    }
+  }
+}
+createSparklines_Split(couName,"table2macro")
+
+## ---- createSparklines_invest ----
+createSparklines_Split <- function(couName,table){      
+  
+  cou <- .getCountryCode(couName)
+  ## Examples like Edward Tufte's sparklines:
+  
+  tableKeys <- unique(filter(TCMN_data, Subsection==table)[,c("Key","IndicatorShort")])
+  data <- filter(TCMN_data, CountryCode==cou, Subsection==table)
+  data <- merge(tableKeys,select(data,-IndicatorShort),by="Key",all.x=TRUE)
+  # keep the latest period (excluding projections further than 2 years)
+  data <- mutate(data, Period = ifelse(is.na(Period),max(as.numeric(Period),na.rm=TRUE),Period))
+  data <- filter(data, Period <= (as.numeric(thisYear) + 1), Period > (as.numeric(thisYear) - 14))
+  #data <- filter(data, !is.na(Observation)) # remove NAs rows
+  # keep relevant columns
+  data <- select(data, Key, Period, Observation)
+  data <- arrange(data, Key, Period)
+  
+  x <- spread(data, Key, Observation)
+  x <- x[,-1] # don't need Period column anymore
+  
+  # impute NAs and standardize so all sparklines are scales
+  for (i in 1:ncol(x)){ # setup for statement to loop over all elements in a list or vector
+    
+    x[is.na(x[,i]),i] <- mean(x[,i],na.rm = TRUE)  #impute NAs to the mean of the column
+    if (sum(x[,i],na.rm = TRUE)==0){ 
+      x[,i] <- 0
+      #x[1,i] <- -10
+      x[nrow(x),i] <- 10
+    }
+  }
+  #x <- scale(x) # standardize x
+  
+  par(mfrow=c(ncol(x)+2,1), #sets number of rows in space to number of cols in data frame x
+      mar=c(1,0,0,0), #sets margin size for the figures
+      oma=c(1,2,1,1)) #sets outer margin
+  
+  for (i in 1:ncol(x)){ # setup for statement to loop over all elements in a list or vector
+    
+    if (sum(x[1:(nrow(x)-1),i])==0){ # paint in white empty rows
+      plot(x[,i], #use col data, not rows from data frame x
+           col="white",lwd=4, #color the line and adjust width
+           axes=F,ylab="",xlab="",main="",type="l"); #suppress axes lines, set as line plot
+      
+      axis(2,yaxp=c(min(x[,i],na.rm = TRUE),max(x[,i],na.rm = TRUE),2),col="white",tcl=0,labels=FALSE)  #y-axis: put a 2nd white axis line over the 1st y-axis to make it invisible
+      ymin<-min(x[,i],na.rm = TRUE); tmin<-which.min(x[,i]);ymax<-max(x[,i], na.rm = TRUE);tmax<-which.max(x[,i]);
+      points(x=c(tmin,tmax),y=c(ymin,ymax),pch=19,col=c("white","white"),cex=5) # add coloured points at max and min# 
+    } else {
+      plot(x[,i], #use col data, not rows from data frame x
+           col="darkgrey",lwd=4, #color the line and adjust width
+           axes=F,ylab="",xlab="",main="",type="l"); #suppress axes lines, set as line plot
+      
+      axis(2,yaxp=c(min(x[,i],na.rm = TRUE),max(x[,i],na.rm = TRUE),2),col="white",tcl=0,labels=FALSE)  #y-axis: put a 2nd white axis line over the 1st y-axis to make it invisible
+      ymin<-min(x[,i],na.rm = TRUE); tmin<-which.min(x[,i]);ymax<-max(x[,i], na.rm = TRUE);tmax<-which.max(x[,i]); # 
+      points(x=c(tmin,tmax),y=c(ymin,ymax),pch=19,col=c("red","green"),cex=5) # add coloured points at max and min
+    }
+  }
+}
+createSparklines_Split(couName,"table2invest")
+
+
+## ---- createSparklines_trade ----
+createSparklines_Split <- function(couName,table){      
+  
+  cou <- .getCountryCode(couName)
+  ## Examples like Edward Tufte's sparklines:
+  
+  tableKeys <- unique(filter(TCMN_data, Subsection==table)[,c("Key","IndicatorShort")])
+  data <- filter(TCMN_data, CountryCode==cou, Subsection==table)
+  data <- merge(tableKeys,select(data,-IndicatorShort),by="Key",all.x=TRUE)
+  # keep the latest period (excluding projections further than 2 years)
+  data <- mutate(data, Period = ifelse(is.na(Period),max(as.numeric(Period),na.rm=TRUE),Period))
+  data <- filter(data, Period <= (as.numeric(thisYear) + 1), Period > (as.numeric(thisYear) - 14))
+  #data <- filter(data, !is.na(Observation)) # remove NAs rows
+  # keep relevant columns
+  data <- select(data, Key, Period, Observation)
+  data <- arrange(data, Key, Period)
+  
+  x <- spread(data, Key, Observation)
+  x <- x[,-1] # don't need Period column anymore
+  
+  # impute NAs and standardize so all sparklines are scales
+  for (i in 1:ncol(x)){ # setup for statement to loop over all elements in a list or vector
+    
+    x[is.na(x[,i]),i] <- mean(x[,i],na.rm = TRUE)  #impute NAs to the mean of the column
+    if (sum(x[,i],na.rm = TRUE)==0){ 
+      x[,i] <- 0
+      #x[1,i] <- -10
+      x[nrow(x),i] <- 10
+    }
+  }
+  #x <- scale(x) # standardize x
+  
+  par(mfrow=c(ncol(x)+2,1), #sets number of rows in space to number of cols in data frame x
+      mar=c(1,0,0,0), #sets margin size for the figures
+      oma=c(1,2,1,1)) #sets outer margin
+  
+  for (i in 1:ncol(x)){ # setup for statement to loop over all elements in a list or vector
+    
+    if (sum(x[1:(nrow(x)-1),i])==0){ # paint in white empty rows
+      plot(x[,i], #use col data, not rows from data frame x
+           col="white",lwd=4, #color the line and adjust width
+           axes=F,ylab="",xlab="",main="",type="l"); #suppress axes lines, set as line plot
+      
+      axis(2,yaxp=c(min(x[,i],na.rm = TRUE),max(x[,i],na.rm = TRUE),2),col="white",tcl=0,labels=FALSE)  #y-axis: put a 2nd white axis line over the 1st y-axis to make it invisible
+      ymin<-min(x[,i],na.rm = TRUE); tmin<-which.min(x[,i]);ymax<-max(x[,i], na.rm = TRUE);tmax<-which.max(x[,i]);
+      points(x=c(tmin,tmax),y=c(ymin,ymax),pch=19,col=c("white","white"),cex=5) # add coloured points at max and min# 
+    } else {
+      plot(x[,i], #use col data, not rows from data frame x
+           col="darkgrey",lwd=4, #color the line and adjust width
+           axes=F,ylab="",xlab="",main="",type="l"); #suppress axes lines, set as line plot
+      
+      axis(2,yaxp=c(min(x[,i],na.rm = TRUE),max(x[,i],na.rm = TRUE),2),col="white",tcl=0,labels=FALSE)  #y-axis: put a 2nd white axis line over the 1st y-axis to make it invisible
+      ymin<-min(x[,i],na.rm = TRUE); tmin<-which.min(x[,i]);ymax<-max(x[,i], na.rm = TRUE);tmax<-which.max(x[,i]); # 
+      points(x=c(tmin,tmax),y=c(ymin,ymax),pch=19,col=c("red","green"),cex=5) # add coloured points at max and min
+    }
+  }
+}
+createSparklines_Split(couName,"table2trade")
+
 ## ---- ESTable ----
 ESTable <- function(couName){      
   
   cou <- .getCountryCode(couName)
-  
-  couRegion <- as.character(countries[countries$CountryCodeISO3==cou,]$RegionCodeES)  # obtain the region for the selected country
-  data <- filter(TCMN_data, CountryCode %in% c(cou,couRegion, "RWe") & Subsection=="table3") #select country, region and world
-  
-  # country, Region, World descriptors
-  country <- as.character(countries[countries$CountryCodeISO3==cou,]$Country)
-  region <- as.character(countries[countries$CountryCodeISO3==cou,]$Region) 
-  world <- "All Countries"
-  
-  neighbors <- data.frame(CountryCode=c(cou,couRegion,"RWe"),colName=c(country,region,world), stringsAsFactors = FALSE)
-  
-  # keep the latest period (excluding projections further than 2 years)
-  data <- filter(data, Period <= (as.numeric(thisYear) + 1))
-  # remove NAs rows
-  data <- filter(data, !is.na(Observation))
-  
-  # prepare for table
-  data <- merge(data, neighbors, by="CountryCode")
-  data <- select(data, IndicatorShort, Observation, colName)
-  data <- spread(data, colName, Observation)
-  data <- data[,c(1,4,3,2)]# reorder columns
-  names(data)[1] <-""
-  
-  # I have to add a dummy column so the alignment works (align)
-  data$dummy <- rep("",nrow(data))
-  names(data)[ncol(data)] <-""
-  
-  # substitute NAs for "---" em-dash
-  data[is.na(data)] <- "---"
+  data <- filter(TCMN_data, CountryCode==cou & Subsection=="table3") #select country, region and world
+  if (nrow(data[data$CountryCode==cou,])>0){
+    
+    couRegion <- as.character(countries[countries$CountryCodeISO3==cou,]$RegionCodeES)  # obtain the region for the selected country
+    data <- filter(TCMN_data, CountryCode %in% c(cou,couRegion, "RWe") & Subsection=="table3") #select country, region and world
+    
+    # country, Region, World descriptors
+    country <- as.character(countries[countries$CountryCodeISO3==cou,]$Country)
+    region <- as.character(countries[countries$CountryCodeISO3==cou,]$Region) 
+    world <- "All Countries"
+    
+    neighbors <- data.frame(CountryCode=c(cou,couRegion,"RWe"),colName=c(country,region,world), stringsAsFactors = FALSE)
+    
+    # keep the latest period (excluding projections further than 2 years)
+    data <- filter(data, Period <= (as.numeric(thisYear) + 1))
+    # remove NAs rows
+    data <- filter(data, !is.na(Observation))
+    
+    # prepare for table
+    data <- merge(data, neighbors, by="CountryCode")
+    data <- select(data, IndicatorShort, Observation, colName)
+    data <- spread(data, colName, Observation)
+    data <- data[,c(1,4,3,2)]# reorder columns
+    names(data)[1] <-""
+    
+    # I have to add a dummy column so the alignment works (align)
+    data$dummy <- rep("",nrow(data))
+    names(data)[ncol(data)] <-""
+    
+    # substitute NAs for "---" em-dash
+    data[is.na(data)] <- "---"
+  } else{
+    
+    data[!is.na(data)] <- ""
+  } 
   
   data.table <- xtable(data)
   align(data.table) <- c('l','l',rep('r',(ncol(data)-2)),'l')
@@ -617,35 +1050,39 @@ ESTable(couName)
 PolicyTable <- function(couName){      
   
   cou <- .getCountryCode(couName)
-  
   data <- filter(TCMN_data, CountryCode == cou, Subsection=="table4") #select country, region and world
+  if (nrow(data[data$CountryCode==cou,])>0){
   
-  # prepare for table
-  data <- select(data, IndicatorShort, Period, Observation)
-  # format numbers
-  data$Observation <- format(data$Observation, digits=0, decimal.mark=".",
-                             big.mark=",",small.mark=".", small.interval=3)
-  
-  data$Observation <- as.numeric(data$Observation)
-  data <- spread(data, Period, Observation)
-  
-  
-  # calculate difference in Rank
-  data$ChangeRank <- data[,2] - data[,3]
-  
-  # red for negative, green for positive changes
-  data <- mutate(data, ChangeRank = ifelse(ChangeRank<0, paste0("\\color{red}{\\Large",ChangeRank,"}"),
-                                           ifelse(ChangeRank>0, paste0("\\color{green}{\\Large",ChangeRank,"}"),ChangeRank)))
-  
-  names(data) <- c("",paste("DB",names(data)[2],"Rank"),paste("DB",names(data)[3],"Rank"),"Change in Rank")
-  
-  # I have to add a dummy column so the alignment works (align)
-  data$dummy <- rep("",nrow(data))
-  names(data)[ncol(data)] <-""
-  
-  # substitute NAs for "---" em-dash
-  data[is.na(data)] <- "---"
-  
+    # prepare for table
+    data <- select(data, IndicatorShort, Period, Observation)
+    # format numbers
+    data$Observation <- format(data$Observation, digits=0, decimal.mark=".",
+                               big.mark=",",small.mark=".", small.interval=3)
+    
+    data$Observation <- as.numeric(data$Observation)
+    data <- spread(data, Period, Observation)
+    
+    
+    # calculate difference in Rank
+    data$ChangeRank <- data[,2] - data[,3]
+    
+    # red for negative, green for positive changes
+    data <- mutate(data, ChangeRank = ifelse(ChangeRank<0, paste0("\\color{red}{\\Large",ChangeRank,"}"),
+                                             ifelse(ChangeRank>0, paste0("\\color{green}{\\Large",ChangeRank,"}"),ChangeRank)))
+    
+    names(data) <- c("",paste("DB",names(data)[2],"Rank"),paste("DB",names(data)[3],"Rank"),"Change in Rank")
+    
+    # I have to add a dummy column so the alignment works (align)
+    data$dummy <- rep("",nrow(data))
+    names(data)[ncol(data)] <-""
+    
+    # substitute NAs for "---" em-dash
+    data[is.na(data)] <- "---"
+  } else{
+    
+    data[!is.na(data)] <- ""
+  }   
+    
   data.table <- xtable(data, digits=rep(0,ncol(data)+1)) #control decimals
   align(data.table) <- c('l','l',rep('r',(ncol(data)-2)),'r')
   print(data.table, include.rownames=FALSE,include.colnames=TRUE, floating=FALSE, 
@@ -660,33 +1097,37 @@ PolicyTable(couName)
 PolicyFacilTable <- function(couName){      
   
   cou <- .getCountryCode(couName)
-  
   data <- filter(TCMN_data, CountryCode == cou, Subsection=="table5") #select country, region and world
   
+  if (nrow(data[data$CountryCode==cou,])>0){    
   # prepare for table
-  data <- select(data, Key, IndicatorShort, Period, Observation)
-  # format numbers
-  data$Observation <- format(data$Observation, digits=2, decimal.mark=".",
-                             big.mark=",",small.mark=".", small.interval=3)
-  
-  data$Observation <- as.numeric(data$Observation)
-  data <- filter(data, Period %in% c(min(Period),max(Period)))
-  
-  for (i in 1:nrow(data)){
+    data <- select(data, Key, IndicatorShort, Period, Observation)
+    # format numbers
+    data$Observation <- format(data$Observation, digits=2, decimal.mark=".",
+                               big.mark=",",small.mark=".", small.interval=3)
     
-    data$IndicatorShort[i] <- ifelse(!is.na(merge(data,TCMN_indic[TCMN_indic$Subsection=="table5",], by="Key")$Note[i]),
-                                     paste0(data$IndicatorShort[i]," \\large{[", merge(data,TCMN_indic[TCMN_indic$Subsection=="table5",], by="Key")$Note[i],"]}"),
-                                     data$IndicatorShort[i])  
+    data$Observation <- as.numeric(data$Observation)
+    data <- filter(data, Period %in% c(min(Period),max(Period)))
+    
+    for (i in 1:nrow(data)){
+      
+      data$IndicatorShort[i] <- ifelse(!is.na(merge(data,TCMN_indic[TCMN_indic$Subsection=="table5",], by="Key")$Note[i]),
+                                       paste0(data$IndicatorShort[i]," \\large{[", merge(data,TCMN_indic[TCMN_indic$Subsection=="table5",], by="Key")$Note[i],"]}"),
+                                       data$IndicatorShort[i])  
+    }
+    
+    # escape ampersands
+    data$IndicatorShort <- gsub("%", "\\%", data$IndicatorShort, fixed=TRUE)
+    
+    data <- select(data, -Key)
+    data <- spread(data, Period, Observation)
+    
+    names(data)[1] <- ""
+  } else{
+    
+    data[!is.na(data)] <- ""
   }
-  
-  # escape ampersands
-  data$IndicatorShort <- gsub("%", "\\%", data$IndicatorShort, fixed=TRUE)
-  
-  data <- select(data, -Key)
-  data <- spread(data, Period, Observation)
-  
-  names(data)[1] <- ""
-  
+    
   # I have to add a dummy column so the alignment works (align)
   data$dummy <- rep("",nrow(data))
   names(data)[ncol(data)] <-""
