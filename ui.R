@@ -73,6 +73,8 @@ tagList(
 #              
              #### PAGE: Macro ####
              tabPanel(title = "Data Categories", icon = icon("stats", lib = "glyphicon"),
+                  conditionalPanel( # hide side menu if no country has been selected
+                      condition="output.hideHomePanel!='Select a country'",
                       navlistPanel(
                         #### TCMN home ####
                         tabPanel("T&C Monitoring note and Operations",
@@ -138,6 +140,7 @@ tagList(
                                  source(file.path("ui_files", "privateSector.R"), local = TRUE)$value
                         )
                       ) # End navlistPanel
+                    ) # end conditionalPanel
              ), # End Macro
              #### PAGE: Projects Portfolio ####
              tabPanel(title = "Operations",icon = icon("folder-open", lib = "glyphicon"),

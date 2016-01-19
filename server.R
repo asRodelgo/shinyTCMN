@@ -42,6 +42,9 @@ function(input, output, session) {
   output$outCouSel2 <- renderText(input$inCouSel2)
   #output$outCouSelLPI <- renderText(input$inCouSelLPI)
   output$outRegSel <- renderText({.getRegion(input$inCouSel)})
+  
+  output$hideHomePanel <- reactive({input$inCouSel}) # condition to hide home panel
+  outputOptions(output, "hideHomePanel", suspendWhenHidden=FALSE) # add this line to make it work
  
   # Home button !! not working globally !! --------------
   observeEvent(input$country_go, {
