@@ -35,7 +35,7 @@ tagList(
       #column(2, h5("Explore by country:")),
       column(4, h3("Trade and Competitiveness Monitoring Note and Operations", style="color:#3399ff")),
       column(3,h5("Select a country:"),
-             selectInput('inCouSel', NULL, choices=c("Select a country",countryNames$Country), selected = 'Select a country', selectize=FALSE)),
+             selectInput('inCouSel', NULL, choices=c("Select a country",countryNames$Country), selected = 'Afghanistan', selectize=FALSE)),
       column(2, div(uiOutput('outFlag'), class = "flag")),
       column(3, h5("Download PDF files for the selected country:"),
              downloadButton('downloadReportHome', 'Data report'),

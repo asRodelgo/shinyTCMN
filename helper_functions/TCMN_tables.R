@@ -211,6 +211,7 @@
   } else{
     
     data[!is.na(data)] <- ""
+    
   } 
   
   return(data)
@@ -385,6 +386,7 @@
     data[is.na(data)] <- "---"
   } else{
     
+    data <- data[,3:5]  
     data[!is.na(data)] <- ""
   } 
 
@@ -426,6 +428,7 @@
 
 } else{
   
+  data <- data[,3:5]  
   data[!is.na(data)] <- ""
 } 
       
@@ -480,10 +483,12 @@
     data[is.na(data)] <- "---"
     names(data)[1] <- "Sector"
     
-    return(data)
+  } else{
     
-  } else {
-    plot(c(1,1),type="n", frame.plot = FALSE, axes=FALSE, ann=FALSE)
-    graphics::text(1.5, 1,"Data not available", col="red", cex=2)
-  }
+    data <- data[,1:6]  
+    data[!is.na(data)] <- ""
+  } 
+  
+  return(data)
+  
 }
