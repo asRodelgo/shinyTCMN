@@ -1,6 +1,5 @@
 # prepare TCMN data for tSNE -----------------------------------------
-.tSNE_compute <- function(couName, num_iter, max_num_neighbors, period){
-
+.tSNE_prepare <- function(period){
   ### read the data
   TCMN_data <- as.data.frame(TCMN_data, stringsAsFactors=FALSE)
   TCMN_data <- filter(TCMN_data, Period == period)# filter by period
@@ -39,8 +38,17 @@
     
     TCMN_data[is.na(TCMN_data[,i]),i] <- mean(as.numeric(TCMN_data[,i]), na.rm = TRUE) * rnorm(length(TCMN_data[is.na(TCMN_data[,i]),i]),1,0.1)
   }
-
+  
   TCMN_data_tsne <- TCMN_data
+  
+  return(TCMN_data_tsne)
+}
+
+
+
+.tSNE_compute <- function(couName, num_iter, max_num_neighbors, period){
+
+  TCMN_data_tsne <- .tSNE_prepare(period)
   
   set.seed(456) # reproducitility
   tSNE_points <- tsne(TCMN_data_tsne[,-c(1,ncol(TCMN_data_tsne)-1,ncol(TCMN_data_tsne))], 
@@ -53,8 +61,9 @@
 }
 
 # compute colors for regions
-.getColors <- function(){
+.getColors <- function(period){
 
+  TCMN_data_tsne <- .tSNE_prepare(period)
   colors <- rainbow(length(unique(TCMN_data_tsne$Region)))
   names(colors) <- unique(TCMN_data_tsne$Region)
   return(colors)
@@ -73,15 +82,17 @@
 # tsne chart ---------------------------------------------------------
 .tSNE_plot <- function(couName, num_iter, max_num_neighbors, period){
   
+  TCMN_data_tsne <- .tSNE_prepare(period)
   tsne_points <- .tSNE_compute(couName, num_iter, max_num_neighbors, period)
   
   plot(tsne_points,t='n', axes=FALSE, frame.plot = FALSE, xlab = "",ylab = ""); 
-  graphics::text(tsne_points,labels=as.character(TCMN_data_tsne$Country), col=.getColors()[as.character(TCMN_data_tsne$Region)])
+  graphics::text(tsne_points,labels=as.character(TCMN_data_tsne$Country), col=.getColors(period)[as.character(TCMN_data_tsne$Region)])
 }
 
 # tsne dist ---------------------------------------------------------
 .tSNE_dist <- function(couName, num_iter, max_num_neighbors, period){
   
+  TCMN_data_tsne <- .tSNE_prepare(period)
   tsne_points <- .tSNE_compute(couName, num_iter, max_num_neighbors, period)
   
   # calculate the euclidean distance between the selected country and the rest
@@ -175,6 +186,7 @@
 # Hexamap chart ---------------------------------------------------------
 .hexamaps <- function(couName, num_iter, max_num_neighbors, period, fact){
   
+  TCMN_data_tsne <- .tSNE_prepare(period)
   # distances from tSNE
   dist_mat <- .tSNE_dist(couName, num_iter, max_num_neighbors, period)
   
