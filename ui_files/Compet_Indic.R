@@ -11,8 +11,8 @@ fluidRow(
                  href = TCMN_sources[TCMN_sources$Source=="WEF_GCREP",]$url)),
     column(3,selectInput('inCouSel2', 'Compare with:', choices=c("Select a country",countryNames$Country),selectize=FALSE)),
     column(3, br(), img(src = "darkbluedot.png", width="20") ,h4(textOutput('outCouSel'))),
-    column(3, br(),img(src = "reddot.png", width="20") ,h4(textOutput('outRegSel'))),
-    column(3, br(), img(src = "greendot.png", width="20") ,h4(textOutput('outCouSel2')))
+    column(3, br(),img(src = "reddot.png", width="20"), h4(textOutput('outRegSel'))),
+    column(3, br(), img(src = "greendot.png", width="20"), h4(textOutput('outCouSel2')))
   ),
   column(12, plotOutput('compet_Indic'))
 )

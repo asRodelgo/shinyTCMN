@@ -5,8 +5,8 @@ fluidRow(
               href = TCMN_sources[TCMN_sources$Source=="WDI",]$url)),
          radioButtons('inNeighbor', "Select Country Group to compare:",
                         c("Top performers in region" = "topRegion",
-                          "Highest income countries" = "topIncome"
-                          ), selected = "topRegion", inline = TRUE)
+                          "Top performers in income region" = "topIncome"
+                          ), selected = "topIncome", inline = TRUE)
   ),
   column(12, plotOutput('WGI'))
 )

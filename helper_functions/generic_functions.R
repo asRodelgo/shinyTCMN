@@ -19,7 +19,7 @@
 .getRegion <- function(couName){
   
   cou <- .getCountryCode(couName)
-  region <- as.character(countries[countries$CountryCodeISO3==cou,]$RegionShort) 
+  region <- as.character(countries[countries$CountryCodeISO3==cou,]$RegionShortIncome) 
 }
 
 .getCountryCode <- function(couName){

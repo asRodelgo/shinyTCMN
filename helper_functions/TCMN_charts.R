@@ -123,41 +123,27 @@
   if (neighbor=="topRegion"){ # only same region countries
     couRegion <- countries[countries$CountryCodeISO3==cou,]$RegionCodeALL  # obtain the region for the selected country
     neighbors <- countries[countries$RegionCodeALL==couRegion,]$CountryCodeISO3 # retrieve all countries in that region
-    neighbors <- as.character(neighbors[!(neighbors==cou)]) # exclude the selected country
-    data <- filter(TCMN_data, CountryCode %in% c(cou,neighbors), Subsection=="chart6")
-    
-    data <- merge(data, countries[,c("Country","CountryCodeISO3")], by.x="CountryCode", by.y="CountryCodeISO3") # add country name
-    data <- filter(data, Period == max(Period))
-    # select top 4 countries from the neighborhood based on their income level
-    income <- filter(TCMN_data, CountryCode %in% neighbors, Subsection=="table2head", Key=="M03")
-    income <- filter(income, Period == thisYear)
-    
-    topNeighbors <- head(arrange(income, desc(Observation)),4)$CountryCode
-    data <- filter(data, CountryCode %in% c(cou,neighbors))
-    
-    # order the factors
-    data$Country = factor(as.character(data$Country), 
-                          levels = c(unique(as.character(data[data$CountryCode==cou,]$Country)), 
-                                     as.character(unique(data[data$CountryCode %in% topNeighbors,]$Country))))
-    
-  } else { # all countries
-    data <- filter(TCMN_data, Subsection=="chart6") 
-    
-    data <- merge(data, countries[,c("Country","CountryCodeISO3")], by.x="CountryCode", by.y="CountryCodeISO3") # add country name
-    data <- filter(data, Period == max(Period))
-    # select top 4 countries from the neighborhood based on their income level
-    income <- filter(TCMN_data, Subsection=="table2head", Key=="M03")
-    income <- filter(income, Period == thisYear)
-    
-    topNeighbors <- head(arrange(income, desc(Observation)),4)$CountryCode
-    data <- filter(data, CountryCode %in% c(cou,topNeighbors))
-    
-    # order the factors
-    data$Country = factor(as.character(data$Country), 
-                          levels = c(unique(as.character(data[data$CountryCode==cou,]$Country)), 
-                                     as.character(unique(data[data$CountryCode %in% topNeighbors,]$Country))))
-  }
+  } else { # Countries in same income group
+    couRegion <- countries[countries$CountryCodeISO3==cou,]$RegionCodeByIncome  # obtain the region for the selected country
+    neighbors <- countries[countries$RegionCodeByIncome==couRegion,]$CountryCodeISO3 # retrieve all countries in that region
+  }  
+  neighbors <- as.character(neighbors[!(neighbors==cou)]) # exclude the selected country
+  data <- filter(TCMN_data, CountryCode %in% c(cou,neighbors), Subsection=="chart6")
   
+  data <- merge(data, countries[,c("Country","CountryCodeISO3")], by.x="CountryCode", by.y="CountryCodeISO3") # add country name
+  data <- filter(data, Period == max(Period))
+  # select top 4 countries from the neighborhood based on their income level
+  income <- filter(TCMN_data, CountryCode %in% neighbors, Subsection=="table2head", Key=="M03")
+  income <- filter(income, Period == thisYear)
+  
+  topNeighbors <- head(arrange(as.data.frame(income), desc(Observation)),4)$CountryCode
+  data <- filter(data, CountryCode %in% c(cou,neighbors))
+  
+  # order the factors
+  data$Country = factor(as.character(data$Country), 
+                        levels = c(unique(as.character(data[data$CountryCode==cou,]$Country)), 
+                                   as.character(unique(data[data$CountryCode %in% topNeighbors,]$Country))))
+
   if (nrow(filter(data, CountryCode==cou))>0){
     
     ggplot(data, aes(x=Country,y=Observation,fill=Country)) +
@@ -226,14 +212,14 @@
   
   cou <- .getCountryCode(couName)
   cou2 <- .getCountryCode(couName2) # country to compare 
-  couRegion <- as.character(countries[countries$CountryCodeISO3==cou,]$RegionCodeALL)  # obtain the region for the selected country
-  neighbors <- countries[countries$RegionCodeALL==couRegion,]$CountryCodeISO3 # retrieve all countries in that region
+  couRegion <- countries[countries$CountryCodeISO3==cou,]$RegionCodeByIncome  # obtain the region for the selected country
+  neighbors <- countries[countries$RegionCodeByIncome==couRegion,]$CountryCodeISO3 # retrieve all countries in that region
   neighbors <- as.character(neighbors[!(neighbors==cou)]) # exclude the selected country
   
   # country and Region descriptors
   country <- couName
   country2 <- couName2
-  region <- as.character(countries[countries$CountryCodeISO3==cou,]$RegionShort) 
+  region <- as.character(countries[countries$CountryCodeISO3==cou,]$RegionShortIncome) 
   
   # filter the data
   data <- filter(TCMN_data, CountryCode %in% c(cou,neighbors), Subsection=="chart7")
