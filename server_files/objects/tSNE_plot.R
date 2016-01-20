@@ -24,7 +24,7 @@ output$tSNE_table <- renderDataTable({
   
   isolate({ # Use isolate() to avoid dependency on input values
     
-    tsneTable <- .tSNE_plot(input$inCouSel,input$inNumIter,input$maxNumNeigh,input$inPeriod)
+    tsneTable <- .tSNE_dist(input$inCouSel,input$inNumIter,input$maxNumNeigh,input$inPeriod)
     return(tsneTable)
     
   })

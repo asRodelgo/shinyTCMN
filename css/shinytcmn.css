@@ -196,7 +196,7 @@ color: white;
 
 
 #nav_toggle {
-  z-index: 20;
+  z-index: -20;
   display: none;/*block;*/
   vertical-align: top;
   margin: 20px;
