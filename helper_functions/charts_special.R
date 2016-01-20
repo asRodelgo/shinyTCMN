@@ -233,7 +233,7 @@
   # color hexagons by region
   #brk<-levels(as.factor(zz$region))
   #ncol<-length(brk)
-  colors <- .getColors()
+  colors <- .getColors(period)
   
   # 3. Plot hexamaps
   p <- ggplot(zz, aes(x, y, group=id)) +
