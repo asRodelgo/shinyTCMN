@@ -13,3 +13,27 @@ output$compet_Indic <- renderPlot({
   .WEFradar(input$inCouSel,input$inCouSel2)
   #})
 }, bg = "transparent")
+
+# download chart
+output$downGCI <- downloadHandler(
+  filename = function(){
+    paste0("CompetitivenessIndicators_",.getCountryCode(input$inCouSel),".png")
+  },
+  content = function(file){
+    png(file,width=700,height=700)
+    .WEFradar(input$inCouSel,input$inCouSel2)
+    dev.off()
+  }
+)
+# download data ----------------------------
+output$dataGCI <- downloadHandler(
+  filename = function() { 
+    paste0("CompetitivenessIndicators_",.getCountryCode(input$inCouSel),"_",.getCountryCode(input$inCouSel2),".csv")
+  },
+  content = function(file) {
+    #write.csv(.GVA_Table(input$inCouSel), file)
+    write.csv(TCMN_data[(TCMN_data$CountryCode %in% c(.getCountryCode(input$inCouSel),
+                                                      .getCountryCode(input$inCouSel2))) & 
+                          (TCMN_data$Subsection=="chart7"),], file, row.names = FALSE)
+  }
+)

@@ -13,3 +13,26 @@ output$WGI <- renderPlot({
   .WGIindicators(input$inCouSel,input$inNeighbor)
   #})
 }, bg = "transparent")
+
+# download chart
+output$downWGI <- downloadHandler(
+  filename = function(){
+    paste0("World_Governance_Indicators_",.getCountryCode(input$inCouSel),"_",input$inNeighbor,".png")
+  },
+  content = function(file){
+    png(file,width=800,height=600)
+    print(.WGIindicators(input$inCouSel,input$inNeighbor))
+    dev.off()
+  }
+)
+# download data ----------------------------
+output$dataWGI <- downloadHandler(
+  filename = function() { 
+    paste0("World_Governance_Indicators_",.getCountryCode(input$inCouSel),"_",input$inNeighbor,".csv")
+  },
+  content = function(file) {
+    #write.csv(.GVA_Table(input$inCouSel), file)
+    write.csv(TCMN_data[(TCMN_data$CountryCode==.getCountryCode(input$inCouSel)) & 
+                          (TCMN_data$Subsection=="chart6"),], file, row.names = FALSE)
+  }
+)

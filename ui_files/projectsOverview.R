@@ -12,6 +12,7 @@ fluidRow(
   column(9,  dateRangeInput('projectDateRange',
                             label = 'Select date range (yyyy-mm-dd)',
                             start = Sys.Date() - 1000, end = Sys.Date()),
+         h6("Download:",downloadLink("dataOperStatus","Data")),
          h4("Financing", style="color:#3399ff"),
          dataTableOutput('projectsTableFinancing'),
          br(),

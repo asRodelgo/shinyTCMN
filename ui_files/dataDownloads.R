@@ -1,0 +1,12 @@
+column(12,h5("Bulk download data for all countries:"),
+downloadLink('bulkDownload', 'TCMN dataset'),
+h5("Download Products Imports for all countries:"),
+downloadLink('mWitsDownload', 'WITS imports'),
+h5("Download Products Exports for all countries:"),
+downloadLink('xWitsDownload', 'WITS exports'),
+h5("Download list of indicators:"),
+downloadLink('indicatorsDownload', 'TCMN indicators'),
+h5("Download IBRD T&C operations:"),
+downloadLink('projectsTCDownload', 'IBRD T&C operations'),
+h5("Download IFC operations:"),
+downloadLink('projectsIFCDownload', 'IFC operations'))

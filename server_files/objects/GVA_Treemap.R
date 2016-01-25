@@ -13,3 +13,26 @@ output$GVA_Treemap <- renderPlot({
   .GVA_Treemap(input$inCouSel)
   #})
 }, bg = "transparent")
+
+# download chart
+output$downGVA <- downloadHandler(
+  filename = function(){
+    paste0("GrossValueAdded_",.getCountryCode(input$inCouSel),".png")
+  },
+  content = function(file){
+    png(file)
+    .GVA_Treemap(input$inCouSel)
+    dev.off()
+  }
+)
+# download data ----------------------------
+output$dataGVA <- downloadHandler(
+  filename = function() { 
+    paste0("GrossValueAdded_",.getCountryCode(input$inCouSel),".csv")
+  },
+  content = function(file) {
+    #write.csv(.GVA_Table(input$inCouSel), file)
+    write.csv(TCMN_data[(TCMN_data$CountryCode==.getCountryCode(input$inCouSel)) & 
+                          (TCMN_data$Subsection=="chart2"),], file, row.names = FALSE)
+  }
+)

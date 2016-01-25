@@ -41,3 +41,17 @@ output$db_Table <- renderDataTable({
   }) # disable all the table fancy options  
 
 #output$tableSpark <- datatable(data.table(dat.t2), rownames = FALSE, options = list(columnDefs = cd, fnDrawCallback = cb))
+
+# download data ----------------------------
+output$dataDB <- downloadHandler(
+  filename = function() { 
+    paste0("DoingBusiness_",.getCountryCode(input$inCouSel),".csv")
+  },
+  content = function(file) {
+    #write.csv(.GVA_Table(input$inCouSel), file)
+    write.csv(TCMN_data[(TCMN_data$CountryCode ==.getCountryCode(input$inCouSel)) & 
+                          (TCMN_data$Subsection=="table4"),], file, row.names = FALSE)
+  }
+)
+
+

@@ -205,6 +205,69 @@
 
 #############
 
+.projectsStatusData <- function(couName, count_type, dateRange){
+  
+  cou <- .getCountryCode(couName)
+  couISO2 <- .getISO2(couName)
+  fromDate <- as.character(dateRange[[1]])
+  toDate <- as.character(dateRange[[2]])
+  
+  ### IBRD T&C projects -----------------
+  dataTC <- .filterTCProjects(couName)
+  dataTC <- select(dataTC, PROJ_ID, Prod_Line, Project_Status=PROJECT_STATUS_NME, 
+                   Approval_Date = BD_APPRVL_DATE, Project_Amount, ProjectOrder)
+  # filter by date range
+  dataTC <- filter(dataTC, (Approval_Date >= fromDate) & (Approval_Date <= toDate))
+  # remove duplicates
+  dataTC <- dataTC[!duplicated(dataTC$PROJ_ID),]
+  # arrange
+  dataTC <- arrange(as.data.frame(dataTC), desc(Prod_Line), ProjectOrder)
+  dataTC <- select(dataTC,-ProjectOrder,-Approval_Date) # drop ProjectOrder
+  
+  ### IFC projects ----------
+  dataIFC <- .filterIFCProjects(couName)
+  # keep relevant columns
+  dataIFC <- select(dataIFC, PROJ_ID, Prod_Line, Project_Name = PROJECT_NAME,
+                    Approval_Date = ASIP_APPROVAL_DATE, Project_Status, Project_Amount = TOTAL_FUNDS_MANAGED_BY_IFC,
+                    ProjectOrder)
+  # remove duplicates
+  dataIFC <- dataIFC[!duplicated(dataIFC$PROJ_ID),]
+  # filter by date range
+  dataIFC <- filter(dataIFC, (Approval_Date >= fromDate) & (Approval_Date <= toDate)) #select country
+  # make PROJ_ID character
+  dataIFC$PROJ_ID <- as.character(dataIFC$PROJ_ID)
+  # arrange
+  dataIFC <- arrange(as.data.frame(dataIFC), ProjectOrder)
+  dataIFC <- select(dataIFC,-ProjectOrder,-Project_Name, -Approval_Date) # drop ProjectOrder
+  
+  # Append both -----------------------
+  data <- rbind_list(dataTC, dataIFC)
+  
+  data[is.na(data)] <- "0"
+  # remove duplicates
+  data <- data[!duplicated(data$PROJ_ID),]
+  
+  data$Prod_Line <- as.character(data$Prod_Line)
+  data <- mutate(data, Prod_Line=ifelse(substr(Prod_Line,nchar(Prod_Line)-2,nchar(Prod_Line))=="IFC",
+                                        "ASA IFC","ASA IBRD"))
+  data$Prod_Line <- as.factor(data$Prod_Line)
+  
+  data <- data %>%
+    group_by(Prod_Line,Project_Status) %>%
+    mutate(totalAmount = sum(as.numeric(Project_Amount), na.rm=TRUE)/1000, 
+           countProjects = n_distinct(PROJ_ID)) %>%
+    select(-PROJ_ID,-Project_Amount)
+  data <- data[!duplicated(data),]
+  # format Amount
+  data$totalAmount <- format(data$totalAmount, digits=0, decimal.mark=".",
+                             big.mark=",",small.mark=".", small.interval=3)
+  
+  return(data)
+  
+}
+
+######################
+
 
 .projectsStatus <- function(couName, count_type, dateRange){
   

@@ -33,13 +33,14 @@ tagList(
     #),
     fluidRow(
       #column(2, h5("Explore by country:")),
-      column(4, h3("Trade and Competitiveness Monitoring Note and Operations", style="color:#3399ff")),
+      column(4, h3("Trade and Competitiveness Data and Operations Snapshots", style="color:#3399ff")),
       column(3,h5("Select a country:"),
              selectInput('inCouSel', NULL, choices=c("Select a country",countryNames$Country), selected = 'Afghanistan', selectize=FALSE)),
       column(2, div(uiOutput('outFlag'), class = "flag")),
-      column(3, h5("Download PDF files for the selected country:"),
-             downloadButton('downloadReportHome', 'Data report'),
-             downloadButton('downloadReportOperHome', 'Operations report'))
+      column(3, h5("Download a PDF report for the selected country:"),
+             downloadButton('downloadReportHome', 'Data'),
+             downloadButton('downloadReportOperHome', 'Operations'),
+             downloadButton('downloadReportFullHome', 'Full'))
       )
   ),
   # navbarPage(save_and_close, id = "nav", #title = NULL,
@@ -77,7 +78,7 @@ tagList(
                       condition="output.hideHomePanel!='Select a country'",
                       navlistPanel(
                         #### TCMN home ####
-                        tabPanel("T&C Monitoring note and Operations",
+                        tabPanel("T&C Snapshots",
                                  source(file.path("ui_files", "TC_Home.R"), local = TRUE)$value
                         ),
                         #### tables ####
@@ -104,15 +105,7 @@ tagList(
                                  )
                         ),
                         tabPanel("Doing Business",
-                                   h4("Doing Business Ranks"),
-                                   h6("Source: ",
-                                    a(TCMN_sources[TCMN_sources$Source=="DB",]$SourceDescription, 
-                                      href = TCMN_sources[TCMN_sources$Source=="DB",]$url)),
-                                   tags$style(HTML("
-                                                   .jqstooltip{
-                                                   box-sizing: content-box;
-                                                   }")), # adjust tooltips in datatables
-                                   dataTableOutput('db_Table')
+                                 source(file.path("ui_files", "dbTable.R"), local = TRUE)$value
                         ),
                         tabPanel("Competitiveness Indicators",
                                  source(file.path("ui_files", "Compet_Indic.R"), local = TRUE)$value
@@ -124,17 +117,7 @@ tagList(
                                  source(file.path("ui_files", "WGI.R"), local = TRUE)$value
                         ),
                         tabPanel("Trade Policy",
-                                 h4("Trade Policy Indicators"),
-                                 h6("Sources: ",
-                                    a(TCMN_sources[TCMN_sources$Source=="WITS_TARIFF",]$SourceDescription, 
-                                      href = TCMN_sources[TCMN_sources$Source=="WITS_TARIFF",]$url),"; ",
-                                    a(TCMN_sources[TCMN_sources$Source=="WTO",]$SourceDescription, 
-                                      href = TCMN_sources[TCMN_sources$Source=="WTO",]$url)),
-                                 tags$style(HTML("
-                                                 .jqstooltip{
-                                                 box-sizing: content-box;
-                                                 }")), # adjust tooltips in datatables
-                                 dataTableOutput('tradePolicy_Table')
+                                 source(file.path("ui_files", "tradePolicy.R"), local = TRUE)$value
                         ),
                         tabPanel("Private Sector's Views",
                                  source(file.path("ui_files", "privateSector.R"), local = TRUE)$value
@@ -187,25 +170,19 @@ tagList(
              tabPanel(title = "Downloads", icon = icon("file", lib = "glyphicon"),
                       #withMathJax(),
                       tabsetPanel(
-                        #### tables ####
+                        #### data downloads ####
                         tabPanel("Data downloads",
-                                 h5("Bulk download data for all countries:"),
-                                 downloadLink('bulkDownload', 'TCMN dataset'),
-                                 h5("Download Products Imports for all countries:"),
-                                 downloadLink('mWitsDownload', 'WITS imports'),
-                                 h5("Download Products Exports for all countries:"),
-                                 downloadLink('xWitsDownload', 'WITS exports'),
-                                 h5("Download list of indicators:"),
-                                 downloadLink('indicatorsDownload', 'TCMN indicators'),
-                                 h5("Download IBRD T&C operations:"),
-                                 downloadLink('projectsTCDownload', 'IBRD T&C operations'),
-                                 h5("Download IFC operations:"),
-                                 downloadLink('projectsIFCDownload', 'IFC operations')
+                                 source(file.path("ui_files", "dataDownloads.R"), local = TRUE)$value  
                         ),
-                        #### charts ####
+                        #### Report downloads ####
                         tabPanel("PDF Country Report",
-                                 h5("Download full TCMN report for the selected country"),
-                                 downloadButton('downloadReport', 'PDF report')
+                                 h4("Available reports for the selected country:"),br(),
+                                 h5("Full T&C data and operations snapshots (4 pages)"),
+                                 downloadButton('downloadReportFull', 'PDF full report'),br(),
+                                 h5("T&C data snapshots (2 pages)"),
+                                 downloadButton('downloadReportData', 'PDF data report'),br(),
+                                 h5("T&C operations snapshots (2 pages)"),
+                                 downloadButton('downloadReportOperations', 'PDF operations report')
                                  
                         )         
                       ) # End tabsetPanel

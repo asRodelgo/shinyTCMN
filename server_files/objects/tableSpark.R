@@ -163,6 +163,17 @@ output$tableSpark_Split_trade <- renderDataTable({
   
 }) 
 
+# download data ----------------------------
+output$dataMacro <- downloadHandler(
+  filename = function() { 
+    paste0("Macro_Indicators_",.getCountryCode(input$inCouSel),".csv")
+  },
+  content = function(file) {
+    #write.csv(.GVA_Table(input$inCouSel), file)
+    write.csv(TCMN_data[(TCMN_data$CountryCode==.getCountryCode(input$inCouSel)) & 
+                          (substr(TCMN_data$Subsection,1,6)=="table2"),], file, row.names = FALSE)
+  }
+)
 
 
 

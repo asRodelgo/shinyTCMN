@@ -14,6 +14,28 @@ output$sectorsTreemap <- renderPlot({
   #})
 }, bg = "transparent")
 
+# download chart
+output$downOperSec <- downloadHandler(
+  filename = function(){
+    paste0("Operations_Sectors_",.getCountryCode(input$inCouSel),".png")
+  },
+  content = function(file){
+    png(file)
+    .projectsTreemap(input$inCouSel,"sector")
+    dev.off()
+  }
+)
+# download data ----------------------------
+output$dataOperSec <- downloadHandler(
+  filename = function() { 
+    paste0("Operations_Sectors_",.getCountryCode(input$inCouSel),".csv")
+  },
+  content = function(file) {
+    #write.csv(.GVA_Table(input$inCouSel), file)
+    write.csv(.projectsSectors(input$inCouSel), file, row.names = FALSE)
+  }
+)
+
 # themes treemap ----------------------------------------------------
 themesTreemap <- reactive({
   #validate(need(input$inCouSel, message = "Loading..."))
@@ -29,6 +51,28 @@ output$themesTreemap <- renderPlot({
   .projectsTreemap(input$inCouSel,"theme")
   #})
 }, bg = "transparent")
+
+# download chart
+output$downOperThem <- downloadHandler(
+  filename = function(){
+    paste0("Operations_Themes_",.getCountryCode(input$inCouSel),".png")
+  },
+  content = function(file){
+    png(file)
+    .projectsTreemap(input$inCouSel,"theme")
+    dev.off()
+  }
+)
+# download data ----------------------------
+output$dataOperThem <- downloadHandler(
+  filename = function() { 
+    paste0("Operations_Themes_",.getCountryCode(input$inCouSel),".csv")
+  },
+  content = function(file) {
+    #write.csv(.GVA_Table(input$inCouSel), file)
+    write.csv(.projectsThemes(input$inCouSel), file, row.names = FALSE)
+  }
+)
 
 # sectors table ----------------------------
 output$sectorsTable <- DT::renderDataTable({

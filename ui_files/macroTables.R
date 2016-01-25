@@ -11,6 +11,7 @@ fluidPage(
               href = TCMN_sources[TCMN_sources$Source=="UNCTADSTAT",]$url),"; ",
               a(TCMN_sources[TCMN_sources$Source=="WEO",]$SourceDescription, 
               href = TCMN_sources[TCMN_sources$Source=="WEO",]$url)),
+         h6("Download: ",downloadLink("dataMacro","Data")),
             tags$style(HTML("
                 .jqstooltip{
                 box-sizing: content-box;

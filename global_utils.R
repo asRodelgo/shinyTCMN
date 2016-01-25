@@ -204,143 +204,143 @@ suppress_and_print <- function(x) {
 
 # update parameter selection for multi-parameter plots --------------------
 # update with regex
-.test_valid_regex <- function(pattern) {
-  trygrep <- try(grep(pattern, ""), silent = TRUE)
-  if (inherits(trygrep, "try-error")) FALSE else TRUE
-}
-.update_params_with_regex <- function(params, all_param_names, regex_pattern) {
-  sel <- which(all_param_names %in% params)
-  to_search <- if (length(sel)) all_param_names[-sel] else all_param_names
-  if (!length(regex_pattern)) return(params)
-  to_add <- grep(regex_pattern, to_search, value = TRUE)
-  if (!length(to_add)) params else c(params, to_add)
-}
-
-# update with groups
-.update_params_with_groups <- function(params, all_param_names) {
-  as_group <- grep("_as_shinystan_group", params)
-  if (!length(as_group)) return(params)
-  make_group <- function(group_name) {
-    all_param_names[grep(paste0("^",group_name,"\\["), all_param_names)]
-  }
-  single_params <- params[-as_group]
-  grouped_params <- params[as_group]
-  groups <- gsub("_as_shinystan_group", "", grouped_params)
-  groups <- sapply(groups, make_group)
-  c(single_params, unlist(groups))
-}
-
-
-# generate color vectors --------------------------------------------------
-color_vector <- function(n) {
-  hues = seq(15, 375, length = n + 1)
-  hcl(h=hues, l=50, c=50)[1:n]
-}
-color_vector_chain <- function(n) {
-  hues = seq(15, 375, length = n + 1)
-  hcl(h=hues, l=80, c=50)[1:n]
-}
-
-alpha_calc_pt <- function(N) {
-  if (N <= 100) return(1)
-  else if (N <= 200) return(0.75)
-  else if (N >= 1500) return(0.15) 
-  else 1 - pnorm(N/1500)
-}
-
-alpha_calc_lines <- function(N) {
-  if (N < 50) return(0.5)
-  if (N < 500) return(0.4)
-  if (N < 1000) return(0.3)
-  if (N < 5000) return(0.2)
-  else return(0.1)
-}
-
-# transformations ---------------------------------------------------------
-transformation_choices <- 
-  c("abs", "atanh", cauchit = "pcauchy", "cloglog",
-    "exp", "expm1", "identity", "inverse", inv_logit = "plogis", 
-    "log", "log", "log10", "log2", "log1p", logit = "qlogis", 
-    probit = "pnorm", "square", "sqrt")
-
-inverse <- function(x) 1/x
-cloglog <- function(x) log(-log1p(-x))
-square <- function(x) x^2
-
-transformation_selectInput <- function(id) {
-  selectInput(id, label = NULL, 
-              choices = transformation_choices,
-              selected = "identity")
-}
-
-transform_helpText <- function(var = "x") {
-  div(
-    if (var == "x") 
-      helpText(style = "font-size: 13px;", 
-               "To apply a transformation",
-               "select a function and click", 
-               code("Transform"))
-    else if (var == "x,y")
-      helpText(style = "font-size: 13px;", 
-               "To apply transformations",
-               "select a function for x and/or y", 
-               "and click", code("Transform"))
-    else 
-      helpText(style = "font-size: 13px;", 
-               "To apply transformations",
-               "select a function for x, y, and/or z", 
-               "and click", code("Transform"))
-  )
-}
-
-
-
-# extra distributions for density comparisons -----------------------------
-# t distribution with location and scale
-.dt_loc_scale <- function(x, df, location, scale) {
-  1/scale * dt((x - location)/scale, df)
-}
-# inverse gamma distribution
-.dinversegamma <- function(x, shape, scale) {
-  logout <- log(scale)*shape - lgamma(shape) - (1+shape)*log(x) - (scale/x)
-  exp(logout)
-}
-
-
-# diagnostics help text ---------------------------------------------------
-hT11 <- function(...) helpText(style = "font-size: 11px;", ...)
-help_interval <- hT11(
-  "Highlighted interval shows \\(\\bar{x} \\pm sd(x)\\)")
-help_lines <- hT11(
-  "Lines are mean (solid) and median (dashed)")
-help_max_td <- hT11(
-  "Horizontal line indicates the max_treedepth setting")
-help_points <- hT11(
-  "Large red points indicate which (if any) iterations",
-  "encountered a divergent transition. Yellow indicates",
-  "a transition hitting the maximum treedepth.")  
-help_dynamic <- hT11(
-  "Use your mouse or the sliders to select areas in the",
-  "traceplot to zoom into. The other plots on the screen", 
-  "will update accordingly. Double-click to reset.")
-
-# stan manual 
-stan_manual <- function() {
-  helpText(style = "font-size: 12px;",
-           "Glossary entries are compiled (with minor edits) from various excepts of the",
-           a("Stan Modeling Language User's Guide and Reference Manual", 
-             href = "http://mc-stan.org/documentation/"),
-           "(",a(href = "http://creativecommons.org/licenses/by/3.0/", "CC BY (v3)"),")"
-  )
-}
-
-# to use in ui.R
-# .model_name <- slot(object, "model_name")
-# .param_names <- slot(object, "param_names")
-# .param_list <- .make_param_list(object)
-# .param_list_with_groups <- .make_param_list_with_groups(object)
-# .nChains <- slot(object, "nChains")
-# .nIter <- slot(object, "nIter")
-# .nWarmup <- slot(object, "nWarmup")
-# .notes <- slot(object, "user_model_info")
-# .model_code <- slot(object, "model_code")
+# .test_valid_regex <- function(pattern) {
+#   trygrep <- try(grep(pattern, ""), silent = TRUE)
+#   if (inherits(trygrep, "try-error")) FALSE else TRUE
+# }
+# .update_params_with_regex <- function(params, all_param_names, regex_pattern) {
+#   sel <- which(all_param_names %in% params)
+#   to_search <- if (length(sel)) all_param_names[-sel] else all_param_names
+#   if (!length(regex_pattern)) return(params)
+#   to_add <- grep(regex_pattern, to_search, value = TRUE)
+#   if (!length(to_add)) params else c(params, to_add)
+# }
+# 
+# # update with groups
+# .update_params_with_groups <- function(params, all_param_names) {
+#   as_group <- grep("_as_shinystan_group", params)
+#   if (!length(as_group)) return(params)
+#   make_group <- function(group_name) {
+#     all_param_names[grep(paste0("^",group_name,"\\["), all_param_names)]
+#   }
+#   single_params <- params[-as_group]
+#   grouped_params <- params[as_group]
+#   groups <- gsub("_as_shinystan_group", "", grouped_params)
+#   groups <- sapply(groups, make_group)
+#   c(single_params, unlist(groups))
+# }
+# 
+# 
+# # generate color vectors --------------------------------------------------
+# color_vector <- function(n) {
+#   hues = seq(15, 375, length = n + 1)
+#   hcl(h=hues, l=50, c=50)[1:n]
+# }
+# color_vector_chain <- function(n) {
+#   hues = seq(15, 375, length = n + 1)
+#   hcl(h=hues, l=80, c=50)[1:n]
+# }
+# 
+# alpha_calc_pt <- function(N) {
+#   if (N <= 100) return(1)
+#   else if (N <= 200) return(0.75)
+#   else if (N >= 1500) return(0.15) 
+#   else 1 - pnorm(N/1500)
+# }
+# 
+# alpha_calc_lines <- function(N) {
+#   if (N < 50) return(0.5)
+#   if (N < 500) return(0.4)
+#   if (N < 1000) return(0.3)
+#   if (N < 5000) return(0.2)
+#   else return(0.1)
+# }
+# 
+# # transformations ---------------------------------------------------------
+# transformation_choices <- 
+#   c("abs", "atanh", cauchit = "pcauchy", "cloglog",
+#     "exp", "expm1", "identity", "inverse", inv_logit = "plogis", 
+#     "log", "log", "log10", "log2", "log1p", logit = "qlogis", 
+#     probit = "pnorm", "square", "sqrt")
+# 
+# inverse <- function(x) 1/x
+# cloglog <- function(x) log(-log1p(-x))
+# square <- function(x) x^2
+# 
+# transformation_selectInput <- function(id) {
+#   selectInput(id, label = NULL, 
+#               choices = transformation_choices,
+#               selected = "identity")
+# }
+# 
+# transform_helpText <- function(var = "x") {
+#   div(
+#     if (var == "x") 
+#       helpText(style = "font-size: 13px;", 
+#                "To apply a transformation",
+#                "select a function and click", 
+#                code("Transform"))
+#     else if (var == "x,y")
+#       helpText(style = "font-size: 13px;", 
+#                "To apply transformations",
+#                "select a function for x and/or y", 
+#                "and click", code("Transform"))
+#     else 
+#       helpText(style = "font-size: 13px;", 
+#                "To apply transformations",
+#                "select a function for x, y, and/or z", 
+#                "and click", code("Transform"))
+#   )
+# }
+# 
+# 
+# 
+# # extra distributions for density comparisons -----------------------------
+# # t distribution with location and scale
+# .dt_loc_scale <- function(x, df, location, scale) {
+#   1/scale * dt((x - location)/scale, df)
+# }
+# # inverse gamma distribution
+# .dinversegamma <- function(x, shape, scale) {
+#   logout <- log(scale)*shape - lgamma(shape) - (1+shape)*log(x) - (scale/x)
+#   exp(logout)
+# }
+# 
+# 
+# # diagnostics help text ---------------------------------------------------
+# hT11 <- function(...) helpText(style = "font-size: 11px;", ...)
+# help_interval <- hT11(
+#   "Highlighted interval shows \\(\\bar{x} \\pm sd(x)\\)")
+# help_lines <- hT11(
+#   "Lines are mean (solid) and median (dashed)")
+# help_max_td <- hT11(
+#   "Horizontal line indicates the max_treedepth setting")
+# help_points <- hT11(
+#   "Large red points indicate which (if any) iterations",
+#   "encountered a divergent transition. Yellow indicates",
+#   "a transition hitting the maximum treedepth.")  
+# help_dynamic <- hT11(
+#   "Use your mouse or the sliders to select areas in the",
+#   "traceplot to zoom into. The other plots on the screen", 
+#   "will update accordingly. Double-click to reset.")
+# 
+# # stan manual 
+# stan_manual <- function() {
+#   helpText(style = "font-size: 12px;",
+#            "Glossary entries are compiled (with minor edits) from various excepts of the",
+#            a("Stan Modeling Language User's Guide and Reference Manual", 
+#              href = "http://mc-stan.org/documentation/"),
+#            "(",a(href = "http://creativecommons.org/licenses/by/3.0/", "CC BY (v3)"),")"
+#   )
+# }
+# 
+# # to use in ui.R
+# # .model_name <- slot(object, "model_name")
+# # .param_names <- slot(object, "param_names")
+# # .param_list <- .make_param_list(object)
+# # .param_list_with_groups <- .make_param_list_with_groups(object)
+# # .nChains <- slot(object, "nChains")
+# # .nIter <- slot(object, "nIter")
+# # .nWarmup <- slot(object, "nWarmup")
+# # .notes <- slot(object, "user_model_info")
+# # .model_code <- slot(object, "model_code")

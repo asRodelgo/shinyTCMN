@@ -14,6 +14,29 @@ output$topImport <- renderPlot({
   #})
 }, bg = "transparent")
 
+# download chart
+output$downTopImp <- downloadHandler(
+  filename = function(){
+    paste0("Top_Imports_",.getCountryCode(input$inCouSel),".png")
+  },
+  content = function(file){
+    png(file)
+    .ImpExp_Treemap(input$inCouSel,"m")
+    dev.off()
+  }
+)
+# download data ----------------------------
+output$dataTopImp <- downloadHandler(
+  filename = function() { 
+    paste0("Top_Imports_",.getCountryCode(input$inCouSel),".csv")
+  },
+  content = function(file) {
+    #write.csv(.GVA_Table(input$inCouSel), file)
+    write.csv(mWits[mWits$CountryCode==.getCountryCode(input$inCouSel),], file, row.names = FALSE)
+  }
+)
+
+
 # exports -----------------------------------------------
 topExport_input <- reactive({
   #validate(need(input$inCouSel, message = "Loading..."))
@@ -29,3 +52,27 @@ output$topExport <- renderPlot({
   .ImpExp_Treemap(input$inCouSel,"x")
   #})
 }, bg = "transparent")
+
+# download chart
+output$downTopExp <- downloadHandler(
+  filename = function(){
+    paste0("Top_Exports_",.getCountryCode(input$inCouSel),".png")
+  },
+  content = function(file){
+    png(file)
+    .ImpExp_Treemap(input$inCouSel,"x")
+    dev.off()
+  }
+)
+# download data ----------------------------
+output$dataTopExp <- downloadHandler(
+  filename = function() { 
+    paste0("Top_Exports_",.getCountryCode(input$inCouSel),".csv")
+  },
+  content = function(file) {
+    #write.csv(.GVA_Table(input$inCouSel), file)
+    write.csv(xWits[xWits$CountryCode==.getCountryCode(input$inCouSel),], file, row.names = FALSE)
+  }
+)
+
+

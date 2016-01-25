@@ -39,3 +39,15 @@ output$tradePolicy_Table <- renderDataTable({
   return(macroSpark)
 }) 
 
+# download data ----------------------------
+output$dataTradePolicy <- downloadHandler(
+  filename = function() { 
+    paste0("Trade_Policy_Indicators_",.getCountryCode(input$inCouSel),".csv")
+  },
+  content = function(file) {
+    #write.csv(.GVA_Table(input$inCouSel), file)
+    write.csv(TCMN_data[(TCMN_data$CountryCode==.getCountryCode(input$inCouSel)) & 
+                          (TCMN_data$Subsection=="table5"),], file, row.names = FALSE)
+  }
+)
+

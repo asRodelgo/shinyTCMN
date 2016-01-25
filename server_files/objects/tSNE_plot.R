@@ -31,5 +31,26 @@ output$tSNE_table <- renderDataTable({
   
 })#,options = list(dom = 't')) # disable all the table fancy options  
 
+# download chart
+output$downTSNE <- downloadHandler(
+  filename = function(){
+    paste0("TSNE_",.getCountryCode(input$inCouSel),".png")
+  },
+  content = function(file){
+    png(file,width=900,height=900)
+    .tSNE_plot(input$inCouSel,input$inNumIter,input$maxNumNeigh,input$inPeriod)
+    dev.off()
+  }
+)
+# download data ----------------------------
+output$dataTSNE <- downloadHandler(
+  filename = function() { 
+    paste0("TSNE_",.getCountryCode(input$inCouSel),"_",input$inNumIter,"_",input$maxNumNeigh,"_",input$inPeriod,"_",input$inFactor,".csv")
+  },
+  content = function(file) {
+    #write.csv(.GVA_Table(input$inCouSel), file)
+    write.csv(.tSNE_compute(input$inCouSel,input$inNumIter,input$maxNumNeigh,input$inPeriod), file, row.names = FALSE)
+  }
+)
 
 
