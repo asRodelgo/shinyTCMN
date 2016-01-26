@@ -1,16 +1,19 @@
 # T&C home -------------------------------
 fluidPage(
-  column(12, h3("Trade and Competitiveness Data and Operations Snapshots"),
+  #column(3,wb_logo(),style="text-align: center;width:20%;height:20%"),
+  column(12,h1("Trade and Competitiveness Data and Operations Snapshots", style="color:#3399ff;text-align: center")),
   br(),
-  h5("The Trade and Competitiveness Data and Operations Snapshots project consists of a full cycle of data collection, processing and dissemination of key T%C indicators taken from more than 12 data sources and selected by the regional country leaders and lead economists in the field."),
+  column(12,h4("The Trade and Competitiveness Data and Operations Snapshots project consists of a full cycle of data collection, processing and dissemination of key T&C indicators taken from more than 12 data sources and selected by the regional country leaders and lead economists in the field.", 
+     style="color:#646464;text-align:center;left:100px;right:100px")),
   br(),
-  h5("In this website you will be able to:"),
-  br(),
-  h5("- Browse T&C data and operations for all countries through tables, charts and maps"),
-  h5("- Download summary data and operations PDF reports for a selected country"),
-  h5("- Access data analysis and other featured data stories"),
-  br(),
-  h4("Select a country and start exploring!")
+  column(12,h4("Browse T&C data and operations for all countries through tables, charts and maps", style="color:#646464;text-align: center"),
+  h4("Download summary data and operations PDF reports for a selected country", style="color:#646464;text-align: center"),
+  h4("Access data analysis and other featured data stories", style="color:#646464;text-align: center"),
+  br(),br()),
+  column(12,h4("Select a country and start exploring!", style="color:#646464;text-align: center"),
+    align="center",
+    selectInput('inCouSelHome', NULL, choices=c("Select a country",countryNames$Country), selected = 'Select a country', selectize=FALSE)
   )
+  
   #includeHTML("html/home_page_links.html")
 )

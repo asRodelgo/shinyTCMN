@@ -196,6 +196,7 @@
   d <- .hexagon_allocation(14, filter = FALSE) 
   
   # 2. allocate countries in hexagons
+  names(dist_mat) <- c("Country","dist")
   dist <- mutate(dist_mat, allocate = round(fact*dist/max(dist)+2), x=0,y=0)
   dist$allocate[1] <- 0 # selected country uses the central ring
   
@@ -254,7 +255,6 @@
     labs(x="",y="") 
   # Label hexagons
   hexalabel(zz,p)
-  
   
 }  
 
