@@ -22,9 +22,9 @@ div(id = "tsne",
             h6("More info: ",
                a("t-SNE by Laurens van der Maaten", 
                  href = "https://lvdmaaten.github.io/tsne/")),
-            h6("Download:",downloadLink("downTSNE","Chart ")," ",downloadLink("dataTSNE","Data")),
-            plotOutput('tSNE_plot',height=600),
-            dataTableOutput('tSNE_table')
+            h6("Download:",downloadLink("downTSNE","plot",class = "plot-download")," ",downloadLink("dataTSNE","data",class = "plot-download")),
+            column(8,plotOutput('tSNE_plot',height=600)),
+            column(4,dataTableOutput('tSNE_table'))
         )
     )
 )

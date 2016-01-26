@@ -24,7 +24,7 @@ div(id = "hexamaps",
         h6("Based on: ",
            a("Hexamaps", 
              href = "http://www.56n.dk/create-your-own-hexamaps/")),
-        h6("Download: ",downloadLink("downHexamap","Download Chart")," ",downloadLink("dataHexamap","Download Data")),
+        h6("Download: ",downloadLink("downHexamap","plot",class = "plot-download")," ",downloadLink("dataHexamap","data",class = "plot-download")),
         plotOutput('hexamaps',height=600)
       )
     )

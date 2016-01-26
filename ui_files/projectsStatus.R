@@ -5,7 +5,7 @@ fluidRow(
                       c("By number of projects" = "count",
                         "By project amount (in $K)" = "amount"
                       ), selected = "count", inline = FALSE),
-         h6("Download:",downloadLink("downOperStatusChart","Chart ")," ",downloadLink("dataOperStatusChart","Data"))
+         h6("Download:",downloadLink("downOperStatusChart","plot",class = "plot-download")," ",downloadLink("dataOperStatusChart","data",class = "plot-download"))
   ),
   column(12, plotOutput('projectsStatus'))
 )

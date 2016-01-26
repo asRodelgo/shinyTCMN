@@ -9,7 +9,7 @@ fluidRow(
          h6("Source: ",
                a(TCMN_sources[TCMN_sources$Source=="WEF_GCREP",]$SourceDescription, 
                  href = TCMN_sources[TCMN_sources$Source=="WEF_GCREP",]$url)),
-         h6("Download:",downloadLink("downGCI","Chart ")," ",downloadLink("dataGCI","Data")),
+         h6("Download: ",downloadLink("downGCI","plot",class = "plot-download"),downloadLink("dataGCI","data",class = "plot-download")),
     column(3,selectInput('inCouSel2', 'Compare with:', choices=c("Select a country",countryNames$Country),selectize=FALSE)),
     column(3, br(), img(src = "darkbluedot.png", width="20") ,h4(textOutput('outCouSel'))),
     column(3, br(),img(src = "reddot.png", width="20"), h4(textOutput('outRegSel'))),

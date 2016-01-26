@@ -4,7 +4,7 @@ fluidRow(
          h6("Source: ",
             a(TCMN_sources[TCMN_sources$Source=="WDI",]$SourceDescription, 
               href = TCMN_sources[TCMN_sources$Source=="WDI",]$url)),
-         h6("Download:",downloadLink("downLPI","Chart ")," ",downloadLink("dataLPI","Data")),
+         h6("Download:",downloadLink("downLPI","plot",class = "plot-download")," ",downloadLink("dataLPI","data",class = "plot-download")),
          column(3,selectInput('inCouSelLPI', 'Compare with:', choices=c("Select a country",countryNames$Country),selectize=FALSE)),
          column(3,sliderInput('inPeriodLPI', 'Select a time period:', 
                      min = as.numeric(min(TCMN_data[TCMN_data$Subsection=="chart8",]$Period)),

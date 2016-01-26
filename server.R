@@ -36,6 +36,18 @@ function(input, output, session) {
       })
     })
   })
+  # hide/show elements between home and main navigation
+  observe({
+    if(!(input$inCouSelHome=="Select a country")){
+      shinyjs::show(id="dataTab")
+      shinyjs::hide(id="homeTab")
+      shinyjs::show(id="homeButtons")
+      # pass the selected country in the home page for the next screen
+      updateSelectInput(session, "inCouSel",
+                        choices=countryNames$Country, 
+                        selected=input$inCouSelHome)
+    }
+  })  
   
   # output Country name --------------------------------
   output$outCouSel <- renderText(input$inCouSel) 

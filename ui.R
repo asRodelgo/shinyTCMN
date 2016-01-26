@@ -34,13 +34,18 @@ tagList(
     fluidRow(
       #column(2, h5("Explore by country:")),
       column(4, h3("Trade and Competitiveness Data and Operations Snapshots", style="color:#3399ff")),
-      column(3,h5("Select a country:"),
-             selectInput('inCouSel', NULL, choices=c("Select a country",countryNames$Country), selected = 'Afghanistan', selectize=FALSE)),
-      column(2, div(uiOutput('outFlag'), class = "flag")),
-      column(3, h5("Download a PDF report for the selected country:"),
-             downloadButton('downloadReportHome', 'Data'),
-             downloadButton('downloadReportOperHome', 'Operations'),
-             downloadButton('downloadReportFullHome', 'Full'))
+      
+      shinyjs::hidden( # hide main navigation from the home page
+        div(id="homeButtons",
+            column(3,h5("Select a country:"),
+                   selectInput('inCouSel', NULL, choices=c("Select a country",countryNames$Country), selectize=FALSE)),
+            column(2, div(uiOutput('outFlag'), class = "flag")),
+            column(3, h5("Download a PDF report for the selected country:"),
+                   downloadButton('downloadReportHome', 'Data'),
+                   downloadButton('downloadReportOperHome', 'Operations'),
+                   downloadButton('downloadReportFullHome', 'Full'))
+            )
+        )
       )
   ),
   # navbarPage(save_and_close, id = "nav", #title = NULL,
@@ -73,14 +78,27 @@ tagList(
 #              ),
 #              
              #### PAGE: Macro ####
+          
              tabPanel(title = "Data Categories", icon = icon("stats", lib = "glyphicon"),
-                  conditionalPanel( # hide side menu if no country has been selected
-                      condition="output.hideHomePanel!='Select a country'",
-                      navlistPanel(
+#                   conditionalPanel( # hide side menu if no country has been selected
+#                       condition="output.hideHomePanel!='Select a country'",
+#                   tabPanel("T&C Snapshots",
+#                            source(file.path("ui_files", "TC_Home.R"), local = TRUE)$value
+#                   ),
+                      #navlistPanel(
                         #### TCMN home ####
+                #shinyjs::show(
+                  div(id = "homeTab",
                         tabPanel("T&C Snapshots",
-                                 source(file.path("ui_files", "TC_Home.R"), local = TRUE)$value
-                        ),
+                                 source(file.path("ui_files", "TC_Home.R"), local = TRUE)$value,
+                                 h4("Select a country:"),
+                                        selectInput('inCouSelHome', NULL, choices=c("Select a country",countryNames$Country), selected = 'Select a country', selectize=FALSE)
+                        )
+                 # )
+                ),
+                shinyjs::hidden(
+                  div(id = "dataTab",
+                      navlistPanel(
                         #### tables ####
                         tabPanel("Macroeconomic indicators",
                                  source(file.path("ui_files", "macroTables.R"), local = TRUE)$value
@@ -123,7 +141,9 @@ tagList(
                                  source(file.path("ui_files", "privateSector.R"), local = TRUE)$value
                         )
                       ) # End navlistPanel
-                    ) # end conditionalPanel
+                    #) # end conditionalPanel
+                    ) # end div
+                  ) # end hidden section
              ), # End Macro
              #### PAGE: Projects Portfolio ####
              tabPanel(title = "Operations",icon = icon("folder-open", lib = "glyphicon"),

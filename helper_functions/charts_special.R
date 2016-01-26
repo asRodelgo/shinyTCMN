@@ -105,6 +105,7 @@
   dist_mat <- mutate(dist_mat, dist = sqrt((V1-distCou1)^2+(V2-distCou2)^2))
   # order by less distance to selected country
   dist_mat <- arrange(dist_mat, dist)[,c(3,4)]
+  names(dist_mat) <- c("Country","Euclid. distance")
   return(dist_mat)
 } 
 # create hexagon grid ---------------------------------
