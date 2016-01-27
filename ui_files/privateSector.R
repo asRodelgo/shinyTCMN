@@ -22,6 +22,6 @@ fluidRow(
          h6("Source: ",
             a(TCMN_sources[TCMN_sources$Source=="WEF_PROFACT",]$SourceDescription, 
               href = TCMN_sources[TCMN_sources$Source=="WEF_PROFACT",]$url)), 
-         h6("Download:",downloadLink("downTop5WEF","Chart ")," ",downloadLink("dataTop5WEF","Data")),
+         h6("Download:",downloadLink("downTop5WEF","plot",class = "plot-download")," ",downloadLink("dataTop5WEF","data",class = "plot-download")),
          plotOutput('top5constraintsWEF'))
 )
