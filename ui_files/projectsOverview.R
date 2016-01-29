@@ -10,8 +10,8 @@
 fluidRow(
   column(3,source(file.path("ui_files", "projectsStatus.R"), local = TRUE)$value),
   column(9,  dateRangeInput('projectDateRange',
-                            label = 'Select date range (yyyy-mm-dd)',
-                            start = Sys.Date() - 1000, end = Sys.Date()),
+                            label = 'Select Approval Date Range (yyyy-mm-dd)',
+                            start = Sys.Date() - 4000, end = Sys.Date() + 1500),
          h6("Download:",downloadLink("dataOperStatus","data",class = "plot-download")),
          h4("Financing", style="color:#3399ff"),
          dataTableOutput('projectsTableFinancing'),
