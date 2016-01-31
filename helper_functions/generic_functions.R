@@ -4,6 +4,12 @@
 ##### Auxiliary functions
 #####
 
+.getISO3fromISO2 <- function(couISO2){
+  
+  countryISO3 <- filter(countries, tolower(CountryCodeISO2)==couISO2)$CountryCodeISO3
+
+}
+
 .getISO2 <- function(couName){
   
   #countryISO2 <- tolower(as.character(countries[countries$CountryCodeISO3==couName,]$CountryCodeISO2))
