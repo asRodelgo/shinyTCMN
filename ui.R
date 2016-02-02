@@ -158,11 +158,11 @@ tagList(
                         #### people #####
                         tabPanel("Project teams",
                                  source(file.path("ui_files", "projectsTeams.R"), local = TRUE)$value
-                        ),
+                        )#,
                         #### map #####
-                        tabPanel("Map",
-                                source(file.path("ui_files", "projectsMap.R"), local = TRUE)$value
-                        )
+                        #tabPanel("Map",
+                        #        source(file.path("ui_files", "projectsMap.R"), local = TRUE)$value
+                        #)
                       ) # End tabsetPanel
              ), # End Projects Portfolio
              #### MENU: Data Analysis ####
