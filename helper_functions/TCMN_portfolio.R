@@ -48,12 +48,12 @@
 ##################
 
 # WB Lending Pipeline  ----------------
-.projectsTableLendingPipeline <- function(couName, dateRange){
+.projectsTableLendingPipeline <- function(couName){
   
   cou <- .getCountryCode(couName)
   couISO2 <- .getISO2(couName)
-  fromDate <- as.character(dateRange[[1]])
-  toDate <- as.character(dateRange[[2]])
+  #fromDate <- as.character(dateRange[[1]])
+  #toDate <- as.character(dateRange[[2]])
   
   ### IBRD T&C projects -----------------
   dataTC <- .filterTCProjects(couName)
@@ -68,7 +68,7 @@
   # Financing products in Pipeline (ProjectOrder==2)
   dataTC <- filter(dataTC, Prod_Line == "Financing" & ProjectOrder==2)
   # filter by date range
-  dataTC <- filter(dataTC, (Approval_Date >= fromDate) & (Approval_Date <= toDate))
+  #dataTC <- filter(dataTC, (Approval_Date >= fromDate) & (Approval_Date <= toDate))
   # arrange
   dataTC <- arrange(as.data.frame(dataTC), desc(Prod_Line), ProjectOrder)
   dataTC <- select(dataTC,-ProjectOrder, -Prod_Line)
@@ -107,12 +107,12 @@
 #############
 
 # WB Portfolio Active  ----------------
-.projectsTablePortfolioActive <- function(couName, dateRange){
+.projectsTablePortfolioActive <- function(couName){
   
   cou <- .getCountryCode(couName)
   couISO2 <- .getISO2(couName)
-  fromDate <- as.character(dateRange[[1]])
-  toDate <- as.character(dateRange[[2]])
+  #fromDate <- as.character(dateRange[[1]])
+  #toDate <- as.character(dateRange[[2]])
   
   ### IBRD T&C projects -----------------
   dataTC <- .filterTCProjects(couName)
@@ -127,7 +127,7 @@
   # Financing products in Active (ProjectOrder==1)
   dataTC <- filter(dataTC, Prod_Line == "Financing" & ProjectOrder==1)
   # filter by date range
-  dataTC <- filter(dataTC, (Approval_Date >= fromDate) & (Approval_Date <= toDate))
+  #dataTC <- filter(dataTC, (Approval_Date >= fromDate) & (Approval_Date <= toDate))
   # arrange
   dataTC <- arrange(as.data.frame(dataTC), desc(Prod_Line), ProjectOrder)
   dataTC <- select(dataTC,-ProjectOrder, -Prod_Line)
@@ -164,12 +164,12 @@
 #############
 
 # WB Portfolio Closed  ----------------
-.projectsTablePortfolioClosed <- function(couName, dateRange){
+.projectsTablePortfolioClosed <- function(couName){
   
   cou <- .getCountryCode(couName)
   couISO2 <- .getISO2(couName)
-  fromDate <- as.character(dateRange[[1]])
-  toDate <- as.character(dateRange[[2]])
+  #fromDate <- as.character(dateRange[[1]])
+  #toDate <- as.character(dateRange[[2]])
   
   ### IBRD T&C projects -----------------
   dataTC <- .filterTCProjects(couName)
@@ -214,12 +214,12 @@
 #############
 
 # WB ASA Active  ----------------
-.projectsTableASAActive <- function(couName, dateRange){
+.projectsTableASAActive <- function(couName){
   
   cou <- .getCountryCode(couName)
   couISO2 <- .getISO2(couName)
-  fromDate <- as.character(dateRange[[1]])
-  toDate <- as.character(dateRange[[2]])
+  #fromDate <- as.character(dateRange[[1]])
+  #toDate <- as.character(dateRange[[2]])
   
   ### IBRD T&C projects -----------------
   dataTC <- .filterTCProjects(couName)
@@ -234,7 +234,7 @@
   dataTC <- filter(dataTC, Prod_Line == "Advisory Services and Analytics (ASA) IBRD" 
                    & ProjectOrder==1)
   # filter by date range
-  dataTC <- filter(dataTC, (Approval_Date >= fromDate) & (Approval_Date <= toDate))
+  #dataTC <- filter(dataTC, (Approval_Date >= fromDate) & (Approval_Date <= toDate))
   # arrange
   #dataTC <- arrange(as.data.frame(dataTC), desc(Prod_Line), ProjectOrder)
   dataTC <- select(dataTC,-ProjectOrder,-Prod_Line)
@@ -278,12 +278,12 @@
 #############
 
 # WB ASA Closed  ----------------
-.projectsTableASAClosed <- function(couName, dateRange){
+.projectsTableASAClosed <- function(couName){
   
   cou <- .getCountryCode(couName)
   couISO2 <- .getISO2(couName)
-  fromDate <- as.character(dateRange[[1]])
-  toDate <- as.character(dateRange[[2]])
+  #fromDate <- as.character(dateRange[[1]])
+  #toDate <- as.character(dateRange[[2]])
   
   ### IBRD T&C projects -----------------
   dataTC <- .filterTCProjects(couName)
@@ -298,7 +298,7 @@
   dataTC <- filter(dataTC, Prod_Line == "Advisory Services and Analytics (ASA) IBRD" 
                    & ProjectOrder==3)
   # filter by date range
-  dataTC <- filter(dataTC, (Approval_Date >= fromDate) & (Approval_Date <= toDate))
+  #dataTC <- filter(dataTC, (Approval_Date >= fromDate) & (Approval_Date <= toDate))
   # arrange
   #dataTC <- arrange(as.data.frame(dataTC), desc(Prod_Line), ProjectOrder)
   dataTC <- select(dataTC,-ProjectOrder, -Prod_Line)
@@ -342,12 +342,12 @@
 #############
 
 # Country projects table ASA IFC ----------------
-.projectsTableASA_IFC <- function(couName, dateRange, status){
+.projectsTableASA_IFC <- function(couName, status){
   
   cou <- .getCountryCode(couName)
   couISO2 <- .getISO2(couName)
-  fromDate <- as.character(dateRange[[1]])
-  toDate <- as.character(dateRange[[2]])
+  #fromDate <- as.character(dateRange[[1]])
+  #toDate <- as.character(dateRange[[2]])
   
   ### IFC projects ----------
   dataIFC <- .filterIFCProjects(couName)
@@ -357,7 +357,7 @@
                     Project_Status, Project_Amount = TOTAL_FUNDING,
                     Current_Exp = PRORATED_TOTAL_FYTD_EXPENSE, ProjectOrder)
   dataIFC <- filter(dataIFC, Project_Status == status)
-  dataIFC <- filter(dataIFC, (Approval_Date >= fromDate) & (Approval_Date <= toDate)) #select country
+  #dataIFC <- filter(dataIFC, (Approval_Date >= fromDate) & (Approval_Date <= toDate)) #select country
   # arrange
   dataIFC <- arrange(as.data.frame(dataIFC), ProjectOrder)
   dataIFC <- select(dataIFC,-ProjectOrder, -Project_Status) # drop ProjectOrder
