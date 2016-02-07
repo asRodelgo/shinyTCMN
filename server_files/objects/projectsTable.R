@@ -5,26 +5,49 @@ output$projectsTable <- DT::renderDataTable({
 },options = list(dom = 't', columnDefs = list(list(className = 'dt-right', targets = 8)),
                  scrollX = FALSE),rownames = FALSE)
 
-# Projects Portfolio table Financing output -----------------------------
-output$projectsTableFinancing <- DT::renderDataTable({
-  projectsTableFinancing <- .projectsTableFinancing(input$inCouSel, input$projectDateRange)
-  return(projectsTableFinancing)
+# Projects Lending Pipeline -----------------------------
+output$lendingPipeline <- DT::renderDataTable({
+  lendingPipeline <- .projectsTableLendingPipeline(input$inCouSel, input$projectDateRange)
+  return(lendingPipeline)
+},options = list(dom = 't', columnDefs = list(list(className = 'dt-right', targets = c(6,8,9))),
+                 scrollX = TRUE),rownames = FALSE,escape=FALSE)
+# Projects Portfolio Active -----------------------------
+output$portfolioActive <- DT::renderDataTable({
+  portfolioActive <- .projectsTablePortfolioActive(input$inCouSel, input$projectDateRange)
+  return(portfolioActive)
+},options = list(dom = 't', columnDefs = list(list(className = 'dt-right', targets = c(6,7,10))),
+                 scrollX = TRUE),rownames = FALSE,escape=FALSE)
+# Projects Portfolio Closed last 2 years -----------------------------
+output$portfolioClosed <- DT::renderDataTable({
+  portfolioClosed <- .projectsTablePortfolioClosed(input$inCouSel, input$projectDateRange)
+  return(portfolioClosed)
 },options = list(dom = 't', columnDefs = list(list(className = 'dt-right', targets = 6)),
-                 scrollX = FALSE),rownames = FALSE)
+                 scrollX = TRUE),rownames = FALSE,escape=FALSE)
+# Projects Portfolio table ASA Active -----------------------------
+output$asaActive <- DT::renderDataTable({
+  asaActive <- .projectsTableASAActive(input$inCouSel, input$projectDateRange)
+  return(asaActive)
+},options = list(dom = 't', columnDefs = list(list(className = 'dt-right', targets = c(6,7,8,9))),
+                 scrollX = FALSE),rownames = FALSE,escape=FALSE)
+# Projects Portfolio table ASA Closed -----------------------------
+output$asaClosed <- DT::renderDataTable({
+  asaClosed <- .projectsTableASAClosed(input$inCouSel, input$projectDateRange)
+  return(asaClosed)
+},options = list(dom = 't', columnDefs = list(list(className = 'dt-right', targets = c(6,7,8,9))),
+                 scrollX = FALSE),rownames = FALSE,escape=FALSE)
 
-# Projects Portfolio table ASA output -----------------------------
-output$projectsTableASA <- DT::renderDataTable({
-  projectsTableASA <- .projectsTableASA(input$inCouSel, input$projectDateRange)
-  return(projectsTableASA)
-},options = list(dom = 't', columnDefs = list(list(className = 'dt-right', targets = 6)),
-                 scrollX = FALSE),rownames = FALSE)
-
-# Projects Portfolio table ASA IFC output -----------------------------
-output$projectsTableASA_IFC <- DT::renderDataTable({
-  projectsTableASA_IFC <- .projectsTableASA_IFC(input$inCouSel, input$projectDateRange)
-  return(projectsTableASA_IFC)
-},options = list(dom = 't', columnDefs = list(list(className = 'dt-right', targets = 4)),
-                 scrollX = TRUE),rownames = FALSE)
+# Projects Portfolio table ASA IFC Active -----------------------------
+output$ifcActive <- DT::renderDataTable({
+  ifcActive <- .projectsTableASA_IFC(input$inCouSel, input$projectDateRange, "Active")
+  return(ifcActive)
+},options = list(dom = 't', columnDefs = list(list(className = 'dt-right', targets = c(5,6))),
+                 scrollX = TRUE),rownames = FALSE,escape=FALSE)
+# Projects Portfolio table ASA IFC Closed -----------------------------
+output$ifcClosed <- DT::renderDataTable({
+  ifcClosed <- .projectsTableASA_IFC(input$inCouSel, input$projectDateRange, "Closed")
+  return(ifcClosed)
+},options = list(dom = 't', columnDefs = list(list(className = 'dt-right', targets = c(5,6))),
+                 scrollX = TRUE),rownames = FALSE,escape=FALSE)
 
 # download data ---------------------
 output$dataOperStatus <- downloadHandler(

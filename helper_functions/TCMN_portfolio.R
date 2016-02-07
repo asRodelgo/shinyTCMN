@@ -10,14 +10,16 @@
   # calculate total amount per project
   dataTC <- dataTC %>%
     group_by(PROJ_ID) %>%
-    mutate(Project_Amount = IBRD_CMT_USD_AMT + GRANT_USD_AMT + IDA_CMT_USD_AMT,
+    mutate(Project_Amount = (IBRD_CMT_USD_AMT + GRANT_USD_AMT + IDA_CMT_USD_AMT)/1000000,
            Prod_Line = ifelse(tolower(substr(PROD_LINE_TYPE_NME,1,4))=="lend","Financing",
                               ifelse(tolower(substr(PROD_LINE_TYPE_NME,1,3))=="aaa",
                                      "Advisory Services and Analytics (ASA) IBRD",PROD_LINE_TYPE_NME)),
            ProjectOrder = ifelse(PROJECT_STATUS_NME=="Active",1,ifelse(PROJECT_STATUS_NME=="Pipeline",2,3)),
-           url = paste0("http://operationsportal2.worldbank.org/wb/opsportal/ttw/about?projId=",PROJ_ID)) %>%
+           url = paste0("http://operationsportal2.worldbank.org/wb/opsportal/ttw/about?projId=",PROJ_ID),
+           RAS = ifelse(is.na(FEE_BASED_FLAG),"N","Y")) %>%
     select(-IBRD_CMT_USD_AMT, -GRANT_USD_AMT, -IDA_CMT_USD_AMT) %>%
     filter(PROJECT_STATUS_NME %in% c("Closed","Active","Pipeline")) #%>%
+    #filter(sequence == max(sequence) & rate_code == "ORR") # latest SORT
     #filter(!(tolower(substr(Prod_Line,1,8))=="standard"))
   
   return(dataTC)
@@ -45,8 +47,8 @@
 
 ##################
 
-# Country projects table Financing products  ----------------
-.projectsTableFinancing <- function(couName, dateRange){
+# WB Lending Pipeline  ----------------
+.projectsTableLendingPipeline <- function(couName, dateRange){
   
   cou <- .getCountryCode(couName)
   couISO2 <- .getISO2(couName)
@@ -57,34 +59,55 @@
   dataTC <- .filterTCProjects(couName)
   # select relevant variables
   dataTC <- select(dataTC, PROJ_ID, Prod_Line, Project_Name = PROJ_SHORT_NME,
-                   Approval_Date = BD_APPRVL_DATE, Project_Status = PROJECT_STATUS_NME,
-                   Major_Sector = MAJORSECTOR_NAME1,
-                   Major_Theme = MAJORTHEME_NAME1,Project_Amount, ProjectOrder)
-  # Financing products
-  dataTC <- filter(dataTC, Prod_Line == "Financing")
+                   Team_Leader = FULL_NME, Approval_Date = BD_APPRVL_DATE, 
+                   Lending_Inst_Type = LENDING_INSTR_TYPE_NME,
+                   Begin_Appraisal = BEGIN_APPRAISAL_DATE,Project_Amount,
+                   Latest_Sort = rate_indicator, FY_Expenses = CURRENT_FY_COST,
+                   Cum_Expenses = CUMULATIVE_FY_COST,FY_Prob = FY_PROB_TYPE_CODE,
+                   ProjectOrder,url)
+  # Financing products in Pipeline (ProjectOrder==2)
+  dataTC <- filter(dataTC, Prod_Line == "Financing" & ProjectOrder==2)
   # filter by date range
   dataTC <- filter(dataTC, (Approval_Date >= fromDate) & (Approval_Date <= toDate))
   # arrange
   dataTC <- arrange(as.data.frame(dataTC), desc(Prod_Line), ProjectOrder)
-  dataTC <- select(dataTC,-ProjectOrder, -Prod_Line) # drop ProjectOrder
+  dataTC <- select(dataTC,-ProjectOrder, -Prod_Line)
   # remove duplicates
   data <- dataTC[!duplicated(dataTC$PROJ_ID),]
+  # Attach a link to Project ID
+  data <- mutate(data, PROJ_ID = 
+                     paste0('<a href=',url,'>',PROJ_ID,'</a>'))
+  data <- select(data, -url)
+  
+  # scale Expenses to thousands 
+  data$FY_Expenses <- data$FY_Expenses/1000
+  data$Cum_Expenses <- data$Cum_Expenses/1000
   # substitute NAs for "---" em-dash
   data[is.na(data)] <- "---"
   
   # format Amount
   data$Project_Amount <- format(data$Project_Amount, digits=0, decimal.mark=".",
                                 big.mark=",",small.mark=".", small.interval=3)
+  data$FY_Expenses <- format(data$FY_Expenses, digits=0, decimal.mark=".",
+                                big.mark=",",small.mark=".", small.interval=3)
+  data$Cum_Expenses <- format(data$Cum_Expenses, digits=0, decimal.mark=".",
+                                big.mark=",",small.mark=".", small.interval=3)
   
-  names(data) <- c("Project ID", "Project Name", "Approval Date", "Status", "Major Sector", "Major Theme", "Amount (in US$)")
+  # If table is empty show "None"
+  if (nrow(data)==0){
+    data <- rbind(data,c("None",rep("",ncol(dataTC)-2)))
+  }
+  names(data) <- c("Project ID", "Project Name", "Team Leader", "Approval Date", "Lending Inst. Type",
+                   "Begin Appraisal", "Commitment (US$M)","Latest Sort Overall Risk Rating","FY Expenses (US$K)",
+                   "Cum Expenses (US$K)","FY Prob")
   
   return(data)
 }
 
 #############
 
-# Country projects table ASA products ----------------
-.projectsTableASA <- function(couName, dateRange){
+# WB Portfolio Active  ----------------
+.projectsTablePortfolioActive <- function(couName, dateRange){
   
   cou <- .getCountryCode(couName)
   couISO2 <- .getISO2(couName)
@@ -95,34 +118,231 @@
   dataTC <- .filterTCProjects(couName)
   # select relevant variables
   dataTC <- select(dataTC, PROJ_ID, Prod_Line, Project_Name = PROJ_SHORT_NME,
-                   Approval_Date = BD_APPRVL_DATE, Project_Status = PROJECT_STATUS_NME,
-                   Major_Sector = MAJORSECTOR_NAME1,
-                   Major_Theme = MAJORTHEME_NAME1,Project_Amount, ProjectOrder)
-  # Advisory (ASA) products
-  dataTC <- filter(dataTC, Prod_Line != "Financing")
+                   Team_Leader = FULL_NME, Approval_Date = BD_APPRVL_DATE, 
+                   Lending_Inst_Type = LENDING_INSTR_TYPE_NME,
+                   Closing_Date = REVISED_CLS_DATE,Project_Amount,
+                   Undisb_Bal = total_undis_balance,DO_RATING, IP_RATING,
+                   Months_Problem = No_of_Months_in_problem_status,
+                   ProjectOrder,url)
+  # Financing products in Active (ProjectOrder==1)
+  dataTC <- filter(dataTC, Prod_Line == "Financing" & ProjectOrder==1)
   # filter by date range
   dataTC <- filter(dataTC, (Approval_Date >= fromDate) & (Approval_Date <= toDate))
   # arrange
   dataTC <- arrange(as.data.frame(dataTC), desc(Prod_Line), ProjectOrder)
-  dataTC <- select(dataTC,-ProjectOrder, -Prod_Line) # drop ProjectOrder
+  dataTC <- select(dataTC,-ProjectOrder, -Prod_Line)
   # remove duplicates
   data <- dataTC[!duplicated(dataTC$PROJ_ID),]
+  # Attach a link to Project ID
+  data <- mutate(data, PROJ_ID = 
+                   paste0('<a href=',url,'>',PROJ_ID,'</a>'))
+  data <- select(data, -url)
+  
+  # scale Expenses to thousands 
+  data$Undisb_Bal <- data$Undisb_Bal/1000000
   # substitute NAs for "---" em-dash
   data[is.na(data)] <- "---"
+  
   # format Amount
   data$Project_Amount <- format(data$Project_Amount, digits=0, decimal.mark=".",
                                 big.mark=",",small.mark=".", small.interval=3)
+  data$Undisb_Bal <- format(data$Undisb_Bal, digits=0, decimal.mark=".",
+                             big.mark=",",small.mark=".", small.interval=3)
   
-  names(data) <- c("Project ID","Project Name", "Approval Date", "Status", "Major Sector", "Major Theme", "Amount (in US$)")
+  # If table is empty show "None"
+  if (nrow(data)==0){
+    data <- rbind(data,c("None",rep("",ncol(dataTC)-2)))
+  }
+  names(data) <- c("Project ID", "Project Name", "Team Leader", "Approval Date", "Lending Inst. Type",
+                   "Closing Date", "Commitment (US$M)","Undisbursed Balance (US$M)",
+                   "Project Rating DO", "Project Rating IP",
+                   "Months in Problem Status")
   
   return(data)
 }
 
 #############
 
+# WB Portfolio Closed  ----------------
+.projectsTablePortfolioClosed <- function(couName, dateRange){
+  
+  cou <- .getCountryCode(couName)
+  couISO2 <- .getISO2(couName)
+  fromDate <- as.character(dateRange[[1]])
+  toDate <- as.character(dateRange[[2]])
+  
+  ### IBRD T&C projects -----------------
+  dataTC <- .filterTCProjects(couName)
+  # select relevant variables
+  dataTC <- select(dataTC, PROJ_ID, Prod_Line, Project_Name = PROJ_SHORT_NME,
+                   Team_Leader = FULL_NME, Approval_Date = BD_APPRVL_DATE, 
+                   Lending_Inst_Type = LENDING_INSTR_TYPE_NME,
+                   Closing_Date = REVISED_CLS_DATE,Project_Amount,
+                   DO_RATING, IP_RATING,
+                   ProjectOrder,url)
+  # Financing products in Closed (ProjectOrder==3)
+  dataTC <- filter(dataTC, Prod_Line == "Financing" & ProjectOrder==3)
+  # filter by date range. Last 2 years
+  dataTC <- filter(dataTC, (Closing_Date >= (Sys.Date() - 730)) | (is.na(Closing_Date)))
+  # arrange
+  dataTC <- arrange(as.data.frame(dataTC), desc(Closing_Date))
+  dataTC <- select(dataTC,-ProjectOrder, -Prod_Line)
+  # remove duplicates
+  data <- dataTC[!duplicated(dataTC$PROJ_ID),]
+  # Attach a link to Project ID
+  data <- mutate(data, PROJ_ID = 
+                   paste0('<a href=',url,'>',PROJ_ID,'</a>'))
+  data <- select(data, -url)
+  
+  # substitute NAs for "---" em-dash
+  data[is.na(data)] <- "---"
+  
+  # format Amount
+  data$Project_Amount <- format(data$Project_Amount, digits=0, decimal.mark=".",
+                                big.mark=",",small.mark=".", small.interval=3)
+  # If table is empty show "None"
+  if (nrow(data)==0){
+    data <- rbind(data,c("None",rep("",ncol(dataTC)-2)))
+  }
+  names(data) <- c("Project ID", "Project Name", "Team Leader", "Approval Date", "Lending Inst. Type",
+                   "Closing Date", "Commitment (US$M)",
+                   "Project Rating DO", "Project Rating IP")
+  
+  return(data)
+}
+
+#############
+
+# WB ASA Active  ----------------
+.projectsTableASAActive <- function(couName, dateRange){
+  
+  cou <- .getCountryCode(couName)
+  couISO2 <- .getISO2(couName)
+  fromDate <- as.character(dateRange[[1]])
+  toDate <- as.character(dateRange[[2]])
+  
+  ### IBRD T&C projects -----------------
+  dataTC <- .filterTCProjects(couName)
+  # select relevant variables
+  dataTC <- select(dataTC, PROJ_ID, Project_Name = PROJ_SHORT_NME,
+                   Team_Leader = FULL_NME, Approval_Date = BD_APPRVL_DATE, 
+                   Prod_Line, PROD_LINE_CODE, RAS, Current_ExpBB = CURRENT_BB_COST,
+                   Cum_ExpBB = CUMULATIVE_BB_COST,FY_Expenses = CURRENT_FY_COST,
+                   Cum_Expenses = CUMULATIVE_FY_COST,
+                   ProjectOrder,url)
+  # AAA in Active (ProjectOrder==1)
+  dataTC <- filter(dataTC, Prod_Line == "Advisory Services and Analytics (ASA) IBRD" 
+                   & ProjectOrder==1)
+  # filter by date range
+  dataTC <- filter(dataTC, (Approval_Date >= fromDate) & (Approval_Date <= toDate))
+  # arrange
+  #dataTC <- arrange(as.data.frame(dataTC), desc(Prod_Line), ProjectOrder)
+  dataTC <- select(dataTC,-ProjectOrder,-Prod_Line)
+  # remove duplicates
+  data <- dataTC[!duplicated(dataTC$PROJ_ID),]
+  # Attach a link to Project ID
+  data <- as.data.frame(data)
+  data <- mutate(data, PROJ_ID = 
+                   paste0('<a href=',url,'>',PROJ_ID,'</a>'))
+  data <- select(data, -url)
+  
+  # scale Expenses to thousands 
+  data$Current_ExpBB <- data$Current_ExpBB/1000
+  data$Cum_ExpBB <- data$Cum_ExpBB/1000
+  data$FY_Expenses <- data$FY_Expenses/1000
+  data$Cum_Expenses <- data$Cum_Expenses/1000
+  # substitute NAs for "---" em-dash
+  data[is.na(data)] <- "---"
+  
+  # format Amount
+  # format Amount
+  data$FY_Expenses <- format(data$FY_Expenses, digits=0, decimal.mark=".",
+                             big.mark=",",small.mark=".", small.interval=3)
+  data$Cum_Expenses <- format(data$Cum_Expenses, digits=0, decimal.mark=".",
+                              big.mark=",",small.mark=".", small.interval=3)
+  data$Current_ExpBB <- format(data$Current_ExpBB, digits=0, decimal.mark=".",
+                             big.mark=",",small.mark=".", small.interval=3)
+  data$Cum_ExpBB <- format(data$Cum_ExpBB, digits=0, decimal.mark=".",
+                              big.mark=",",small.mark=".", small.interval=3)
+  # If table is empty show "None"
+  if (nrow(data)==0){
+    data <- rbind(data,c("None",rep("",ncol(dataTC)-2)))
+  }
+  names(data) <- c("Task ID", "Task Name", "Team Leader", "Management Approval Date", 
+                   "Product Line","RAS (Y/N)","Current Expenditure BB (US$K)", "Current Expenditure Total (US$K)",
+                   "Lifetime Expenditure BB (US$K)","Lifetime Expenditure Total (US$K)")
+  
+  return(data)
+}
+
+#############
+
+# WB ASA Closed  ----------------
+.projectsTableASAClosed <- function(couName, dateRange){
+  
+  cou <- .getCountryCode(couName)
+  couISO2 <- .getISO2(couName)
+  fromDate <- as.character(dateRange[[1]])
+  toDate <- as.character(dateRange[[2]])
+  
+  ### IBRD T&C projects -----------------
+  dataTC <- .filterTCProjects(couName)
+  # select relevant variables
+  dataTC <- select(dataTC, PROJ_ID, Project_Name = PROJ_SHORT_NME,
+                   Team_Leader = FULL_NME, Approval_Date = BD_APPRVL_DATE, 
+                   Prod_Line, PROD_LINE_CODE, RAS, Current_ExpBB = CURRENT_BB_COST,
+                   Cum_ExpBB = CUMULATIVE_BB_COST,FY_Expenses = CURRENT_FY_COST,
+                   Cum_Expenses = CUMULATIVE_FY_COST,
+                   ProjectOrder,url)
+  # AAA in Active (ProjectOrder==1)
+  dataTC <- filter(dataTC, Prod_Line == "Advisory Services and Analytics (ASA) IBRD" 
+                   & ProjectOrder==3)
+  # filter by date range
+  dataTC <- filter(dataTC, (Approval_Date >= fromDate) & (Approval_Date <= toDate))
+  # arrange
+  #dataTC <- arrange(as.data.frame(dataTC), desc(Prod_Line), ProjectOrder)
+  dataTC <- select(dataTC,-ProjectOrder, -Prod_Line)
+  # remove duplicates
+  data <- dataTC[!duplicated(dataTC$PROJ_ID),]
+  # Attach a link to Project ID
+  data <- as.data.frame(data)
+  data <- mutate(data, PROJ_ID = 
+                   paste0('<a href=',url,'>',PROJ_ID,'</a>'))
+  data <- select(data, -url)
+  
+  # scale Expenses to thousands 
+  data$Current_ExpBB <- data$Current_ExpBB/1000
+  data$Cum_ExpBB <- data$Cum_ExpBB/1000
+  data$FY_Expenses <- data$FY_Expenses/1000
+  data$Cum_Expenses <- data$Cum_Expenses/1000
+  # substitute NAs for "---" em-dash
+  data[is.na(data)] <- "---"
+  
+  # format Amount
+  # format Amount
+  data$FY_Expenses <- format(data$FY_Expenses, digits=0, decimal.mark=".",
+                             big.mark=",",small.mark=".", small.interval=3)
+  data$Cum_Expenses <- format(data$Cum_Expenses, digits=0, decimal.mark=".",
+                              big.mark=",",small.mark=".", small.interval=3)
+  data$Current_ExpBB <- format(data$Current_ExpBB, digits=0, decimal.mark=".",
+                               big.mark=",",small.mark=".", small.interval=3)
+  data$Cum_ExpBB <- format(data$Cum_ExpBB, digits=0, decimal.mark=".",
+                           big.mark=",",small.mark=".", small.interval=3)
+  # If table is empty show "None"
+  if (nrow(data)==0){
+    data <- rbind(data,c("None",rep("",ncol(dataTC)-2)))
+  }
+  names(data) <- c("Task ID", "Task Name", "Team Leader", "Management Approval Date", 
+                   "Product Line","RAS (Y/N)","Current Expenditure BB (US$K)", "Current Expenditure Total (US$K)",
+                   "Lifetime Expenditure BB (US$K)","Lifetime Expenditure Total (US$K)")
+  
+  return(data)
+}
+
+#############
 
 # Country projects table ASA IFC ----------------
-.projectsTableASA_IFC <- function(couName, dateRange){
+.projectsTableASA_IFC <- function(couName, dateRange, status){
   
   cou <- .getCountryCode(couName)
   couISO2 <- .getISO2(couName)
@@ -132,23 +352,34 @@
   ### IFC projects ----------
   dataIFC <- .filterIFCProjects(couName)
   # keep relevant columns
-  dataIFC <- select(dataIFC, PROJ_ID, Prod_Line, Project_Name = PROJECT_NAME,
-                    Approval_Date = ASIP_APPROVAL_DATE, Project_Status, Project_Amount = TOTAL_FUNDS_MANAGED_BY_IFC,
-                    ProjectOrder
-  )
-  # projects within 3 fiscal years in the past
+  dataIFC <- select(dataIFC, PROJ_ID, Project_Name = PROJECT_NAME, Team_Leader = PROJECT_LEADER,
+                    Approval_Date = ASIP_APPROVAL_DATE, Closing_Date = IMPLEMENTATION_END_DATE,
+                    Project_Status, Project_Amount = TOTAL_FUNDING,
+                    Current_Exp = PRORATED_TOTAL_FYTD_EXPENSE, ProjectOrder)
+  dataIFC <- filter(dataIFC, Project_Status == status)
   dataIFC <- filter(dataIFC, (Approval_Date >= fromDate) & (Approval_Date <= toDate)) #select country
   # arrange
   dataIFC <- arrange(as.data.frame(dataIFC), ProjectOrder)
-  dataIFC <- select(dataIFC,-ProjectOrder, -Prod_Line) # drop ProjectOrder
+  dataIFC <- select(dataIFC,-ProjectOrder, -Project_Status) # drop ProjectOrder
   # remove duplicates
   data <- dataIFC[!duplicated(dataIFC$PROJ_ID),]
   # substitute NAs for "---" em-dash
   data[is.na(data)] <- "---"
+  # Scale amounts
+  data$Project_Amount <- data$Project_Amount/1000
+  data$Current_Exp <- data$Current_Exp/1000
   # format Amount
   data$Project_Amount <- format(data$Project_Amount, digits=0, decimal.mark=".",
                                 big.mark=",",small.mark=".", small.interval=3)
-  names(data) <- c("Project ID", "Project Name", "Approval Date", "Status","Amount (in US$)")
+  data$Current_Exp <- format(data$Current_Exp, digits=0, decimal.mark=".",
+                             big.mark=",",small.mark=".", small.interval=3)
+  
+  # If table is empty show "None"
+  if (nrow(data)==0){
+    data <- rbind(data,c("None",rep("",ncol(dataIFC)-1)))
+  }
+  names(data) <- c("Project ID", "Project Name", "Team Leader","IP Approval Date", 
+                   "Expected End Date","Approval Value (in US$K)", "Current Expenditure (in US$K)")
   
   return(data)
 }
