@@ -12,7 +12,7 @@
   #sidebarPanel(),
   
 #  mainPanel(
-    tabsetPanel(
+    tabsetPanel(selected = "WB Portfolio",
   #### tables ####
       tabPanel("WB Lending Pipeline",
                 h4("WB Lending Pipeline", style="color:#3399ff"),

@@ -15,7 +15,7 @@ output$lendingPipeline <- DT::renderDataTable({
 output$portfolioActive <- DT::renderDataTable({
   portfolioActive <- .projectsTablePortfolioActive(input$inCouSel)#, input$projectDateRange)
   return(portfolioActive)
-},options = list(dom = 't', columnDefs = list(list(className = 'dt-right', targets = c(6,7,10))),
+},options = list(dom = 't', columnDefs = list(list(className = 'dt-right', targets = c(6,7,11))),
                  scrollX = TRUE),rownames = FALSE,escape=FALSE)
 # Projects Portfolio Closed last 2 years -----------------------------
 output$portfolioClosed <- DT::renderDataTable({

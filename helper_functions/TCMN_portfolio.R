@@ -38,7 +38,7 @@
   dataIFC <- mutate(dataIFC, Prod_Line = "Advisory Services and Analytics (ASA) IFC",
                     Project_Status = ifelse(PROJECT_STAGE=="PIPELINE","Pipeline",ifelse(PROJECT_STATUS=="CLOSED","Closed","Active")))
   dataIFC <- mutate(dataIFC, ProjectOrder = ifelse(Project_Status=="Active",1,ifelse(Project_Status=="Pipeline",2,3)),
-                    url = paste0("http://ifcext.ifc.org/ifcext/spiwebsite1.nsf/%20AllDocsAdvisory?SearchView&Query=(FIELD ProjectId=",PROJ_ID))
+                    url = paste0("http://ifcext.ifc.org/ifcext/spiwebsite1.nsf/%20AllDocsAdvisory?SearchView&Query=(FIELD%20ProjectId=",PROJ_ID))
   # make PROJ_ID character
   dataIFC$PROJ_ID <- as.character(dataIFC$PROJ_ID)
   
@@ -70,7 +70,7 @@
   # filter by date range
   #dataTC <- filter(dataTC, (Approval_Date >= fromDate) & (Approval_Date <= toDate))
   # arrange
-  dataTC <- arrange(as.data.frame(dataTC), desc(Prod_Line), ProjectOrder)
+  dataTC <- arrange(as.data.frame(dataTC), desc(Approval_Date))
   dataTC <- select(dataTC,-ProjectOrder, -Prod_Line)
   # remove duplicates
   data <- dataTC[!duplicated(dataTC$PROJ_ID),]
@@ -82,17 +82,22 @@
   # scale Expenses to thousands 
   data$FY_Expenses <- data$FY_Expenses/1000
   data$Cum_Expenses <- data$Cum_Expenses/1000
-  # substitute NAs for "---" em-dash
-  data[is.na(data)] <- "---"
-  
   # format Amount
   data$Project_Amount <- format(data$Project_Amount, digits=0, decimal.mark=".",
                                 big.mark=",",small.mark=".", small.interval=3)
   data$FY_Expenses <- format(data$FY_Expenses, digits=0, decimal.mark=".",
-                                big.mark=",",small.mark=".", small.interval=3)
+                             big.mark=",",small.mark=".", small.interval=3)
   data$Cum_Expenses <- format(data$Cum_Expenses, digits=0, decimal.mark=".",
-                                big.mark=",",small.mark=".", small.interval=3)
-  
+                              big.mark=",",small.mark=".", small.interval=3)
+  # substitute NAs for "---" em-dash
+  data[is.na(data)] <- "---"
+  nrow <- nrow(data)
+  data <- sapply(data, function(x) gsub("NA", "---", x, fixed=TRUE))
+  if (nrow==1){
+    data <- as.data.frame(t(data))
+  } else{
+    data <- as.data.frame(data)
+  }
   # If table is empty show "None"
   if (nrow(data)==0){
     data <- rbind(data,c("None",rep("",ncol(dataTC)-2)))
@@ -122,6 +127,7 @@
                    Lending_Inst_Type = LENDING_INSTR_TYPE_NME,
                    Closing_Date = REVISED_CLS_DATE,Project_Amount,
                    Undisb_Bal = total_undis_balance,DO_RATING, IP_RATING,
+                   Latest_Sort = rate_indicator,
                    Months_Problem = No_of_Months_in_problem_status,
                    ProjectOrder,url)
   # Financing products in Active (ProjectOrder==1)
@@ -129,7 +135,7 @@
   # filter by date range
   #dataTC <- filter(dataTC, (Approval_Date >= fromDate) & (Approval_Date <= toDate))
   # arrange
-  dataTC <- arrange(as.data.frame(dataTC), desc(Prod_Line), ProjectOrder)
+  dataTC <- arrange(as.data.frame(dataTC), desc(Approval_Date))
   dataTC <- select(dataTC,-ProjectOrder, -Prod_Line)
   # remove duplicates
   data <- dataTC[!duplicated(dataTC$PROJ_ID),]
@@ -140,22 +146,29 @@
   
   # scale Expenses to thousands 
   data$Undisb_Bal <- data$Undisb_Bal/1000000
-  # substitute NAs for "---" em-dash
-  data[is.na(data)] <- "---"
-  
   # format Amount
   data$Project_Amount <- format(data$Project_Amount, digits=0, decimal.mark=".",
                                 big.mark=",",small.mark=".", small.interval=3)
   data$Undisb_Bal <- format(data$Undisb_Bal, digits=0, decimal.mark=".",
-                             big.mark=",",small.mark=".", small.interval=3)
-  
+                            big.mark=",",small.mark=".", small.interval=3)
+  data$Months_Problem <- format(data$Months_Problem, digits=1, decimal.mark=".",
+                                big.mark=",",small.mark=".", small.interval=3)
+  # substitute NAs for "---" em-dash
+  data[is.na(data)] <- "---"
+  nrow <- nrow(data)
+  data <- sapply(data, function(x) gsub("NA", "---", x, fixed=TRUE))
+  if (nrow==1){
+    data <- as.data.frame(t(data))
+  } else{
+    data <- as.data.frame(data)
+  }
   # If table is empty show "None"
   if (nrow(data)==0){
     data <- rbind(data,c("None",rep("",ncol(dataTC)-2)))
   }
   names(data) <- c("Project ID", "Project Name", "Team Leader", "Approval Date", "Lending Inst. Type",
                    "Closing Date", "Commitment (US$M)","Undisbursed Balance (US$M)",
-                   "Project Rating DO", "Project Rating IP",
+                   "Project Rating DO", "Project Rating IP","Overall Risk",
                    "Months in Problem Status")
   
   return(data)
@@ -194,12 +207,18 @@
                    paste0('<a href=',url,'>',PROJ_ID,'</a>'))
   data <- select(data, -url)
   
-  # substitute NAs for "---" em-dash
-  data[is.na(data)] <- "---"
-  
   # format Amount
   data$Project_Amount <- format(data$Project_Amount, digits=0, decimal.mark=".",
                                 big.mark=",",small.mark=".", small.interval=3)
+  # substitute NAs for "---" em-dash
+  data[is.na(data)] <- "---"
+  nrow <- nrow(data)
+  data <- sapply(data, function(x) gsub("NA", "---", x, fixed=TRUE))
+  if (nrow==1){
+    data <- as.data.frame(t(data))
+  } else{
+    data <- as.data.frame(data)
+  }
   # If table is empty show "None"
   if (nrow(data)==0){
     data <- rbind(data,c("None",rep("",ncol(dataTC)-2)))
@@ -227,7 +246,7 @@
   dataTC <- select(dataTC, PROJ_ID, Project_Name = PROJ_SHORT_NME,
                    Team_Leader = FULL_NME, Approval_Date = BD_APPRVL_DATE, 
                    Prod_Line, PROD_LINE_CODE, RAS, Current_ExpBB = CURRENT_BB_COST,
-                   Cum_ExpBB = CUMULATIVE_BB_COST,FY_Expenses = CURRENT_FY_COST,
+                   FY_Expenses = CURRENT_FY_COST,Cum_ExpBB = CUMULATIVE_BB_COST,
                    Cum_Expenses = CUMULATIVE_FY_COST,
                    ProjectOrder,url)
   # AAA in Active (ProjectOrder==1)
@@ -236,7 +255,7 @@
   # filter by date range
   #dataTC <- filter(dataTC, (Approval_Date >= fromDate) & (Approval_Date <= toDate))
   # arrange
-  #dataTC <- arrange(as.data.frame(dataTC), desc(Prod_Line), ProjectOrder)
+  dataTC <- arrange(as.data.frame(dataTC), desc(Approval_Date))
   dataTC <- select(dataTC,-ProjectOrder,-Prod_Line)
   # remove duplicates
   data <- dataTC[!duplicated(dataTC$PROJ_ID),]
@@ -251,19 +270,24 @@
   data$Cum_ExpBB <- data$Cum_ExpBB/1000
   data$FY_Expenses <- data$FY_Expenses/1000
   data$Cum_Expenses <- data$Cum_Expenses/1000
-  # substitute NAs for "---" em-dash
-  data[is.na(data)] <- "---"
-  
-  # format Amount
   # format Amount
   data$FY_Expenses <- format(data$FY_Expenses, digits=0, decimal.mark=".",
                              big.mark=",",small.mark=".", small.interval=3)
   data$Cum_Expenses <- format(data$Cum_Expenses, digits=0, decimal.mark=".",
                               big.mark=",",small.mark=".", small.interval=3)
   data$Current_ExpBB <- format(data$Current_ExpBB, digits=0, decimal.mark=".",
-                             big.mark=",",small.mark=".", small.interval=3)
+                               big.mark=",",small.mark=".", small.interval=3)
   data$Cum_ExpBB <- format(data$Cum_ExpBB, digits=0, decimal.mark=".",
-                              big.mark=",",small.mark=".", small.interval=3)
+                           big.mark=",",small.mark=".", small.interval=3)
+  # substitute NAs for "---" em-dash
+  data[is.na(data)] <- "---"
+  nrow <- nrow(data)
+  data <- sapply(data, function(x) gsub("NA", "---", x, fixed=TRUE))
+  if (nrow==1){
+    data <- as.data.frame(t(data))
+  } else{
+    data <- as.data.frame(data)
+  }
   # If table is empty show "None"
   if (nrow(data)==0){
     data <- rbind(data,c("None",rep("",ncol(dataTC)-2)))
@@ -291,7 +315,7 @@
   dataTC <- select(dataTC, PROJ_ID, Project_Name = PROJ_SHORT_NME,
                    Team_Leader = FULL_NME, Approval_Date = BD_APPRVL_DATE, 
                    Prod_Line, PROD_LINE_CODE, RAS, Current_ExpBB = CURRENT_BB_COST,
-                   Cum_ExpBB = CUMULATIVE_BB_COST,FY_Expenses = CURRENT_FY_COST,
+                   FY_Expenses = CURRENT_FY_COST, Cum_ExpBB = CUMULATIVE_BB_COST,
                    Cum_Expenses = CUMULATIVE_FY_COST,
                    ProjectOrder,url)
   # AAA in Active (ProjectOrder==1)
@@ -300,7 +324,7 @@
   # filter by date range
   #dataTC <- filter(dataTC, (Approval_Date >= fromDate) & (Approval_Date <= toDate))
   # arrange
-  #dataTC <- arrange(as.data.frame(dataTC), desc(Prod_Line), ProjectOrder)
+  dataTC <- arrange(as.data.frame(dataTC), desc(Approval_Date))
   dataTC <- select(dataTC,-ProjectOrder, -Prod_Line)
   # remove duplicates
   data <- dataTC[!duplicated(dataTC$PROJ_ID),]
@@ -315,10 +339,6 @@
   data$Cum_ExpBB <- data$Cum_ExpBB/1000
   data$FY_Expenses <- data$FY_Expenses/1000
   data$Cum_Expenses <- data$Cum_Expenses/1000
-  # substitute NAs for "---" em-dash
-  data[is.na(data)] <- "---"
-  
-  # format Amount
   # format Amount
   data$FY_Expenses <- format(data$FY_Expenses, digits=0, decimal.mark=".",
                              big.mark=",",small.mark=".", small.interval=3)
@@ -328,6 +348,16 @@
                                big.mark=",",small.mark=".", small.interval=3)
   data$Cum_ExpBB <- format(data$Cum_ExpBB, digits=0, decimal.mark=".",
                            big.mark=",",small.mark=".", small.interval=3)
+  
+  # substitute NAs for "---" em-dash
+  data[is.na(data)] <- "---"
+  nrow <- nrow(data)
+  data <- sapply(data, function(x) gsub("NA", "---", x, fixed=TRUE))
+  if (nrow==1){
+    data <- as.data.frame(t(data))
+  } else{
+    data <- as.data.frame(data)
+  }
   # If table is empty show "None"
   if (nrow(data)==0){
     data <- rbind(data,c("None",rep("",ncol(dataTC)-2)))
@@ -355,16 +385,18 @@
   dataIFC <- select(dataIFC, PROJ_ID, Project_Name = PROJECT_NAME, Team_Leader = PROJECT_LEADER,
                     Approval_Date = ASIP_APPROVAL_DATE, Closing_Date = IMPLEMENTATION_END_DATE,
                     Project_Status, Project_Amount = TOTAL_FUNDING,
-                    Current_Exp = PRORATED_TOTAL_FYTD_EXPENSE, ProjectOrder)
+                    Current_Exp = PRORATED_TOTAL_FYTD_EXPENSE, ProjectOrder,url)
   dataIFC <- filter(dataIFC, Project_Status == status)
   #dataIFC <- filter(dataIFC, (Approval_Date >= fromDate) & (Approval_Date <= toDate)) #select country
   # arrange
-  dataIFC <- arrange(as.data.frame(dataIFC), ProjectOrder)
+  dataIFC <- arrange(as.data.frame(dataIFC), desc(Approval_Date))
   dataIFC <- select(dataIFC,-ProjectOrder, -Project_Status) # drop ProjectOrder
   # remove duplicates
   data <- dataIFC[!duplicated(dataIFC$PROJ_ID),]
-  # substitute NAs for "---" em-dash
-  data[is.na(data)] <- "---"
+  data <- as.data.frame(data)
+  data <- mutate(data, PROJ_ID = 
+                   paste0('<a href=',url,'>',PROJ_ID,'</a>'))
+  data <- select(data, -url)
   # Scale amounts
   data$Project_Amount <- data$Project_Amount/1000
   data$Current_Exp <- data$Current_Exp/1000
@@ -373,7 +405,15 @@
                                 big.mark=",",small.mark=".", small.interval=3)
   data$Current_Exp <- format(data$Current_Exp, digits=0, decimal.mark=".",
                              big.mark=",",small.mark=".", small.interval=3)
-  
+  # substitute NAs for "---" em-dash
+  data[is.na(data)] <- "---"
+  nrow <- nrow(data)
+  data <- sapply(data, function(x) gsub("NA", "---", x, fixed=TRUE))
+  if (nrow==1){
+    data <- as.data.frame(t(data))
+  } else{
+    data <- as.data.frame(data)
+  }
   # If table is empty show "None"
   if (nrow(data)==0){
     data <- rbind(data,c("None",rep("",ncol(dataIFC)-1)))
@@ -401,6 +441,7 @@
   dataTC <- filter(dataTC, (Approval_Date >= fromDate) & (Approval_Date <= toDate))
   # remove duplicates
   dataTC <- dataTC[!duplicated(dataTC$PROJ_ID),]
+  
   # arrange
   dataTC <- arrange(as.data.frame(dataTC), desc(Prod_Line), ProjectOrder)
   dataTC <- select(dataTC,-ProjectOrder,-Approval_Date) # drop ProjectOrder
