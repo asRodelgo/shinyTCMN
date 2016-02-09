@@ -10,7 +10,7 @@
   # calculate total amount per project
   dataTC <- dataTC %>%
     group_by(PROJ_ID) %>%
-    mutate(Project_Amount = (IBRD_CMT_USD_AMT + GRANT_USD_AMT + IDA_CMT_USD_AMT)/1000000,
+    mutate(Project_Amount = (IBRD_CMT_USD_AMT + GRANT_USD_AMT + IDA_CMT_USD_AMT)/1000,
            Prod_Line = ifelse(tolower(substr(PROD_LINE_TYPE_NME,1,4))=="lend","Financing",
                               ifelse(tolower(substr(PROD_LINE_TYPE_NME,1,3))=="aaa",
                                      "Advisory Services and Analytics (ASA) IBRD",PROD_LINE_TYPE_NME)),
@@ -18,10 +18,11 @@
            url = paste0("http://operationsportal2.worldbank.org/wb/opsportal/ttw/about?projId=",PROJ_ID),
            RAS = ifelse(is.na(FEE_BASED_FLAG),"N","Y")) %>%
     select(-IBRD_CMT_USD_AMT, -GRANT_USD_AMT, -IDA_CMT_USD_AMT) %>%
-    filter(PROJECT_STATUS_NME %in% c("Closed","Active","Pipeline")) #%>%
+    filter(PROJECT_STATUS_NME %in% c("Closed","Active","Pipeline")) %>%
+    mutate(ProjectOrder = ifelse(is.na(REVISED_CLS_DATE),ProjectOrder,ifelse(REVISED_CLS_DATE<Sys.Date(),3,ProjectOrder)))
     #filter(sequence == max(sequence) & rate_code == "ORR") # latest SORT
     #filter(!(tolower(substr(Prod_Line,1,8))=="standard"))
-  
+
   return(dataTC)
 }
 
@@ -41,6 +42,7 @@
                     url = paste0("http://ifcext.ifc.org/ifcext/spiwebsite1.nsf/%20AllDocsAdvisory?SearchView&Query=(FIELD%20ProjectId=",PROJ_ID))
   # make PROJ_ID character
   dataIFC$PROJ_ID <- as.character(dataIFC$PROJ_ID)
+  dataIFC <- mutate(dataIFC, ProjectOrder = ifelse(is.na(IMPLEMENTATION_END_DATE),ProjectOrder,ifelse(IMPLEMENTATION_END_DATE<Sys.Date(),3,ProjectOrder)))
   
   return(dataIFC)
 }
@@ -103,7 +105,7 @@
     data <- rbind(data,c("None",rep("",ncol(dataTC)-2)))
   }
   names(data) <- c("Project ID", "Project Name", "Team Leader", "Approval Date", "Lending Inst. Type",
-                   "Begin Appraisal", "Commitment (US$M)","Latest Sort Overall Risk Rating","FY Expenses (US$K)",
+                   "Begin Appraisal", "Commitment (US$K)","Latest Sort Overall Risk Rating","FY Expenses (US$K)",
                    "Cum Expenses (US$K)","FY Prob")
   
   return(data)
@@ -145,7 +147,7 @@
   data <- select(data, -url)
   
   # scale Expenses to thousands 
-  data$Undisb_Bal <- data$Undisb_Bal/1000000
+  data$Undisb_Bal <- data$Undisb_Bal/1000
   # format Amount
   data$Project_Amount <- format(data$Project_Amount, digits=0, decimal.mark=".",
                                 big.mark=",",small.mark=".", small.interval=3)
@@ -167,7 +169,7 @@
     data <- rbind(data,c("None",rep("",ncol(dataTC)-2)))
   }
   names(data) <- c("Project ID", "Project Name", "Team Leader", "Approval Date", "Lending Inst. Type",
-                   "Closing Date", "Commitment (US$M)","Undisbursed Balance (US$M)",
+                   "Closing Date", "Commitment (US$K)","Undisbursed Balance (US$K)",
                    "Project Rating DO", "Project Rating IP","Overall Risk",
                    "Months in Problem Status")
   
@@ -191,14 +193,24 @@
                    Team_Leader = FULL_NME, Approval_Date = BD_APPRVL_DATE, 
                    Lending_Inst_Type = LENDING_INSTR_TYPE_NME,
                    Closing_Date = REVISED_CLS_DATE,Project_Amount,
-                   DO_RATING, IP_RATING,
+                   DO_RATING, IP_RATING,ieg_Outcome,
                    ProjectOrder,url)
   # Financing products in Closed (ProjectOrder==3)
   dataTC <- filter(dataTC, Prod_Line == "Financing" & ProjectOrder==3)
+  # convert IEG outcome to codes
+  dataTC <- mutate(dataTC, ieg_Outcome = ifelse(is.na(ieg_Outcome),"---",
+                                            ifelse(substr(ieg_Outcome,1,1)=="H",
+                                                ifelse(substr(ieg_Outcome,8,8)=="S","HS","HU"),
+                                                ifelse(substr(ieg_Outcome,1,1)=="M",
+                                                       ifelse(substr(ieg_Outcome,12,12)=="S","MS","MU"),
+                                                       ifelse(substr(ieg_Outcome,1,1)=="N",
+                                                              ifelse(substr(ieg_Outcome,5,6)=="AP","NAP",ifelse(substr(ieg_Outcome,5,6)=="AV","NA","NR")),
+                                                              substr(ieg_Outcome,1,2))))))
+  
   # filter by date range. Last 2 years
   dataTC <- filter(dataTC, (Closing_Date >= (Sys.Date() - 730)) | (is.na(Closing_Date)))
   # arrange
-  dataTC <- arrange(as.data.frame(dataTC), desc(Closing_Date))
+  dataTC <- arrange(as.data.frame(dataTC), desc(Closing_Date),desc(Approval_Date))
   dataTC <- select(dataTC,-ProjectOrder, -Prod_Line)
   # remove duplicates
   data <- dataTC[!duplicated(dataTC$PROJ_ID),]
@@ -224,8 +236,8 @@
     data <- rbind(data,c("None",rep("",ncol(dataTC)-2)))
   }
   names(data) <- c("Project ID", "Project Name", "Team Leader", "Approval Date", "Lending Inst. Type",
-                   "Closing Date", "Commitment (US$M)",
-                   "Project Rating DO", "Project Rating IP")
+                   "Closing Date", "Commitment (US$K)",
+                   "Project Rating DO", "Project Rating IP", "IEG Outcome Rating")
   
   return(data)
 }
@@ -378,7 +390,7 @@
   couISO2 <- .getISO2(couName)
   #fromDate <- as.character(dateRange[[1]])
   #toDate <- as.character(dateRange[[2]])
-  
+  pOrder <- ifelse(status=="Active",1,ifelse(status=="Closed",3,2))
   ### IFC projects ----------
   dataIFC <- .filterIFCProjects(couName)
   # keep relevant columns
@@ -386,7 +398,7 @@
                     Approval_Date = ASIP_APPROVAL_DATE, Closing_Date = IMPLEMENTATION_END_DATE,
                     Project_Status, Project_Amount = TOTAL_FUNDING,
                     Current_Exp = PRORATED_TOTAL_FYTD_EXPENSE, ProjectOrder,url)
-  dataIFC <- filter(dataIFC, Project_Status == status)
+  dataIFC <- filter(dataIFC, ProjectOrder == pOrder)
   #dataIFC <- filter(dataIFC, (Approval_Date >= fromDate) & (Approval_Date <= toDate)) #select country
   # arrange
   dataIFC <- arrange(as.data.frame(dataIFC), desc(Approval_Date))
