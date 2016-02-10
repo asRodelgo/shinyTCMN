@@ -15,13 +15,13 @@
     tabsetPanel(selected = "WB Portfolio",
   #### tables ####
       tabPanel("SCD/CPF",
-               h4("SCD/CPF", style="color:#3399ff"),
+               column(8,h4("SCD/CPF", style="color:#3399ff"),
                h4("Most Recent",style="color:#3399ff"),
                dataTableOutput('mostRecentDocs'),
                br(),
                h4("Planned",style="color:#3399ff"),
                dataTableOutput('plannedDocs'),
-               br()
+               br())
       ),
       tabPanel("WB Lending Pipeline",
                 h4("WB Lending Pipeline", style="color:#3399ff"),

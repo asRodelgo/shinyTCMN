@@ -40,19 +40,19 @@ output$asaClosed <- DT::renderDataTable({
 output$ifcActive <- DT::renderDataTable({
   ifcActive <- .projectsTableASA_IFC(input$inCouSel, "Active")
   return(ifcActive)
-},options = list(dom = 't', columnDefs = list(list(className = 'dt-right', targets = c(5,6))),
+},options = list(dom = 't', columnDefs = list(list(className = 'dt-right', targets = c(5,6,7))),
                  scrollX = TRUE),rownames = FALSE,escape=FALSE)
 # Projects Portfolio table ASA IFC Active -----------------------------
 output$ifcPipeline <- DT::renderDataTable({
   ifcPipeline <- .projectsTableASA_IFC(input$inCouSel, "Pipeline")
   return(ifcPipeline)
-},options = list(dom = 't', columnDefs = list(list(className = 'dt-right', targets = c(5,6))),
+},options = list(dom = 't', columnDefs = list(list(className = 'dt-right', targets = c(5,6,7))),
                  scrollX = TRUE),rownames = FALSE,escape=FALSE)
 # Projects Portfolio table ASA IFC Closed -----------------------------
 output$ifcClosed <- DT::renderDataTable({
   ifcClosed <- .projectsTableASA_IFC(input$inCouSel, "Closed")
   return(ifcClosed)
-},options = list(dom = 't', columnDefs = list(list(className = 'dt-right', targets = c(5,6))),
+},options = list(dom = 't', columnDefs = list(list(className = 'dt-right', targets = c(5,6,7))),
                  scrollX = TRUE),rownames = FALSE,escape=FALSE)
 # SCD/CPF most recent -----------------------------
 output$mostRecentDocs <- DT::renderDataTable({

@@ -68,7 +68,7 @@
                    Cum_Expenses = CUMULATIVE_FY_COST,FY_Prob = FY_PROB_TYPE_CODE,
                    ProjectOrder,url)
   # Financing products in Pipeline (ProjectOrder==2)
-  dataTC <- filter(dataTC, Prod_Line == "Financing" & ProjectOrder==2 & !(is.na(Approval_Date)))
+  dataTC <- filter(dataTC, Prod_Line == "Financing" & ProjectOrder==2)
   # filter by date range
   #dataTC <- filter(dataTC, (Approval_Date >= fromDate) & (Approval_Date <= toDate))
   
@@ -432,7 +432,7 @@
   }
   # If table is empty show "None"
   if (nrow(data)==0){
-    data <- rbind(data,c("None",rep("",ncol(dataIFC)-1)))
+    data <- rbind(data,c("None",rep("",ncol(dataIFC)-2)))
   }
   names(data) <- c("Project ID", "Project Name", "Team Leader","IP Approval Date", 
                    "Expected End Date","Approval Value (in US$K)", "Total Expenditures (in US$K)","Current FY Expenditure (in US$K)")
@@ -450,13 +450,15 @@
   couISO2 <- .getISO2(couName)
   
   data <- filter(mostRecentDocs, CountryCodeISO3 == cou)
-  data <- select(data, Name, Date, Report)
-  names(data) <- c("Product","Document Date","Document ID")
+  data <- select(data, Name, DateOrder, Report)
+  data$DateOrder <- gsub("/","-",data$DateOrder,fixed=TRUE)
+  data$Report <- as.character(data$Report)
   
   # If table is empty show "None"
   if (nrow(data)==0){
     data <- rbind(data,c("None",rep("",2)))
   }
+  names(data) <- c("Product","Document Date","Document ID")
   
   return(data)
 }
