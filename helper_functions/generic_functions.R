@@ -38,6 +38,17 @@
   }
   #return(countryCode)
 }
+.getCountryCodeIFC <- function(couName){
+  
+  countryCode <- filter(countries, Country==couName)$ISO3_IFC
+  if (length(countryCode)==1){
+    return(countryCode)
+  } else{
+    return(0)
+  }
+  #return(countryCode)
+}
+
 
 # country flags -----------------------------------
 .outFlag <- function(couName){

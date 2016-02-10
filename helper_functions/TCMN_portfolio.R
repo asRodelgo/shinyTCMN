@@ -29,7 +29,7 @@
 # filter IFC T&C relevant projects ---------------
 .filterIFCProjects <- function(couName){
   
-  cou <- .getCountryCode(couName)
+  cou <- .getCountryCodeIFC(couName)
   couISO2 <- .getISO2(couName)
   
   dataIFC <- filter(IFCprojects, COUNTRY_CODE==cou) #select country
@@ -68,9 +68,10 @@
                    Cum_Expenses = CUMULATIVE_FY_COST,FY_Prob = FY_PROB_TYPE_CODE,
                    ProjectOrder,url)
   # Financing products in Pipeline (ProjectOrder==2)
-  dataTC <- filter(dataTC, Prod_Line == "Financing" & ProjectOrder==2)
+  dataTC <- filter(dataTC, Prod_Line == "Financing" & ProjectOrder==2 & !(is.na(Approval_Date)))
   # filter by date range
   #dataTC <- filter(dataTC, (Approval_Date >= fromDate) & (Approval_Date <= toDate))
+  
   # arrange
   dataTC <- arrange(as.data.frame(dataTC), desc(Approval_Date))
   dataTC <- select(dataTC,-ProjectOrder, -Prod_Line)
@@ -133,7 +134,7 @@
                    Months_Problem = No_of_Months_in_problem_status,
                    ProjectOrder,url)
   # Financing products in Active (ProjectOrder==1)
-  dataTC <- filter(dataTC, Prod_Line == "Financing" & ProjectOrder==1)
+  dataTC <- filter(dataTC, Prod_Line == "Financing" & ProjectOrder==1 & !(is.na(Approval_Date)))
   # filter by date range
   #dataTC <- filter(dataTC, (Approval_Date >= fromDate) & (Approval_Date <= toDate))
   # arrange
@@ -262,8 +263,8 @@
                    Cum_Expenses = CUMULATIVE_FY_COST,
                    ProjectOrder,url)
   # AAA in Active (ProjectOrder==1)
-  dataTC <- filter(dataTC, Prod_Line == "Advisory Services and Analytics (ASA) IBRD" 
-                   & ProjectOrder==1)
+  dataTC <- filter(dataTC, Prod_Line %in% c("Advisory Services and Analytics (ASA) IBRD","STANDARD PRODUCT") 
+                   & ProjectOrder==1 & !(is.na(Approval_Date)))
   # filter by date range
   #dataTC <- filter(dataTC, (Approval_Date >= fromDate) & (Approval_Date <= toDate))
   # arrange
@@ -331,7 +332,7 @@
                    Cum_Expenses = CUMULATIVE_FY_COST,
                    ProjectOrder,url)
   # AAA in Active (ProjectOrder==1)
-  dataTC <- filter(dataTC, Prod_Line == "Advisory Services and Analytics (ASA) IBRD" 
+  dataTC <- filter(dataTC, Prod_Line %in% c("Advisory Services and Analytics (ASA) IBRD","STANDARD PRODUCT") 
                    & ProjectOrder==3)
   # filter by date range
   #dataTC <- filter(dataTC, (Approval_Date >= fromDate) & (Approval_Date <= toDate))
@@ -396,7 +397,7 @@
   # keep relevant columns
   dataIFC <- select(dataIFC, PROJ_ID, Project_Name = PROJECT_NAME, Team_Leader = PROJECT_LEADER,
                     Approval_Date = ASIP_APPROVAL_DATE, Closing_Date = IMPLEMENTATION_END_DATE,
-                    Project_Status, Project_Amount = TOTAL_FUNDING,
+                    Project_Status, Project_Amount = TOTAL_FUNDING, ITD_EXPENDITURES,
                     Current_Exp = PRORATED_TOTAL_FYTD_EXPENSE, ProjectOrder,url)
   dataIFC <- filter(dataIFC, ProjectOrder == pOrder)
   #dataIFC <- filter(dataIFC, (Approval_Date >= fromDate) & (Approval_Date <= toDate)) #select country
@@ -412,10 +413,13 @@
   # Scale amounts
   data$Project_Amount <- data$Project_Amount/1000
   data$Current_Exp <- data$Current_Exp/1000
+  data$ITD_EXPENDITURES <- data$ITD_EXPENDITURES/1000
   # format Amount
   data$Project_Amount <- format(data$Project_Amount, digits=0, decimal.mark=".",
                                 big.mark=",",small.mark=".", small.interval=3)
   data$Current_Exp <- format(data$Current_Exp, digits=0, decimal.mark=".",
+                             big.mark=",",small.mark=".", small.interval=3)
+  data$ITD_EXPENDITURES <- format(data$ITD_EXPENDITURES, digits=0, decimal.mark=".",
                              big.mark=",",small.mark=".", small.interval=3)
   # substitute NAs for "---" em-dash
   data[is.na(data)] <- "---"
@@ -431,7 +435,48 @@
     data <- rbind(data,c("None",rep("",ncol(dataIFC)-1)))
   }
   names(data) <- c("Project ID", "Project Name", "Team Leader","IP Approval Date", 
-                   "Expected End Date","Approval Value (in US$K)", "Current Expenditure (in US$K)")
+                   "Expected End Date","Approval Value (in US$K)", "Total Expenditures (in US$K)","Current FY Expenditure (in US$K)")
+  
+  return(data)
+}
+
+#############
+
+
+# SCD/CPF Most recent ----------------
+.mostRecentDocs <- function(couName){
+  
+  cou <- .getCountryCode(couName)
+  couISO2 <- .getISO2(couName)
+  
+  data <- filter(mostRecentDocs, CountryCodeISO3 == cou)
+  data <- select(data, Name, Date, Report)
+  names(data) <- c("Product","Document Date","Document ID")
+  
+  # If table is empty show "None"
+  if (nrow(data)==0){
+    data <- rbind(data,c("None",rep("",2)))
+  }
+  
+  return(data)
+}
+
+#############
+
+# SCD/CPF Planned ----------------
+.plannedDocs <- function(couName){
+  
+  cou <- .getCountryCode(couName)
+  couISO2 <- .getISO2(couName)
+  
+  data <- filter(plannedDocs, CountryCodeISO3 == cou)
+  data <- select(data, Product, ConceptReviewDate, BoardDate)
+  
+  # If table is empty show "None"
+  if (nrow(data)==0){
+    data <- rbind(data,c("None",rep("",2)))
+  }
+  names(data) <- c("Product","Concept Review Date","Board Date")
   
   return(data)
 }

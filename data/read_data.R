@@ -14,6 +14,7 @@ TCMN_data <- read.csv("data/TCMN_data.csv", colClasses = c(rep("character",4),re
 
 # country table ----------------------------
 countries <- read.csv("data/CountryClassification.csv", stringsAsFactors = FALSE)
+countries <- arrange(countries, Country)
 
 # list of only countries (useful for selectors and others)
 countryNames <- filter(countries, !(CountryCodeISO2==""))
@@ -43,5 +44,9 @@ TCprojects <- read.csv("data/TCprojects.csv", stringsAsFactors = FALSE)
 # IFC projects portfolio --------------
 IFCprojects <- read.csv("data/IFCprojects.csv", stringsAsFactors = FALSE)
 
+# SCD/CPF most recent --------------
+mostRecentDocs <- read.csv("data/SCDCPFdocuments.csv", stringsAsFactors = FALSE)
 
+# SCD/CPF planned --------------
+plannedDocs <- read.csv("data/Planneddocuments.csv", stringsAsFactors = FALSE)
 

@@ -14,6 +14,15 @@
 #  mainPanel(
     tabsetPanel(selected = "WB Portfolio",
   #### tables ####
+      tabPanel("SCD/CPF",
+               h4("SCD/CPF", style="color:#3399ff"),
+               h4("Most Recent",style="color:#3399ff"),
+               dataTableOutput('mostRecentDocs'),
+               br(),
+               h4("Planned",style="color:#3399ff"),
+               dataTableOutput('plannedDocs'),
+               br()
+      ),
       tabPanel("WB Lending Pipeline",
                 h4("WB Lending Pipeline", style="color:#3399ff"),
                 h6("Download:",downloadLink("dataLendingPipeline","data",class = "plot-download")
@@ -45,6 +54,10 @@
                h4("Active",style="color:#3399ff"),
                h6("Download:",downloadLink("dataASA_IFCActive","data",class = "plot-download")),
                dataTableOutput('ifcActive'),
+               br(),
+               h4("Pipeline",style="color:#3399ff"),
+               h6("Download:",downloadLink("dataASA_IFCPipeline","data",class = "plot-download")),
+               dataTableOutput('ifcPipeline'),
                br(),
                h4("Closed",style="color:#3399ff"),
                h6("Download:",downloadLink("dataASA_IFCClosed","data",class = "plot-download")),

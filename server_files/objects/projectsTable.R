@@ -42,12 +42,28 @@ output$ifcActive <- DT::renderDataTable({
   return(ifcActive)
 },options = list(dom = 't', columnDefs = list(list(className = 'dt-right', targets = c(5,6))),
                  scrollX = TRUE),rownames = FALSE,escape=FALSE)
+# Projects Portfolio table ASA IFC Active -----------------------------
+output$ifcPipeline <- DT::renderDataTable({
+  ifcPipeline <- .projectsTableASA_IFC(input$inCouSel, "Pipeline")
+  return(ifcPipeline)
+},options = list(dom = 't', columnDefs = list(list(className = 'dt-right', targets = c(5,6))),
+                 scrollX = TRUE),rownames = FALSE,escape=FALSE)
 # Projects Portfolio table ASA IFC Closed -----------------------------
 output$ifcClosed <- DT::renderDataTable({
   ifcClosed <- .projectsTableASA_IFC(input$inCouSel, "Closed")
   return(ifcClosed)
 },options = list(dom = 't', columnDefs = list(list(className = 'dt-right', targets = c(5,6))),
                  scrollX = TRUE),rownames = FALSE,escape=FALSE)
+# SCD/CPF most recent -----------------------------
+output$mostRecentDocs <- DT::renderDataTable({
+  mostRecentDocs <- .mostRecentDocs(input$inCouSel)
+  return(mostRecentDocs)
+},options = list(dom = 't', scrollX = TRUE),rownames = FALSE,escape=FALSE)
+# SCD/CPF planned -----------------------------
+output$plannedDocs <- DT::renderDataTable({
+  plannedDocs <- .plannedDocs(input$inCouSel)
+  return(plannedDocs)
+},options = list(dom = 't', scrollX = TRUE),rownames = FALSE,escape=FALSE)
 
 # download data ---------------------
 output$dataLendingPipeline <- downloadHandler(
@@ -104,6 +120,15 @@ output$dataASA_IFCActive <- downloadHandler(
     write.csv(.projectsTableASA_IFC(input$inCouSel,"Active"), file, row.names = FALSE)
   }
 )
+output$dataASA_IFCPipeline <- downloadHandler(
+  filename = function() { 
+    paste0("Operations_ASA_IFCPipeline_",.getCountryCode(input$inCouSel),".csv")
+  },
+  content = function(file) {
+    #write.csv(.GVA_Table(input$inCouSel), file)
+    write.csv(.projectsTableASA_IFC(input$inCouSel,"Pipeline"), file, row.names = FALSE)
+  }
+)
 output$dataASA_IFCClosed <- downloadHandler(
   filename = function() { 
     paste0("Operations_ASA_IFCClosed_",.getCountryCode(input$inCouSel),".csv")
@@ -113,7 +138,6 @@ output$dataASA_IFCClosed <- downloadHandler(
     write.csv(.projectsTableASA_IFC(input$inCouSel,"Closed"), file, row.names = FALSE)
   }
 )
-
 # Projects Portfolio People table output -----------------------------
 output$projectsPeople <- DT::renderDataTable({
   projectsPeople <- .projectsPeople(input$inCouSel)
