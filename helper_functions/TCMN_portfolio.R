@@ -42,7 +42,7 @@
                     url = paste0("http://ifcext.ifc.org/ifcext/spiwebsite1.nsf/%20AllDocsAdvisory?SearchView&Query=(FIELD%20ProjectId=",PROJ_ID))
   # make PROJ_ID character
   dataIFC$PROJ_ID <- as.character(dataIFC$PROJ_ID)
-  dataIFC <- mutate(dataIFC, ProjectOrder = ifelse(is.na(IMPLEMENTATION_END_DATE),ProjectOrder,ifelse(IMPLEMENTATION_END_DATE<Sys.Date(),3,ProjectOrder)))
+  #dataIFC <- mutate(dataIFC, ProjectOrder = ifelse(is.na(IMPLEMENTATION_END_DATE),ProjectOrder,ifelse(IMPLEMENTATION_END_DATE<Sys.Date(),3,ProjectOrder)))
   
   return(dataIFC)
 }
@@ -395,7 +395,8 @@
   ### IFC projects ----------
   dataIFC <- .filterIFCProjects(couName)
   # keep relevant columns
-  dataIFC <- select(dataIFC, PROJ_ID, Project_Name = PROJECT_NAME, Team_Leader = PROJECT_LEADER,
+  dataIFC <- select(dataIFC, PROJ_ID, Project_Name = PROJECT_NAME, 
+                    Team_Leader = PROJECT_LEADER, PRODUCT_NAME, ClassType = PROJECT_CLASSIFICATION_TYPE,
                     Approval_Date = ASIP_APPROVAL_DATE, Closing_Date = IMPLEMENTATION_END_DATE,
                     Project_Status, Project_Amount = TOTAL_FUNDING, ITD_EXPENDITURES,
                     Current_Exp = PRORATED_TOTAL_FYTD_EXPENSE, ProjectOrder,url)
@@ -404,8 +405,18 @@
   # arrange
   dataIFC <- arrange(as.data.frame(dataIFC), desc(Approval_Date))
   dataIFC <- select(dataIFC,-ProjectOrder, -Project_Status) # drop ProjectOrder
-  # remove duplicates
-  data <- dataIFC[!duplicated(dataIFC$PROJ_ID),]
+  # remove duplicates of Proj_ID and product name
+  data <- dataIFC[!duplicated(paste0(dataIFC$PROJ_ID,dataIFC$PRODUCT_NAME)),]
+  # add amounts per PROJ_ID
+  data <- data %>%
+    group_by(PROJ_ID) %>%
+    mutate(Project_Amount = sum(Project_Amount, na.rm=TRUE), 
+           ITD_EXPENDITURES = sum(ITD_EXPENDITURES, na.rm=TRUE),
+           Current_Exp = sum(Current_Exp, na.rm=TRUE))
+  
+  data <- data[!duplicated(data$PROJ_ID),]
+  data <- select(data,-PRODUCT_NAME, -ClassType) # drop Product and class info
+  
   data <- as.data.frame(data)
   data <- mutate(data, PROJ_ID = 
                    paste0('<a href=',url,'>',PROJ_ID,'</a>'))
