@@ -37,7 +37,8 @@
   dataIFC <- filter(dataIFC, (PROJECT_STAGE %in% c("PIPELINE","PORTFOLIO")) | (PROJECT_STATUS %in% c("ACTIVE", "HOLD", "CLOSED")),
                     PROJECT_TYPE == "AS PROJECTS WITH CLIENT(S)")
   dataIFC <- mutate(dataIFC, Prod_Line = "Advisory Services and Analytics (ASA) IFC",
-                    Project_Status = ifelse(PROJECT_STAGE=="PIPELINE","Pipeline",ifelse(PROJECT_STATUS=="CLOSED","Closed","Active")))
+                    Project_Status = ifelse(PROJECT_STATUS=="CLOSED","Closed",ifelse(PROJECT_STAGE=="PIPELINE","Pipeline","Active")),
+                    Hold = ifelse((PROJECT_STAGE=="PORTFOLIO") & (PROJECT_STATUS=="HOLD"), "Y","N"))
   dataIFC <- mutate(dataIFC, ProjectOrder = ifelse(Project_Status=="Active",1,ifelse(Project_Status=="Pipeline",2,3)),
                     url = paste0("http://ifcext.ifc.org/ifcext/spiwebsite1.nsf/%20AllDocsAdvisory?SearchView&Query=(FIELD%20ProjectId=",PROJ_ID))
   # make PROJ_ID character
@@ -399,7 +400,7 @@
                     Team_Leader = PROJECT_LEADER, PRODUCT_NAME, ClassType = PROJECT_CLASSIFICATION_TYPE,
                     Approval_Date = ASIP_APPROVAL_DATE, Closing_Date = IMPLEMENTATION_END_DATE,
                     Project_Status, Project_Amount = TOTAL_FUNDING, ITD_EXPENDITURES,
-                    Current_Exp = PRORATED_TOTAL_FYTD_EXPENSE, ProjectOrder,url)
+                    Current_Exp = PRORATED_TOTAL_FYTD_EXPENSE, ProjectOrder,url,Hold)
   dataIFC <- filter(dataIFC, ProjectOrder == pOrder)
   #dataIFC <- filter(dataIFC, (Approval_Date >= fromDate) & (Approval_Date <= toDate)) #select country
   # arrange
@@ -418,9 +419,11 @@
   data <- select(data,-PRODUCT_NAME, -ClassType) # drop Product and class info
   
   data <- as.data.frame(data)
-  data <- mutate(data, PROJ_ID = 
-                   paste0('<a href=',url,'>',PROJ_ID,'</a>'))
-  data <- select(data, -url)
+  data <- mutate(data, PROJ_ID = ifelse(Hold == "Y",
+                   paste0('<a href=',url,'>',PROJ_ID,' (Hold)</a>'),
+                 paste0('<a href=',url,'>',PROJ_ID,'</a>')))
+  
+  data <- select(data, -url, -Hold)
   # Scale amounts
   data$Project_Amount <- data$Project_Amount/1000
   data$Current_Exp <- data$Current_Exp/1000
@@ -443,7 +446,7 @@
   }
   # If table is empty show "None"
   if (nrow(data)==0){
-    data <- rbind(data,c("None",rep("",ncol(dataIFC)-2)))
+    data <- rbind(data,c("None",rep("",ncol(dataIFC)-4)))
   }
   names(data) <- c("Project ID", "Project Name", "Team Leader","IP Approval Date", 
                    "Expected End Date","Approval Value (in US$K)", "Total Expenditures (in US$K)","Current FY Expenditure (in US$K)")
