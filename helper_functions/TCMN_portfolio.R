@@ -464,15 +464,16 @@
   couISO2 <- .getISO2(couName)
   
   data <- filter(mostRecentDocs, CountryCodeISO3 == cou)
-  data <- select(data, Name, DateOrder, Report)
-  data$DateOrder <- gsub("/","-",data$DateOrder,fixed=TRUE)
-  data$Report <- as.character(data$Report)
+  data <- select(data, Report, Date, url)
+  data <- as.data.frame(data)
+  data <- mutate(data, Report = paste0('<a href=',url,'>',Report,'</a>'))
+  data <- select(data, -url)
   
   # If table is empty show "None"
   if (nrow(data)==0){
     data <- rbind(data,c("None",rep("",2)))
   }
-  names(data) <- c("Product","Document Date","Document ID")
+  names(data) <- c("Product","Document Date")
   
   return(data)
 }
