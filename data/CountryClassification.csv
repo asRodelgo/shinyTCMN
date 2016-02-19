@@ -119,8 +119,8 @@ Uzbekistan,UZB,R2,Europe and Central Asia,R2,R2d,Europe and Central Asia,,R2e,R2
 Vanuatu,VUT,R1,East Asia and Pacific,R1,R1d,East Asia and Pacific,,R1e,R1e,VU,Vanuatu,East Asia & Pacific,East Asia & Pacific,Vanuatu,VAN
 Vietnam,VNM,R1,East Asia and Pacific,R1,R1d,East Asia and Pacific,,R1e,R1e,VN,Viet Nam,East Asia & Pacific,East Asia & Pacific,Vietnam,VNM
 Samoa,WSM,R1,East Asia and Pacific,R1,R1d,East Asia and Pacific,,R1e,R1e,WS,Samoa,East Asia & Pacific,East Asia & Pacific,Samoa,WSM
-Kosovo,KSV,R2,Europe and Central Asia,R2,R2d,Europe and Central Asia,,R2e,R2e,,Kosovo,Europe & Cen. Asia,Europe & Cen. Asia,Kosovo,XKS
-West Bank and Gaza,WBG,R4,Middle East and North Africa,R4,R4d,Middle East and North Africa,,R4e,R4e,,State of Palestine,MENA,MENA,West Bank and Gaza,XOT
+Kosovo,KSV,R2,Europe and Central Asia,R2,R2d,Europe and Central Asia,,R2e,R2e,XK,Kosovo,Europe & Cen. Asia,Europe & Cen. Asia,Kosovo,XKS
+West Bank and Gaza,WBG,R4,Middle East and North Africa,R4,R4d,Middle East and North Africa,,R4e,R4e,PS,State of Palestine,MENA,MENA,West Bank and Gaza,XOT
 "Yemen, Rep.",YEM,R4,Middle East and North Africa,R4,R4d,Middle East and North Africa,,R4e,R4e,YE,Yemen,MENA,MENA,Republic of Yemen,YAR
 "Congo, Dem. Rep.",COD,R7,Sub-Saharan Africa,R7,R7d,Sub-Saharan Africa,,R7e,R7e,CD,Dem. Rep. of the Congo,Sub-Saharan Africa,Sub-Saharan Africa,"Congo, Democratic Republic of",ZAI
 Zambia,ZMB,R7,Sub-Saharan Africa,R7,R7d,Sub-Saharan Africa,,R7e,R7e,ZM,Zambia,Sub-Saharan Africa,Sub-Saharan Africa,Zambia,ZAM
@@ -193,7 +193,7 @@ Channel Islands,,R2,High income: nonOECD,I1,R2d,Europe and Central Asia,,R2e,I1e
 Chile,CHL,R3,High income: OECD,I0,I0,Latin America and Caribbean,,R3e,I0e,CL,Chile,Lat. America & Carib.,High income: OECD,Chile,CHL
 "Congo, Rep.",COG,R7,Sub-Saharan Africa,R7,R7d,Sub-Saharan Africa,,R7e,R7e,CG,Congo,Sub-Saharan Africa,Sub-Saharan Africa,"Congo, Republic of",COG
 Cuba,CUB,R3,Latin America and Caribbean,R3,R3d,Latin America and Caribbean,,R3e,R3e,CU,Cuba,Lat. America & Carib.,Lat. America & Carib.,Cuba,CUB
-Curacao,,R3,High income: nonOECD,I1,R3d,Latin America and Caribbean,,R3e,I1e,,Curaçao,Lat. America & Carib.,High income: nonOECD,Curaçao,0
+Curacao,CUW,R3,High income: nonOECD,I1,R3d,Latin America and Caribbean,,R3e,I1e,CW,Curaçao,Lat. America & Carib.,High income: nonOECD,Curaçao,0
 Cyprus,CYP,R2,High income: nonOECD,I1,R2d,Europe and Central Asia,EU,R2e,I1e,CY,Cyprus,Europe & Cen. Asia,High income: nonOECD,Cyprus,CYP
 Denmark,DNK,R2,High income: OECD,I0,I0,Europe and Central Asia,EU,R2e,I0e,DK,Denmark,Europe & Cen. Asia,High income: OECD,Denmark,DNK
 Djibouti,DJI,R4,Middle East and North Africa,R4,R4d,Middle East and North Africa,,R4e,R4e,DJ,Djibouti,MENA,MENA,Djibouti,DJI
