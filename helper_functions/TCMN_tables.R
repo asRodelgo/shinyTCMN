@@ -183,6 +183,8 @@
     data <- arrange(data, Key)
     data <- select(data, Key, IndicatorShort, Period, ObsScaled)
     
+    # restrict to 2 decimal places
+    data$ObsScaled <- round(data$ObsScaled,2)
     # add sparkline column
     dataSpark <- data %>% 
       group_by(Key) %>%
