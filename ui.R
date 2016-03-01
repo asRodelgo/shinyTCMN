@@ -37,7 +37,7 @@ tagList(
       
       shinyjs::hidden( # hide main navigation from the home page
         div(id="homeButtons",
-            column(4, h3("Trade and Competitiveness Data and Operations Snapshots", style="color:#3399ff")),
+            column(4, h3(HTML("<A HREF=\"javascript:history.go(0)\">Trade and Competitiveness Data and Operations Snapshots</A>"), style="color:#3399ff")),
             column(3,h5("Select a country:"),
                    selectInput('inCouSel', NULL, choices=c("Select a country",countryNames$Country), selectize=FALSE)),
             column(2, div(uiOutput('outFlag'), class = "flag")),

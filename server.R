@@ -8,12 +8,6 @@ source("global_utils.R", local = TRUE) #global functions available for the whole
 # ___________________________________________________________________
 function(input, output, session) {
   
-#   observe({
-#     # Stop the app when "Save & Close" button is clicked
-#     if (input$save_and_close_button > 0) 
-#       stopApp(object)
-#   })
-  
   # Source all files from server_files directory and subdirectories
   files <- list.files("server_files", full.names = TRUE, recursive = TRUE)
   for (f in files) source(f, local = TRUE)
@@ -42,7 +36,7 @@ function(input, output, session) {
       shinyjs::show(id="dataTab")
       shinyjs::hide(id="homeTab")
       shinyjs::show(id="homeButtons")
-      # pass the selected country in the home page for the next screen
+      # pass the selected country in the home page to the next screen
       updateSelectInput(session, "inCouSel",
                         choices=countryNames$Country, 
                         selected=input$inCouSelHome)
@@ -58,7 +52,7 @@ function(input, output, session) {
   output$hideHomePanel <- reactive({input$inCouSel}) # condition to hide home panel
   outputOptions(output, "hideHomePanel", suspendWhenHidden=TRUE) # add this line to make it work
  
-  # Home button !! not working globally !! --------------
+  # Home button --------------
   observeEvent(input$country_go, {
    
       shinyjs::onclick("country_go", updateTabsetPanel(session, "nav", selected = "macro"))
