@@ -16,19 +16,24 @@ br(),br(),
 column(12,h4("In this site you will be able to:"), style="color:#646464;text-align: center"),
 br(),
 column(12,h4("Browse T&C data and operations for all countries through tables, charts and maps", style="color:#646464;text-align: center"),
-       h4("Access data analysis and other featured data stories", style="color:#646464;text-align: center"),
-       h4("Download summary data and operations PDF reports for a selected country", style="color:#646464;text-align: center")),
+       h4("Download summary data and operations PDF reports for a selected country", style="color:#646464;text-align: center")
+       #h4("Access data analysis and other featured data stories", style="color:#646464;text-align: center")
+       ),
+br(),br(),
+column(12,h4("------------"), style="color:#646464;text-align: center"),
 br(),
-column(12,h4("Download Operations by Country Departments", style="color:#3399ff;text-align: center"),
+column(12,h4("Alternatively, you can directly download:"), style="color:#646464;text-align: center"),
+br(),
+column(12,h4("Operations Reports by Country Departments", style="color:#3399ff;text-align: center"),
        align="center",
-       selectInput('inCouDepHome', NULL, choices=list("Select a country department",`East Asia and Pacific` = unique(filter(countryDeps, RegionCodeALL == "R1")$CMU),
+       div(style="display:inline-block",selectInput('inCouDepHome', NULL, choices=list("Select a country department",`East Asia and Pacific` = unique(filter(countryDeps, RegionCodeALL == "R1")$CMU),
                                                       `Europe and Central Asia` = unique(filter(countryDeps, RegionCodeALL == "R2")$CMU),
                                                       `Latin America and Caribbean` = unique(filter(countryDeps, RegionCodeALL == "R3")$CMU),
                                                       `Middle East and North Africa` = unique(filter(countryDeps, RegionCodeALL == "R4")$CMU),
                                                       `South Asia` = unique(filter(countryDeps, RegionCodeALL == "R6")$CMU),
                                                       `Sub-Saharan Africa` = unique(filter(countryDeps, RegionCodeALL == "R7")$CMU)), 
-                                          selected = "Select a country department", selectize=FALSE),
-       downloadButton('downloadRepsDeps', 'Download Reports')
+                                          selected = "Select a country department", selectize=FALSE)),
+           div(style="display:inline-block",downloadButton('downloadRepsDeps', 'pdf'))
   #includeHTML("html/home_page_links.html")
-)
+  )
 )
