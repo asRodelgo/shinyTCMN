@@ -464,10 +464,10 @@
   couISO2 <- .getISO2(couName)
   
   data <- filter(mostRecentDocs, CountryCodeISO3 == cou)
-  data <- select(data, Report, Date, url)
+  data <- select(data, Report, Date, pdfurl)
   data <- as.data.frame(data)
-  data <- mutate(data, Report = paste0('<a href=',url,'>',Report,'</a>'))
-  data <- select(data, -url)
+  data <- mutate(data, Report = paste0('<a href=',pdfurl,' target="_blank">',Report,'</a>'))
+  data <- select(data, -pdfurl)
   
   # If table is empty show "None"
   if (nrow(data)==0){
