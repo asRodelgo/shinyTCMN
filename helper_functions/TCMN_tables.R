@@ -269,16 +269,27 @@
 
 #############
 
-.PolicyTable <- function(couName){
+.PolicyTable <- function(couName, dbType){
   
+  if (dbType == "dbDTF") {
+    dbTable <- "table4b"
+    dbTitle <- "DTF (% points)"
+    dbDigits <- 4
+    dbSign <- -1
+  } else {
+    dbTable <- "table4"
+    dbTitle <- "Rank"
+    dbDigits <- 0
+    dbSign <- 1
+  }
   cou <- .getCountryCode(couName)
-  data <- filter(TCMN_data, CountryCode == cou, Subsection=="table4") #select country, region and world
+  data <- filter(TCMN_data, CountryCode == cou, Subsection==dbTable) #select country, region and world
   if (nrow(data[data$CountryCode==cou,])>0){
     # prepare for table
     data <- select(data, IndicatorShort, Period, Observation)
     data <- arrange(data, Period)
     # format numbers
-    data$Observation <- format(data$Observation, digits=0, decimal.mark=".",
+    data$Observation <- format(data$Observation, digits=dbDigits, decimal.mark=".",
                                big.mark=",",small.mark=".", small.interval=3)
     
     data$Observation <- as.numeric(data$Observation)
@@ -292,13 +303,13 @@
     
     data <- spread(data, Period, Observation)
     # this part creates the sparkline structure for the last column of the table
-    data$trend <- data[,2] - data[,3]
+    data$trend <- dbSign*data[,2] - dbSign*data[,3]
     data <- data %>%
       group_by(IndicatorShort) %>%
       mutate(trend = paste0("0,",trend))
       
   
-    names(data) <- c("Indicator",paste("DB",names(data)[2],"Rank"),paste("DB",names(data)[3],"Rank"),"Change in Rank")
+    names(data) <- c("Indicator",paste("DB",names(data)[2],dbTitle),paste("DB",names(data)[3],dbTitle),"Change")
     
     # substitute NAs for "---" em-dash
     data[is.na(data)] <- "---"
@@ -310,7 +321,6 @@
   return(data)
   
 }
-
 
 #############
 

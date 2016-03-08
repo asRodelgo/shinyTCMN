@@ -1,4 +1,8 @@
+#column(12,h4("Doing Business Ranks"),
 column(12,h4("Doing Business Ranks"),
+       radioButtons('inDBtype', "",
+                    c("Distance to Frontier" = "dbDTF","Ranks" = "dbRanks"), 
+                    selected = "dbDTF", inline = TRUE),
 h6("Source: ",
    a(TCMN_sources[TCMN_sources$Source=="DB",]$SourceDescription, 
      href = TCMN_sources[TCMN_sources$Source=="DB",]$url)),

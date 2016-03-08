@@ -9,7 +9,7 @@ output$db_Table <- renderDataTable({
   box_string <- "type: 'box', lineColor: 'black', whiskerColor: 'black', outlierFillColor: 'black', outlierLineColor: 'black', medianColor: 'black', boxFillColor: 'orange', boxLineColor: 'black'"
   
   # here's the data
-  dataSpark <- .PolicyTable(input$inCouSel)
+  dataSpark <- .PolicyTable(input$inCouSel,input$inDBtype)
   
   # column definitions: column #20, javascript starts arrays on 0
   cd <- list(list(targets = c(ncol(dataSpark)), 
@@ -50,7 +50,7 @@ output$dataDB <- downloadHandler(
   content = function(file) {
     #write.csv(.GVA_Table(input$inCouSel), file)
     write.csv(TCMN_data[(TCMN_data$CountryCode ==.getCountryCode(input$inCouSel)) & 
-                          (TCMN_data$Subsection=="table4"),], file, row.names = FALSE)
+                          (substr(TCMN_data$Subsection,1,6)=="table4"),], file, row.names = FALSE)
   }
 )
 
