@@ -136,7 +136,7 @@ tagList(
                         tabPanel("Trade Policy",
                                  source(file.path("ui_files", "tradePolicy.R"), local = TRUE)$value
                         ),
-                        tabPanel("Private Sector's Views",
+                        tabPanel("Private Sector View",
                                  source(file.path("ui_files", "privateSector.R"), local = TRUE)$value
                         )
                       ) # End navlistPanel
