@@ -181,9 +181,13 @@
     data2 <- filter(data2, Period == period)
     data <- rbind(data, data2)
     data <- mutate(data, CountryName = ifelse(CountryCode==cou, couName,couName2))
+    # custom reorder bars
+    data$IndicatorShort <- factor(data$IndicatorShort, levels=data[order(data$Key, decreasing = TRUE), "IndicatorShort"])
     
-    ggplot(data, aes(x=IndicatorShort,y=Observation,fill=factor(CountryName))) +
-      geom_bar(position="dodge",stat="identity") +
+    alpha <- factor(ifelse(data$Key=="TP00",0.9,0.5))
+    ggplot(data=data) + #,fill=factor(CountryName))) +
+      geom_bar(aes(x=IndicatorShort,y=Observation, fill = factor(ifelse(Key == "TP00", ifelse(CountryCode == cou, 1, 2),ifelse(CountryCode == cou, 1, 2))), alpha = alpha),position="dodge",stat="identity")+
+      #geom_bar(aes(x=IndicatorShort,y=Observation, fill = factor(ifelse(Key == "TP00", ifelse(CountryCode == cou, 1, 2),ifelse(CountryCode == cou, 1, 2))), alpha = ifelse(Key == "TP00",0.9,0.1)),position="dodge",stat="identity")+
       coord_flip() +
       theme(legend.key=element_blank(),
             legend.title=element_blank(),
@@ -193,7 +197,8 @@
             axis.text.y = element_text(size=15)#, axis.text.x = element_blank()
             ) + 
       labs(x="",y="")+#,title="Logistics Performance Index (1-5)"
-      scale_fill_manual(values = c("darkblue","green"))
+      scale_fill_manual(values = c("blue","green"), labels = c(couName,couName2)) +
+      scale_alpha_discrete(range = c(0.5, 0.9), guide = FALSE)
                         #,guide = guide_legend(reverse=TRUE))
   
 } else {
