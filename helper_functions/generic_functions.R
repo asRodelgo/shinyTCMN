@@ -98,4 +98,10 @@
   }
   
 }
+# to use for tSNE --------------
+.getSubsectionFromDataset <- function(dataset){
+  
+  subsections <- unique(filter(TCMN_indic, Dataset == dataset)$Subsection)
+
+}
 

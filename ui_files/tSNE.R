@@ -13,6 +13,7 @@ div(id = "tsne",
                                   min = as.numeric(min(TCMN_data$Period)),
                                   max = as.numeric(thisYear)-1,
                                   value = as.numeric(thisYear)-2),
+            selectInput('inDataset',"Select a subset of the data:",c("All datasets",unique(TCMN_indic$Dataset)),selected = "DB",selectize = FALSE),
             actionButton('tsne_go', "Generate t-SNE")#, class = "tsne-go"),
           ),
         mainPanel(

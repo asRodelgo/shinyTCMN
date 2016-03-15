@@ -3,7 +3,7 @@ tSNE_plot <- eventReactive(input$tsne_go,{
   #validate(need(input$inCouSel, message = "Loading..."))
   
   do.call(".tSNE_plot", args = list(
-    couName = input$inCouSel, num_iter = input$inNumIter, max_num_neighbors = input$maxNumNeigh, period = input$inPeriod 
+    couName = input$inCouSel, num_iter = input$inNumIter, max_num_neighbors = input$maxNumNeigh, period = input$inPeriod, dataset = input$inDataset 
   ))
 })
 
@@ -13,7 +13,7 @@ output$tSNE_plot <- renderPlot({
   
   isolate({ # Use isolate() to avoid dependency on input values
     
-    .tSNE_plot(input$inCouSel,input$inNumIter,input$maxNumNeigh,input$inPeriod)
+    .tSNE_plot(input$inCouSel,input$inNumIter,input$maxNumNeigh,input$inPeriod,input$inDataset)
   })
   
 }, bg = "transparent")
@@ -24,7 +24,7 @@ output$tSNE_table <- renderDataTable({
   
   isolate({ # Use isolate() to avoid dependency on input values
     
-    tsneTable <- .tSNE_dist(input$inCouSel,input$inNumIter,input$maxNumNeigh,input$inPeriod)
+    tsneTable <- .tSNE_dist(input$inCouSel,input$inNumIter,input$maxNumNeigh,input$inPeriod,input$inDataset)
     return(tsneTable)
     
   })
@@ -38,18 +38,18 @@ output$downTSNE <- downloadHandler(
   },
   content = function(file){
     png(file,width=900,height=900)
-    .tSNE_plot(input$inCouSel,input$inNumIter,input$maxNumNeigh,input$inPeriod)
+    .tSNE_plot(input$inCouSel,input$inNumIter,input$maxNumNeigh,input$inPeriod,input$inDataset)
     dev.off()
   }
 )
 # download data ----------------------------
 output$dataTSNE <- downloadHandler(
   filename = function() { 
-    paste0("TSNE_",.getCountryCode(input$inCouSel),"_",input$inNumIter,"_",input$maxNumNeigh,"_",input$inPeriod,"_",input$inFactor,".csv")
+    paste0("TSNE_",.getCountryCode(input$inCouSel),"_",input$inNumIter,"_",input$maxNumNeigh,"_",input$inPeriod,"_",input$inFactor,"_",input$inDataset,".csv")
   },
   content = function(file) {
     #write.csv(.GVA_Table(input$inCouSel), file)
-    write.csv(.tSNE_compute(input$inCouSel,input$inNumIter,input$maxNumNeigh,input$inPeriod), file, row.names = FALSE)
+    write.csv(.tSNE_compute(input$inCouSel,input$inNumIter,input$maxNumNeigh,input$inPeriod,input$inDataset), file, row.names = FALSE)
   }
 )
 

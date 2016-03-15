@@ -1,8 +1,11 @@
 # prepare TCMN data for tSNE -----------------------------------------
-.tSNE_prepare <- function(period){
+.tSNE_prepare <- function(period,dataset){
   ### read the data
   TCMN_data <- as.data.frame(TCMN_data, stringsAsFactors=FALSE)
-  TCMN_data <- filter(TCMN_data, Period == period)# filter by period
+  if (dataset == "All datasets") {
+    dataset <- unique(TCMN_indic$Dataset)
+  }
+  TCMN_data <- filter(TCMN_data, Period == period, Subsection %in% .getSubsectionFromDataset(dataset))# filter by period & dataset
   # rows correspond to countries
   TCMN_data <- spread(TCMN_data, CountryCode, Observation)
   TCMN_data <- as.data.frame(t(TCMN_data), stringsAsFactors = FALSE)
@@ -46,9 +49,9 @@
 
 
 
-.tSNE_compute <- function(couName, num_iter, max_num_neighbors, period){
+.tSNE_compute <- function(couName, num_iter, max_num_neighbors, period, dataset){
 
-  TCMN_data_tsne <- .tSNE_prepare(period)
+  TCMN_data_tsne <- .tSNE_prepare(period,dataset)
   
   set.seed(456) # reproducitility
   tSNE_points <- tsne(TCMN_data_tsne[,-c(1,ncol(TCMN_data_tsne)-1,ncol(TCMN_data_tsne))], 
@@ -61,9 +64,9 @@
 }
 
 # compute colors for regions
-.getColors <- function(period){
+.getColors <- function(period,dataset){
 
-  TCMN_data_tsne <- .tSNE_prepare(period)
+  TCMN_data_tsne <- .tSNE_prepare(period,dataset)
   colors <- rainbow(length(unique(TCMN_data_tsne$Region)))
   names(colors) <- unique(TCMN_data_tsne$Region)
   return(colors)
@@ -80,20 +83,20 @@
 }
 
 # tsne chart ---------------------------------------------------------
-.tSNE_plot <- function(couName, num_iter, max_num_neighbors, period){
+.tSNE_plot <- function(couName, num_iter, max_num_neighbors, period,dataset){
   
-  TCMN_data_tsne <- .tSNE_prepare(period)
-  tsne_points <- .tSNE_compute(couName, num_iter, max_num_neighbors, period)
+  TCMN_data_tsne <- .tSNE_prepare(period,dataset)
+  tsne_points <- .tSNE_compute(couName, num_iter, max_num_neighbors, period, dataset)
   
   plot(tsne_points,t='n', axes=FALSE, frame.plot = FALSE, xlab = "",ylab = ""); 
-  graphics::text(tsne_points,labels=as.character(TCMN_data_tsne$Country), col=.getColors(period)[as.character(TCMN_data_tsne$Region)])
+  graphics::text(tsne_points,labels=as.character(TCMN_data_tsne$Country), col=.getColors(period,dataset)[as.character(TCMN_data_tsne$Region)])
 }
 
 # tsne dist ---------------------------------------------------------
-.tSNE_dist <- function(couName, num_iter, max_num_neighbors, period){
+.tSNE_dist <- function(couName, num_iter, max_num_neighbors, period,dataset){
   
-  TCMN_data_tsne <- .tSNE_prepare(period)
-  tsne_points <- .tSNE_compute(couName, num_iter, max_num_neighbors, period)
+  TCMN_data_tsne <- .tSNE_prepare(period,dataset)
+  tsne_points <- .tSNE_compute(couName, num_iter, max_num_neighbors, period,dataset)
   
   # calculate the euclidean distance between the selected country and the rest
   dist_mat <- cbind(tsne_points,TCMN_data_tsne$Country)
