@@ -229,6 +229,7 @@
   # filter the data
   data <- filter(TCMN_data, CountryCode %in% c(cou,neighbors), Subsection=="chart7")
   data2 <- filter(TCMN_data, CountryCode == cou2, Subsection=="chart7")
+  dataLegend <- filter(TCMN_data, CountryCode %in% c(cou,neighbors,cou2), Subsection=="chart7b")
   
   if (nrow(data2)>0){ # there is data for the comparing country
     #print("c2 true")

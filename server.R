@@ -58,7 +58,12 @@ function(input, output, session) {
       shinyjs::onclick("country_go", updateTabsetPanel(session, "nav", selected = "macro"))
   })
   
-      # test ------
+  # output global Compet Indic values ---------
+  output$outCouGCI <- renderText(paste0(" (",round(filter(TCMN_data, CountryCode == .getCountryCode(input$inCouSel), Key=="P00")$Observation,1),")"))
+  output$outCou2GCI <- renderText(paste0(" (",round(filter(TCMN_data, CountryCode == .getCountryCode(input$inCouSel2), Key=="P00")$Observation,1),")"))
+  output$outRegGCI <- renderText(paste0(" (",round(filter(TCMN_data, CountryCode == .getRegionCode(input$inCouSel), Key=="P00")$Observation,1),")"))
+  
+       # test ------
 #   randomVals <- eventReactive(input$tsne_go, {
 #     runif(input$inNumIter)
 #   })

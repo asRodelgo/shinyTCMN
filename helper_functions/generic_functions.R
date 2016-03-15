@@ -28,6 +28,13 @@
   region <- as.character(countries[countries$CountryCodeISO3==cou,]$RegionShortIncome) 
 }
 
+.getRegionCode <- function(couName){
+  
+  #cou <- .getCountryCode(couName)
+  reg <- .getRegion(couName)
+  regionCode <- as.character(countries[countries$RegionShortIncome==reg,]$RegionCodeByIncome) 
+}
+
 .getCountryCode <- function(couName){
   
   countryCode <- filter(countries, Country==couName)$CountryCodeISO3
