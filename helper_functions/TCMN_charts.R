@@ -174,6 +174,9 @@
   cou2 <- .getCountryCode(couName2)
   data <- filter(TCMN_data, CountryCode==cou, Subsection=="chart8")
   data2 <- filter(TCMN_data, CountryCode==cou2, Subsection=="chart8")
+  # Global ranks
+  cou_rank <- filter(TCMN_data, CountryCode==cou, Key=="TP00R", Period == period)$Observation
+  cou2_rank <- filter(TCMN_data, CountryCode==cou2, Key=="TP00R", Period == period)$Observation
   
   if (nrow(data)>0){  
     
@@ -197,7 +200,9 @@
             axis.text.y = element_text(size=15)#, axis.text.x = element_blank()
             ) + 
       labs(x="",y="")+#,title="Logistics Performance Index (1-5)"
-      scale_fill_manual(values = c("blue","green"), labels = c(couName,couName2)) +
+      scale_fill_manual(values = c("blue","green"), 
+                        labels = c(paste0(couName," (Rank: ",cou_rank,")"),
+                                   paste0(couName2," (Rank: ",cou2_rank,")"))) +
       scale_alpha_discrete(range = c(0.5, 0.9), guide = FALSE)
                         #,guide = guide_legend(reverse=TRUE))
   
@@ -259,11 +264,12 @@
       
       # final tweaking
       data <- select(data, IndicatorShort, max, min, Observation, regionAvg, compCou)
+      #data$Observation <- data$Observation + 1
       
       # transpose the data for radarchart to read
       dataTrans <- as.data.frame(t(data[,2:ncol(data)]))
       
-      radarchart(dataTrans, axistype=1, caxislabels=seq(from=1,to=max,by=1),
+      radarchart(dataTrans, axistype=1, caxislabels=c(" ","2","3","4","5","6","7"), centerzero = FALSE,seg=6,
                  plty=c(1,2,1),plwd=c(6,3,4),pcol=c("darkblue","red","green"),pdensity=c(0, 0, 0),
                  cglwd=2,axislabcol="navy", vlabels=data$IndicatorShort, cex.main=1,cex=2.5)
       #title="WEF Competitiveness Indicators, stage of development (1-7)",
@@ -294,6 +300,7 @@
       data <- cbind(data,max,min)
       
       # order labels ad-hoc:
+      data <- arrange(data,Key)
       order <- c(8,10,6,4,7,3,1,9,5,2,11,12)
       data <- cbind(data,order)
       data <- arrange(data,order)
@@ -305,7 +312,7 @@
       # transpose the data for radarchart to read
       dataTrans <- as.data.frame(t(data[,2:ncol(data)]))
       
-      radarchart(dataTrans, axistype=1, caxislabels=seq(from=1,to=max,by=1),
+      radarchart(dataTrans, axistype=1, caxislabels=c(" ","2","3","4","5","6","7"), centerzero = FALSE,seg=6,
                  plty=c(1,2),plwd=c(6,3),pcol=c("darkblue","red"),pdensity=c(0, 0),
                  cglwd=2,axislabcol="navy", vlabels=data$IndicatorShort, cex.main=1,cex=2.5)
       #title="WEF Competitiveness Indicators, stage of development (1-7)",

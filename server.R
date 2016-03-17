@@ -59,9 +59,9 @@ function(input, output, session) {
   })
   
   # output global Compet Indic values ---------
-  output$outCouGCI <- renderText(paste0(" (",round(filter(TCMN_data, CountryCode == .getCountryCode(input$inCouSel), Key=="P00")$Observation,1),")"))
-  output$outCou2GCI <- renderText(paste0(" (",round(filter(TCMN_data, CountryCode == .getCountryCode(input$inCouSel2), Key=="P00")$Observation,1),")"))
-  output$outRegGCI <- renderText(paste0(" (",round(filter(TCMN_data, CountryCode == .getRegionCode(input$inCouSel), Key=="P00")$Observation,1),")"))
+  output$outCouGCI <- renderText(paste0(" (Rank: ",round(filter(TCMN_data, CountryCode == .getCountryCode(input$inCouSel), Key=="P00b")$Observation,1),")"))
+  output$outCou2GCI <- renderText(paste0(" (Rank: ",round(filter(TCMN_data, CountryCode == .getCountryCode(input$inCouSel2), Key=="P00b")$Observation,1),")"))
+  output$outRegGCI <- renderText(paste0(" (Avg Rank: ",round(filter(TCMN_data, CountryCode == .getRegionCode(input$inCouSel), Key=="P00b")$Observation,1),")"))
   
        # test ------
 #   randomVals <- eventReactive(input$tsne_go, {
