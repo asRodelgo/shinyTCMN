@@ -195,6 +195,7 @@
       theme(legend.key=element_blank(),
             legend.title=element_blank(),
             legend.position="top",
+            legend.text = element_text(size = 15),
             panel.border = element_blank(),
             panel.background = element_blank(),plot.title = element_text(lineheight=.5),
             axis.text.y = element_text(size=15)#, axis.text.x = element_blank()
