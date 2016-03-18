@@ -5,15 +5,15 @@ div(id = "tsne",
       sidebarPanel(
         #fluidRow(
         #  column(2,
-            numericInput('inNumIter', label = "Number of iterations:", value = 100, 
+            numericInput('inNumIter', label = "Number of iterations:", value = 200, 
                          min = 10, max = 1000),
             numericInput('maxNumNeigh', label = "Max number of neighbors per cluster:", value = 10, 
                          min = 2, max = 100),
             sliderInput('inPeriod', 'Select a time period:', 
                                   min = as.numeric(min(TCMN_data$Period)),
-                                  max = as.numeric(thisYear)-1,
+                                  max = as.numeric(thisYear),
                                   value = as.numeric(thisYear)-2),
-            selectInput('inDataset',"Select a subset of the data:",c("All datasets",unique(TCMN_indic$Dataset)),selected = "DB",selectize = FALSE),
+            selectInput('inDataset',"Select a subset of the data:",c("All datasets",unique(TCMN_datasets$DatasetDesc)),selected = "Doing Business",selectize = FALSE),
             actionButton('tsne_go', "Generate t-SNE")#, class = "tsne-go"),
           ),
         mainPanel(

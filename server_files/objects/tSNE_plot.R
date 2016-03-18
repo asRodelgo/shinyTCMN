@@ -3,7 +3,7 @@ tSNE_plot <- eventReactive(input$tsne_go,{
   #validate(need(input$inCouSel, message = "Loading..."))
   
   do.call(".tSNE_plot", args = list(
-    couName = input$inCouSel, num_iter = input$inNumIter, max_num_neighbors = input$maxNumNeigh, period = input$inPeriod, dataset = input$inDataset 
+    couName = input$inCouSel, num_iter = input$inNumIter, max_num_neighbors = input$maxNumNeigh, period = input$inPeriod, datasetDes = input$inDataset 
   ))
 })
 
