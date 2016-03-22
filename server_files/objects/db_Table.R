@@ -38,7 +38,7 @@ output$db_Table <- renderDataTable({
   
   return(macroSpark)
   #macroSpark
-  }) # disable all the table fancy options  
+}) # disable all the table fancy options  
 
 #output$tableSpark <- datatable(data.table(dat.t2), rownames = FALSE, options = list(columnDefs = cd, fnDrawCallback = cb))
 

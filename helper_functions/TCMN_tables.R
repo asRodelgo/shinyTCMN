@@ -291,24 +291,20 @@
     # format numbers
     data$Observation <- format(data$Observation, digits=dbDigits, decimal.mark=".",
                                big.mark=",",small.mark=".", small.interval=3)
-    
     data$Observation <- as.numeric(data$Observation)
     
-    # add sparkline column
-  #   dataSpark <- data %>% 
-  #     group_by(IndicatorShort) %>%
-  #     mutate(Trend = paste(Observation, collapse = ","))
-  #   
-  #  data <- merge(data, dataSpark, by="IndicatorShort")
-    
     data <- spread(data, Period, Observation)
+    # reorder rows. Want overall indicator on top
+    order <- c(2,1,seq(3,nrow(data),1))
+    data <- cbind(data,order)
+    data <- arrange(data, order)
+    data <- select(data, -order)
     # this part creates the sparkline structure for the last column of the table
     data$trend <- dbSign*data[,2] - dbSign*data[,3]
     data <- data %>%
       group_by(IndicatorShort) %>%
       mutate(trend = paste0("0,",trend))
       
-  
     names(data) <- c("Indicator",paste("DB",names(data)[2],dbTitle),paste("DB",names(data)[3],dbTitle),"Change")
     
     # substitute NAs for "---" em-dash
