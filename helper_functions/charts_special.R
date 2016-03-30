@@ -209,9 +209,9 @@
 # Hexamap chart ---------------------------------------------------------
 .hexamaps <- function(couName, num_iter, max_num_neighbors, period, fact){
   
-  TCMN_data_tsne <- .tSNE_prepare(period)
+  TCMN_data_tsne <- .tSNE_prepare(period,"All datasets")
   # distances from tSNE
-  dist_mat <- .tSNE_dist(couName, num_iter, max_num_neighbors, period)
+  dist_mat <- .tSNE_dist(couName, num_iter, max_num_neighbors, period,"All datasets")
   
   ## compute hexamaps
   # 1. create grid of hexagons
@@ -257,7 +257,7 @@
   # color hexagons by region
   #brk<-levels(as.factor(zz$region))
   #ncol<-length(brk)
-  colors <- .getColors(period)
+  colors <- .getColors(period,"All datasets")
   
   # 3. Plot hexamaps
   p <- ggplot(zz, aes(x, y, group=id)) +

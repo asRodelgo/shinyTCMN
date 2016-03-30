@@ -12,7 +12,7 @@
   #sidebarPanel(),
   
 #  mainPanel(
-    tabsetPanel(selected = "WB Portfolio",
+    tabsetPanel(selected = "SCD/CPF",
   #### tables ####
       tabPanel("SCD/CPF",
                column(8,h4("SCD/CPF", style="color:#3399ff"),
