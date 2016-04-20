@@ -1,8 +1,8 @@
 name: shinyTCMN
 account: alberto-sanchez-rodelgo
 server: shinyapps.io
-bundleId: 364407
+bundleId: 423590
 url: https://alberto-sanchez-rodelgo.shinyapps.io/shinyTCMN/
-when: 1454427861.62451
+when: 1460995497.33833
 asMultiple: FALSE
 asStatic: FALSE
