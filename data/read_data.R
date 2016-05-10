@@ -47,7 +47,9 @@ mWits <- read.csv("data/mWits.csv", colClasses = c(rep("character",3),rep("numer
 xWits <- read.csv("data/xWits.csv", colClasses = c(rep("character",3),rep("numeric",2),rep("character",2)))
 
 # IBRD T&C projects portfolio --------------
-TCprojects <- read.csv("data/TCprojects.csv", stringsAsFactors = FALSE)
+TCprojects1 <- read.csv("/Users/asanchez3/shinyTCMN/data/TCprojects1.csv", stringsAsFactors = FALSE)
+TCprojects2 <- read.csv("/Users/asanchez3/shinyTCMN/data/TCprojects2.csv", stringsAsFactors = FALSE)
+TCprojects <- rbind(TCprojects1,TCprojects2)
                                                              
 # IFC projects portfolio --------------
 IFCprojects <- read.csv("data/IFCprojects.csv", stringsAsFactors = FALSE)
