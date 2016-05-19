@@ -47,10 +47,18 @@ mWits <- read.csv("data/mWits.csv", colClasses = c(rep("character",3),rep("numer
 xWits <- read.csv("data/xWits.csv", colClasses = c(rep("character",3),rep("numeric",2),rep("character",2)))
 
 # IBRD T&C projects portfolio --------------
-TCprojects1 <- read.csv("/Users/asanchez3/shinyTCMN/data/TCprojects1.csv", stringsAsFactors = FALSE)
-TCprojects2 <- read.csv("/Users/asanchez3/shinyTCMN/data/TCprojects2.csv", stringsAsFactors = FALSE)
-TCprojects <- rbind(TCprojects1,TCprojects2)
-                                                             
+# TCprojects1 <- read.csv("/Users/asanchez3/shinyTCMN/data/TCprojects1.csv", stringsAsFactors = FALSE)
+# TCprojects2 <- read.csv("/Users/asanchez3/shinyTCMN/data/TCprojects2.csv", stringsAsFactors = FALSE)
+# TCprojects <- rbind(TCprojects1,TCprojects2)
+                                       
+TCprojectList <- list()
+pieces <- 5 # number of TC data frames
+for (i in 1:pieces){
+  TCprojectList[[i]] <- read.csv(paste0("/Users/asanchez3/shinyTCMN/data/TCprojects",i,".csv"),stringsAsFactors = FALSE)
+  TCprojectList[[i]] <- select(TCprojectList[[i]], -upi_nbr_c)
+}
+TCprojects <- bind_rows(TCprojectList)
+                      
 # IFC projects portfolio --------------
 IFCprojects <- read.csv("data/IFCprojects.csv", stringsAsFactors = FALSE)
 
