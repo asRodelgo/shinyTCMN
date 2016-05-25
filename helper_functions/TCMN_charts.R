@@ -46,6 +46,7 @@
   
   cou <- .getCountryCode(couName)
   data <- filter(TCMN_data, CountryCode==cou, Subsection=="chart3")
+  data <- filter(data, !is.na(Observation))
   
   if (nrow(data)>0){
     # compute top 5 constraints

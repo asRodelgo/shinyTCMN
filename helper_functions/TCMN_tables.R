@@ -228,10 +228,11 @@
   
   cou <- .getCountryCode(couName)
   data <- filter(TCMN_data, CountryCode==cou & Subsection=="table3") #select country, region and world
+
   if (nrow(data[data$CountryCode==cou,])>0){
     couRegion <- as.character(countries[countries$CountryCodeISO3==cou,]$RegionCodeES)  # obtain the region for the selected country
     data <- filter(TCMN_data, CountryCode %in% c(cou,couRegion, "RWe") & Subsection=="table3") #select country, region and world
-    
+  
     # country, Region, World descriptors
     country <- as.character(countries[countries$CountryCodeISO3==cou,]$Country)
     region <- as.character(countries[countries$CountryCodeISO3==cou,]$Region) 
@@ -252,7 +253,9 @@
     data <- select(data, IndicatorShort, Observation, colName)
     data <- spread(data, colName, Observation)
     
-    data <- data[,c(1,4,3,2)]
+    if (ncol(data)==4){
+      data <- data[,c(1,4,3,2)]  
+    }
     
     names(data)[1] <-"Indicator"
     
