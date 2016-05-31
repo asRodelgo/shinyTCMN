@@ -26,7 +26,7 @@ output$downLPI <- downloadHandler(
   }
 )
 # download data ----------------------------
-output$dataGVA <- downloadHandler(
+output$dataLPI <- downloadHandler(
   filename = function() { 
     paste0("LogisticsPerformanceIndicators_",.getCountryCode(input$inCouSel),"_",.getCountryCode(input$inCouSelLPI),"_",input$inPeriodLPI,".csv")
   },
