@@ -83,6 +83,7 @@
   
   cou <- .getCountryCode(couName)
   data <- filter(TCMN_data, CountryCode==cou, Subsection=="chart4")
+  data <- filter(data, Period == max(Period))
   
   if (nrow(data)>0){
     # compute top 5 constraints
