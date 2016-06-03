@@ -47,17 +47,17 @@ mWits <- read.csv("/srv/shiny-server/shinyTCMN-data/data/mWits.csv", colClasses 
 xWits <- read.csv("/srv/shiny-server/shinyTCMN-data/data/xWits.csv", colClasses = c(rep("character",3),rep("numeric",2),rep("character",2)))
 
 # IBRD T&C projects portfolio --------------
-# TCprojects1 <- read.csv("/Users/asanchez3/shinyTCMN//srv/shiny-server/shinyTCMN-/srv/shiny-server/shinyTCMN-data/data//srv/shiny-server/shinyTCMN-data/data/TCprojects1.csv", stringsAsFactors = FALSE)
+TCprojects <- read.csv("/srv/shiny-server/shinyTCMN-data/data/TCprojects.csv", stringsAsFactors = FALSE)
 # TCprojects2 <- read.csv("/Users/asanchez3/shinyTCMN//srv/shiny-server/shinyTCMN-data/data/TCprojects2.csv", stringsAsFactors = FALSE)
 # TCprojects <- rbind(TCprojects1,TCprojects2)
                                        
-TCprojectList <- list()
-pieces <- 5 # number of TC data frames
-for (i in 1:pieces){
-  TCprojectList[[i]] <- read.csv(paste0("/srv/shiny-server/shinyTCMN-data/data/TCprojects",i,".csv"),stringsAsFactors = FALSE)
-  TCprojectList[[i]] <- select(TCprojectList[[i]], -upi_nbr_c)
-}
-TCprojects <- bind_rows(TCprojectList)
+# TCprojectList <- list()
+# pieces <- 5 # number of TC data frames
+# for (i in 1:pieces){
+#   TCprojectList[[i]] <- read.csv(paste0("/srv/shiny-server/shinyTCMN-data/data/TCprojects",i,".csv"),stringsAsFactors = FALSE)
+#   TCprojectList[[i]] <- select(TCprojectList[[i]], -upi_nbr_c)
+# }
+# TCprojects <- bind_rows(TCprojectList)
                       
 # IFC projects portfolio --------------
 IFCprojects <- read.csv("/srv/shiny-server/shinyTCMN-data/data/IFCprojects.csv", stringsAsFactors = FALSE)
