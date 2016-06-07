@@ -26,7 +26,7 @@ countryDeps <- filter(countries, !(CMU==""))
 countryDeps <- arrange(select(countryDeps, CountryCodeISO3, RegionCodeALL, Region ,CMU), CMU)
 
 # country Coordinates --------------
-countryCoords <- read.csv("/srv/shiny-server/shinyTCMN-data/data/countryCoords.csv", stringsAsFactors = FALSE)
+#countryCoords <- read.csv("/srv/shiny-server/shinyTCMN-data/data/countryCoords.csv", stringsAsFactors = FALSE)
 
 # indicator table ----------------------------
 indicators <- read.csv("/srv/shiny-server/shinyTCMN-data/data/IndicatorClassification.csv", stringsAsFactors = FALSE)
