@@ -177,7 +177,7 @@
     
     #keep only periods of interest in data
     #data <- filter(data, Period > (as.numeric(thisYear) - 4))
-    data <- rbind(data, data_avg) # add rows to data
+    data <- bind_rows(data, data_avg) # add rows to data
     # Scale Observations
     data <- mutate(data, ObsScaled = Scale*Observation)
     data <- arrange(data, Key)
