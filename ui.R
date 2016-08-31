@@ -26,14 +26,8 @@ tagList(
   shinyjs::useShinyjs(),
   includeCSS("css/shinytcmn.css"),
   fluidPage(
-    #fluidRow(
-    #  column(3,wb_logo()),
-    #  #column(9, tcmn_logo())
-    #  column(9, tcmn_banner())
-    #),
+    
     fluidRow(
-      #column(2, h5("Explore by country:")),
-      
       
       shinyjs::hidden( # hide main navigation from the home page
         div(id="homeButtons",
@@ -56,44 +50,11 @@ tagList(
              inverse = FALSE, position = "fixed-top",
              theme = shinythemes::shinytheme("flatly"),
              #### HOME PAGE ####
-#              tabPanel(title = strong(style = "color: black", "TCMN home"),
-#                       value = "home",
-#                       #  source(file.path("ui_files", "country_selector_home.R"), local = TRUE)$value
-#                       #),
-#                       br(),
-#                       includeHTML("html/home_page_links.html"),
-#                       column(2,''),
-#                       column(8,h5("Macroeconomic Indicators"),
-#                              h6("Sources: ",
-#                                 a(TCMN_sources[TCMN_sources$Source=="MFM",]$SourceDescription, 
-#                                   href = TCMN_sources[TCMN_sources$Source=="MFM",]$url),"; ",
-#                                 a(TCMN_sources[TCMN_sources$Source=="WDI",]$SourceDescription, 
-#                                   href = TCMN_sources[TCMN_sources$Source=="WDI",]$url),"; ",
-#                                 a(TCMN_sources[TCMN_sources$Source=="WEO",]$SourceDescription, 
-#                                   href = TCMN_sources[TCMN_sources$Source=="WEO",]$url)),
-#                              dataTableOutput('tableHome'))
-#                       #column(5,div(style = "margin-top: -10px; height:450px",
-#                       #    img(src = "tSNE_image.png"))),
-#                       #br(),
-#                       
-#              ),
-#              
-             #### PAGE: Macro ####
-          
              tabPanel(title = "Data Categories", icon = icon("stats", lib = "glyphicon"),
-#                   conditionalPanel( # hide side menu if no country has been selected
-#                       condition="output.hideHomePanel!='Select a country'",
-#                   tabPanel("T&C Snapshots",
-#                            source(file.path("ui_files", "TC_Home.R"), local = TRUE)$value
-#                   ),
-                      #navlistPanel(
-                        #### TCMN home ####
-                #shinyjs::show(
                   div(id = "homeTab",
                         tabPanel("T&C Snapshots",
                                  source(file.path("ui_files", "TC_Home.R"), local = TRUE)$value
                         )
-                 # )
                 ),
                 shinyjs::hidden(
                   div(id = "dataTab",
