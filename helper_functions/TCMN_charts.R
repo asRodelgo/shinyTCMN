@@ -297,6 +297,7 @@
       data <- filter(data, CountryCode==cou)
       # Keep last period
       data <- filter(data, Period == max(Period))
+      data <- as.data.frame(data)
       # I must add the max and min columns to make it work:
       max<-7
       min <-1
