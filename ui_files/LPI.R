@@ -8,8 +8,8 @@ fluidRow(
          column(3,selectInput('inCouSelLPI', 'Compare with:', choices=c("Select a country",countryNames$Country),selectize=FALSE)),
          column(3,sliderInput('inPeriodLPI', 'Select a time period:', 
                      min = as.numeric(min(TCMN_data[TCMN_data$Subsection=="chart8",]$Period)),
-                     max = as.numeric(thisYear)-1,
-                     value = as.numeric(thisYear)-2))
+                     max = as.numeric(max(TCMN_data[TCMN_data$Subsection=="chart8",]$Period)),
+                     value = as.numeric(max(TCMN_data[TCMN_data$Subsection=="chart8",]$Period))))
          #column(3, br(),img(src = "darkbluedot.png", width="20") ,h4(textOutput('outCouSel'))),
          #column(3, br(),img(src = "greendot.png", width="20") ,h4(textOutput('outCouSelLPI')))
   ),
