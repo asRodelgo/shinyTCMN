@@ -33,6 +33,7 @@ output$dataExpImp <- downloadHandler(
   content = function(file) {
     #write.csv(.GVA_Table(input$inCouSel), file)
     write.csv(TCMN_data[(TCMN_data$CountryCode==.getCountryCode(input$inCouSel)) & 
-                          (TCMN_data$Subsection=="chart1"),], file, row.names = FALSE)
+                          (TCMN_data$Subsection=="chart1") & ((TCMN_data$Source=="WDI")),], 
+              file, row.names = FALSE)
   }
 )
