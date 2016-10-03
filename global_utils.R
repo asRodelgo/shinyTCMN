@@ -17,6 +17,10 @@ library(knitr) # generate LaTeX PDF report
 #devtools::install_github("56north/hexamapmaker")
 library(hexamapmaker) #this package will not work on shinyapps.io
 #library(leaflet) # interactive maps
+# radar charts in ggplot2
+#library(devtools)
+#devtools::install_github("jerryzhujian9/ezmisc")
+library(ezmisc)#
 
 
 # global data and functions -----------------------------------------
@@ -32,6 +36,24 @@ for (h in helpers) source(h, local = TRUE)
 # PDF report R scripts
 source("reporting/ReportGenerator.R", local = TRUE)
 #source("reporting/TCMN_charts_PDF.R", local = TRUE)
+
+# ----------- tSNE data topology
+data_tsne <- .prepare_data()
+data_tsne_sample <- filter(data_tsne, Period > "2000")
+tsne_ready <- cbind(data_tsne_sample,tsne_points)
+names(tsne_ready)[ncol(tsne_ready)-1] <- "x"
+names(tsne_ready)[ncol(tsne_ready)] <- "y"
+# Default selector choices for tsne -----------
+countries_list <- sort(unique(data_tsne_sample$CountryShort))
+periods_list <- sort(unique(data_tsne_sample$Period))
+regions_list <- sort(unique(data_tsne_sample$RegionShort))
+indicators_list <- names(data_tsne_sample)[7:ncol(data_tsne_sample)]
+#
+indicator_selection_plots <- c("Ease_of_Doing_Business","Control_of_Corruption","Unemployment_rate",
+                               "Overall_score","MFN_Tariff_Simple_Average","Remittances_received_perc_of_GDP",
+                               "Manufac",
+                               "Exports","Imports","Income_per_capita_USDollars")
+# ---------------
 
 # avoid conflict with inline::code if rstan is loaded
 code <- shiny::code

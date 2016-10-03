@@ -144,6 +144,10 @@ tagList(
                         tabPanel(title = "Hexamaps",
                                  source(file.path("ui_files", "hexamaps.R"), local = TRUE)$value
                                  #
+                        ),
+                        tabPanel(title = "Data Topology",
+                                 source(file.path("ui_files", "dataTopology.R"), local = TRUE)$value
+                                 #
                         )
              ), # End navbarMenu
              #### PAGE: Downloads ####

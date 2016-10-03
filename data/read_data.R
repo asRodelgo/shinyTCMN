@@ -65,3 +65,5 @@ if (getwd() == "/Users/asanchez3/shinyTCMN"){
   plannedDocs <- read.csv("/srv/shiny-server/shinyTCMN-data/data/Planneddocuments.csv", stringsAsFactors = FALSE)
   
 }
+
+tsne_points <- read.csv("data/tsne_points.csv",stringsAsFactors = FALSE)
