@@ -38,6 +38,10 @@
 #   for (i in 7:ncol(data_tsne)){
 #     data_tsne[is.na(data_tsne[,i]),i] <- mean(as.numeric(data_tsne[,i]), na.rm = TRUE) * rnorm(length(data_tsne[is.na(data_tsne[,i]),i]),1,0.1)
 #   }
+  num_col <- ncol(data_tsne) - 5
+  data_missing <- data_tsne %>%
+    mutate(missing_values = rowSums(is.na(.))/num_col) %>%
+    dplyr::select(CountryCode, Period, missing_values)
   
   data_tsne <- data_tsne %>%
     #group_by(CountryCode) %>%
@@ -59,6 +63,9 @@
   data_tsne <- as.data.frame(data_tsne)
   
   data_tsne <- distinct(data_tsne, CountryCode, Period, .keep_all = TRUE)
+  data_tsne <- merge(data_tsne, data_missing, by=c("CountryCode","Period"))
+  data_tsne$missing_values <- as.numeric(data_tsne$missing_values)
+  data_tsne <- as.data.frame(data_tsne)
   
   return(data_tsne)
 }
@@ -68,7 +75,7 @@
   
   data_tsne <- .prepare_data()
   
-  #data_tsne_sample <- filter(data_tsne, Period > "2000")
+  #data_tsne_sample <- filter(data_tsne, Period > "2002")
   
   if (nrow(data_tsne)>0){
     num_iter <- 400

@@ -39,7 +39,7 @@ source("reporting/ReportGenerator.R", local = TRUE)
 
 # ----------- tSNE data topology
 data_tsne <- .prepare_data()
-data_tsne_sample <- filter(data_tsne, Period > "2000")
+data_tsne_sample <- filter(data_tsne, Period > "2002")
 tsne_ready <- cbind(data_tsne_sample,tsne_points)
 names(tsne_ready)[ncol(tsne_ready)-1] <- "x"
 names(tsne_ready)[ncol(tsne_ready)] <- "y"
