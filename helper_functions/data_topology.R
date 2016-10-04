@@ -65,6 +65,7 @@
   data_tsne <- distinct(data_tsne, CountryCode, Period, .keep_all = TRUE)
   data_tsne <- merge(data_tsne, data_missing, by=c("CountryCode","Period"))
   data_tsne$missing_values <- as.numeric(data_tsne$missing_values)
+  data_tsne[,c(6:ncol(data_tsne))] <- round(data_tsne[,c(6:ncol(data_tsne))],3)
   data_tsne <- as.data.frame(data_tsne)
   
   return(data_tsne)
@@ -75,7 +76,7 @@
   
   data_tsne <- .prepare_data()
   
-  #data_tsne_sample <- filter(data_tsne, Period > "2002")
+  data_tsne_sample <- filter(data_tsne, Period > "2002" & Period < "2016")
   
   if (nrow(data_tsne)>0){
     num_iter <- 400

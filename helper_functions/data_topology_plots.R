@@ -38,7 +38,8 @@
         geom_point(data=tsne_points_filter_out,color=alpha("lightgrey",0.1)) + 
         theme(legend.key=element_blank(),
               legend.title=element_blank(),
-              legend.text = element_blank(),
+              #legend.text = element_blank(),
+              legend.position = "top",
               panel.border = element_blank(),
               panel.background = element_blank(),
               axis.text.x = element_blank(),
@@ -55,7 +56,8 @@
         geom_point(data=centroid,color="red",size=3) + 
         theme(legend.key=element_blank(),
               legend.title=element_blank(),
-              legend.text = element_blank(),
+              #legend.text = element_blank(),
+              legend.position = "top",
               panel.border = element_blank(),
               panel.background = element_blank(),
               axis.text.x = element_blank(),
@@ -84,8 +86,11 @@
   if (colPeriod=="All") colPeriod <- periods_list
   
   if (length(tsne_ready)>0){ # if data do stuff
-    tsne_ready_select <- dplyr::select(tsne_ready, CountryCode, Period, RegionShort, 
-                                       RegionShortIncome, CountryShort, x, y, one_of(indicator_selection_plots))
+    tsne_ready_select <- tsne_ready %>%
+      dplyr::select(CountryCode, Period, RegionShort, 
+                    RegionShortIncome, CountryShort, x, y, 
+                    one_of(indicator_selection_plots))
+      
     # General Filters
     tsne_points_filter <- tsne_ready_select %>%
       filter(CountryShort %in% colCountry & RegionShort %in% colRegion & Period %in% colPeriod)
@@ -205,6 +210,8 @@
   
   tsne_radar <- bind_rows(tsne_mean,tsne_max)
   tsne_radar <- dplyr::select(tsne_radar, CountryShort, one_of(indicator_selection_plots))
+  # shorter names to display
+  names(tsne_radar) <- c("CountryShort",indicator_selection_plots_short)
   #ez.radarmap(df, "model", stats="mean", lwd=1, angle=0, fontsize=0.6, facet=T, facetfontsize=1, color=id, linetype=NULL)
   ez.radarmap(tsne_radar, "CountryShort", stats="none", lwd=1, angle=0, fontsize=1.5, facet=F, facetfontsize=1, color=id, linetype=NULL) +
     theme(legend.key=element_blank(),

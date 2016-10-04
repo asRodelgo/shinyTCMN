@@ -39,7 +39,7 @@ source("reporting/ReportGenerator.R", local = TRUE)
 
 # ----------- tSNE data topology
 data_tsne <- .prepare_data()
-data_tsne_sample <- filter(data_tsne, Period > "2002")
+data_tsne_sample <- filter(data_tsne, Period < "2016" & Period > "2002")
 tsne_ready <- cbind(data_tsne_sample,tsne_points)
 names(tsne_ready)[ncol(tsne_ready)-1] <- "x"
 names(tsne_ready)[ncol(tsne_ready)] <- "y"
@@ -53,6 +53,11 @@ indicator_selection_plots <- c("Ease_of_Doing_Business","Control_of_Corruption",
                                "Overall_score","MFN_Tariff_Simple_Average","Remittances_received_perc_of_GDP",
                                "Manufac",
                                "Exports","Imports","Income_per_capita_USDollars")
+indicator_selection_plots_short <- c("Ease_DB","Corruption","Unemployed",
+                               "LPI","MFN_Tariff","Remittances",
+                               "Manufac",
+                               "Export","Import","Income")
+
 # ---------------
 
 # avoid conflict with inline::code if rstan is loaded
