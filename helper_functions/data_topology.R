@@ -2,8 +2,7 @@
 
 
 # Data processing
-
-.prepare_data <- function(){
+.filter_TCMN_data <- function(){
   
   tsne_indicators <- read.csv("data/TCMN_TSNEIndicators.csv", stringsAsFactors = FALSE)
   tsne_indicators <- dplyr::select(tsne_indicators, IndicatorShort, Subsection)
@@ -33,6 +32,13 @@
   data_spread <- spread(data_merge, IndicatorShort, Observation)
   # remove all NA rows
   data_tsne <- data_spread[rowSums(is.na(data_spread))<ncol(data_spread[,-c(1:5)]),]
+  
+  return(data_tsne)
+}
+
+.prepare_data <- function(){
+  
+  data_tsne <- .filter_TCMN_data()
   # impute remaining NAs 
 #   set.seed(123) #for reproducibility
 #   for (i in 7:ncol(data_tsne)){

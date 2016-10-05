@@ -57,6 +57,9 @@ indicator_selection_plots_short <- c("Ease_DB","Corruption","Unemployed",
                                "LPI","MFN_Tariff","Remittances",
                                "Manufac",
                                "Export","Import","Income")
+# filter TCMN_data by selected indicators in order to show the actual values on the 
+# topology tab
+selected_TCMN_data <- filter(TCMN_data, IndicatorShort %in% indicator_selection_plots)
 
 # ---------------
 

@@ -315,7 +315,22 @@
 
 
 .brushTable <- function(brushPoints){
-  
+  # brushed points
   brushPoints <- dplyr::select(brushPoints,Country=CountryShort, Period, one_of(indicator_selection_plots))
-  #return(str(brushPoints))
+  names(brushPoints) <- c("Country","Period",indicator_selection_plots_short)
+  # actual data filter
+  selected_TCMN_data <- .filter_TCMN_data()
+  # merge
+  brushPoints_actual <- merge(selected_TCMN_data,brushPoints[,c("Country","Period")], 
+                              by.x = c("CountryShort","Period"), by.y = c("Country","Period"))
+  brushPoints_actual <- brushPoints_actual %>%
+    dplyr::select(CountryShort, Period, one_of(indicator_selection_plots))
+  
+  names(brushPoints_actual) <- c("Country","Period",indicator_selection_plots_short)
+  brushPoints_actual[,c(3:ncol(brushPoints_actual))] <- round(brushPoints_actual[,c(3:ncol(brushPoints_actual))],2)
+  brushPoints_actual[is.na(brushPoints_actual)] <- "..."
+    #return(str(brushPoints))
+  brushPoints <- brushPoints_actual
 }
+
+

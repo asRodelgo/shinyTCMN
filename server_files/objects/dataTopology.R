@@ -18,8 +18,23 @@ output$hover_info <- renderUI({
   top_pct <- (hover$domain$top - hover$y) / (hover$domain$top - hover$domain$bottom)
   
   # calculate distance from left and bottom side of the picture in pixels
-  left_px <- hover$range$left + left_pct * (hover$range$right - hover$range$left)
-  top_px <- hover$range$top + top_pct * (hover$range$bottom - hover$range$top)
+  # avoid overlapping with other objects by keeping the tooltip inside the frame
+  if (left_pct > .75){
+    if (top_pct >.75){
+      left_px <- -25*hover$range$left + left_pct * (hover$range$right - hover$range$left)
+      top_px <- -15*hover$range$top + top_pct * (hover$range$bottom - hover$range$top)
+    } else {
+      left_px <- -25*hover$range$left + left_pct * (hover$range$right - hover$range$left)
+      top_px <- hover$range$top + top_pct * (hover$range$bottom - hover$range$top)
+    }
+  } else if (top_pct >.75){
+    left_px <- hover$range$left + left_pct * (hover$range$right - hover$range$left)
+    top_px <- -15*hover$range$top + top_pct * (hover$range$bottom - hover$range$top)
+  } else{
+    left_px <- hover$range$left + left_pct * (hover$range$right - hover$range$left)
+    top_px <- hover$range$top + top_pct * (hover$range$bottom - hover$range$top)
+  }
+  
   
   # create style property fot tooltip
   # background color is set so tooltip is a bit transparent
