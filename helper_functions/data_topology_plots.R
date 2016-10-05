@@ -104,6 +104,33 @@
   return(tsne_points_filter)
 }
 
+# Filters for hover over tooltips ---------------------------------------------------------
+.tSNE_plot_filter_hover <- function(colRegion,colPeriod,colCountry,colIndicator){
+  #
+  if (colCountry=="All") colCountry <- countries_list
+  if (colRegion=="All") colRegion <- regions_list
+  if (colPeriod=="All") colPeriod <- periods_list
+  
+  if (length(tsne_ready)>0){ # if data do stuff
+    tsne_ready_select <- tsne_ready %>%
+      dplyr::select(CountryCode, Period, RegionShort, 
+                    RegionShortIncome, CountryShort, x, y, 
+                    everything())
+    
+    # General Filters
+    tsne_points_filter <- tsne_ready_select %>%
+      filter(CountryShort %in% colCountry & RegionShort %in% colRegion & Period %in% colPeriod)
+    tsne_points_filter_out <- tsne_ready_select %>%
+      filter(!(CountryShort %in% colCountry & RegionShort %in% colRegion & Period %in% colPeriod))
+    
+  } else{ return()}
+  #plot(c(1,1),type="n", frame.plot = FALSE, axes=FALSE, ann=FALSE)
+  #graphics::text(1.5, 1,"Not enough data", col="red", cex=2)
+  
+  return(tsne_points_filter)
+}
+
+
 # Density plots
 .densityPlots <- function(colRegion,colPeriod,colCountry,colIndicator,clickCountry,clickPeriod){
   
@@ -161,13 +188,7 @@
 
 .radarPlot <- function(brushPoints){#,Off_Deff="All"){
   
-  #   if (Off_Deff == "Offense"){
-  #     list_skills <- c("effPTS","eff2PM","eff2PA","eff3PM","eff3PA","effFTA","effFTM","effAST")
-  #   } else if (Off_Deff == "Defense"){
-  #     list_skills <- c("effBLK","effDRB","effORB","effSTL","effTOV","effPF")
-  #   } else {
   list_indicators <- c()
-  #     }
   
   tsne_radar <- tsne_ready %>%
     dplyr::select(one_of(indicator_selection_plots), CountryShort, Period) %>%
@@ -228,6 +249,70 @@
     )  
   
 }
+
+.radarPlot_base <- function(brushPoints){#,Off_Deff="All"){
+  
+  list_indicators <- c()
+  
+  tsne_radar <- tsne_ready %>%
+    dplyr::select(one_of(indicator_selection_plots), CountryShort, Period) %>%
+    mutate_at(indicator_selection_plots, funs(max,mean)) %>%
+    #filter(Season == colPeriod) %>%
+    dplyr::select(-Period)
+  
+  #brushPoints <- filter(tsne_ready, Period == "2014")
+  brushPoints <- as.data.frame(brushPoints)
+  
+  if (nrow(brushPoints)>0){
+    #brushPoints <- merge(tsne_ready, brushPoints, by = c("Player","Season"))
+    tsne_mean <- brushPoints %>%
+      dplyr::select(one_of(indicator_selection_plots), CountryShort, Period) %>%
+      mutate_at(indicator_selection_plots, funs(mean)) %>%
+      #dplyr::select(ends_with("_mean")) %>%
+      mutate(CountryShort = "mean of selected") %>%
+      distinct(.keep_all=TRUE) %>%
+      dplyr::select(CountryShort, everything())
+    
+    names(tsne_mean) <- gsub("_mean","",names(tsne_mean))
+    
+  } else {
+    tsne_mean <- tsne_radar %>%
+      dplyr::select(ends_with("_mean")) %>%
+      distinct(.keep_all=TRUE) %>%
+      mutate(CountryShort = "mean of selected") %>%
+      dplyr::select(CountryShort, everything())
+    
+    names(tsne_mean) <- gsub("_mean","",names(tsne_mean))
+  }
+  
+  tsne_max <- tsne_radar %>%
+    dplyr::select(ends_with("_max")) %>%
+    distinct(.keep_all=TRUE) %>%
+    mutate(CountryShort = "max") %>%
+    dplyr::select(CountryShort, everything())
+  
+  names(tsne_max) <- gsub("_max","",names(tsne_max))
+  
+  tsne_radar <- bind_rows(tsne_mean,tsne_max)
+  tsne_radar <- dplyr::select(tsne_radar, CountryShort, one_of(indicator_selection_plots))
+  # shorter names to display
+  names(tsne_radar) <- c("CountryShort",indicator_selection_plots_short)
+  # add the min column and transpose
+  tsne_radar <- t(tsne_radar)
+  tsne_radar <- tsne_radar[-1,]
+  tsne_radar <- as.data.frame(tsne_radar)
+  tsne_radar <- mutate_all(tsne_radar, funs(as.numeric(as.character(.))))
+  tsne_radar <- tsne_radar %>%
+    mutate(Observation = V1*10, min = 1, max = 10) %>%
+    dplyr::select(max, min, Observation)
+  tsne_radar <- as.data.frame(t(tsne_radar))
+  # plot
+  radarchart(tsne_radar, axistype=1, caxislabels=c(" "," ",".5"," "," "), centerzero = FALSE,seg=4,
+             plty=c(1),plwd=c(5),pcol=c("green"),pdensity=c(0),
+             cglwd=2,axislabcol="red", vlabels=indicator_selection_plots_short, cex.main=1,cex=2.5)  
+  
+}
+
 
 .brushTable <- function(brushPoints){
   

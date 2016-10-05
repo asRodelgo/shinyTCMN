@@ -8,7 +8,7 @@ output$plotTSNE <- renderPlot({
 # tooltip hover over scatterplot points: see https://gitlab.com/snippets/16220
 output$hover_info <- renderUI({
   hover <- input$plot_hover
-  point <- nearPoints(.tSNE_plot_filter(input$colRegion,input$colPeriod,input$colCountry,
+  point <- nearPoints(.tSNE_plot_filter_hover(input$colRegion,input$colPeriod,input$colCountry,
                                         input$colIndicator), hover, threshold = 3, maxpoints = 1, addDist = TRUE)
   
   if (nrow(point) == 0) return(NULL)
@@ -57,7 +57,7 @@ output$plotRadarBrushed <- renderPlot({
   pointsBrushed <- brushedPoints(.tSNE_plot_filter(input$colRegion,input$colPeriod,input$colCountry,
                                                    input$colIndicator), brush)
   
-  plotRadarBrushed <- .radarPlot(pointsBrushed)
+  plotRadarBrushed <- .radarPlot_base(pointsBrushed)
   
   return(plotRadarBrushed)
   
