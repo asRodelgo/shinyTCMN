@@ -20,7 +20,7 @@ library(hexamapmaker) #this package will not work on shinyapps.io
 # radar charts in ggplot2
 #library(devtools)
 #devtools::install_github("jerryzhujian9/ezmisc")
-library(ezmisc)#
+#library(ezmisc)#
 
 
 # global data and functions -----------------------------------------
