@@ -1,5 +1,5 @@
 # Plot tsne chart ---------------------------------------------------------
-.tSNE_plot_All <- function(colRegion,colPeriod,colCountry,colIndicator){
+.tSNE_plot_All <- function(colRegion,colPeriod,colCountry,colIndicator,centralMeasure){
   # tsne_points contains pairs of coordinate points to plot
   # Parameters -----------
   # 
@@ -32,21 +32,39 @@
     # Skills filter
     if (!(colIndicator=="All")){
       
-      ggplot(NULL, aes(x,y)) +
-        geom_point(data=tsne_points_filter,aes(color = eval(parse(text=colIndicator))),size=2) +
-        scale_color_gradient2(midpoint=mean(eval(parse(text=paste0("tsne_points_filter$",colIndicator)))), low="blue", mid="white",high="red")+
-        geom_point(data=tsne_points_filter_out,color=alpha("lightgrey",0.1)) + 
-        theme(legend.key=element_blank(),
-              legend.title=element_blank(),
-              #legend.text = element_blank(),
-              legend.position = "top",
-              panel.border = element_blank(),
-              panel.background = element_blank(),
-              axis.text.x = element_blank(),
-              axis.text.y = element_blank(),
-              axis.title.x = element_blank(),
-              axis.title.y = element_blank(),
-              axis.ticks = element_blank())
+      if (centralMeasure=="mean"){
+        ggplot(NULL, aes(x,y)) +
+          geom_point(data=tsne_points_filter,aes(color = eval(parse(text=colIndicator))),size=2) +
+          scale_color_gradient2(midpoint=mean(eval(parse(text=paste0("tsne_points_filter$",colIndicator)))), low="blue", mid="white",high="red")+
+          geom_point(data=tsne_points_filter_out,color=alpha("lightgrey",0.1)) + 
+          theme(legend.key=element_blank(),
+                legend.title=element_blank(),
+                #legend.text = element_blank(),
+                legend.position = "top",
+                panel.border = element_blank(),
+                panel.background = element_blank(),
+                axis.text.x = element_blank(),
+                axis.text.y = element_blank(),
+                axis.title.x = element_blank(),
+                axis.title.y = element_blank(),
+                axis.ticks = element_blank())
+      } else{
+        ggplot(NULL, aes(x,y)) +
+          geom_point(data=tsne_points_filter,aes(color = eval(parse(text=colIndicator))),size=2) +
+          scale_color_gradient2(midpoint=median(eval(parse(text=paste0("tsne_points_filter$",colIndicator)))), low="blue", mid="white",high="red")+
+          geom_point(data=tsne_points_filter_out,color=alpha("lightgrey",0.1)) + 
+          theme(legend.key=element_blank(),
+                legend.title=element_blank(),
+                #legend.text = element_blank(),
+                legend.position = "top",
+                panel.border = element_blank(),
+                panel.background = element_blank(),
+                axis.text.x = element_blank(),
+                axis.text.y = element_blank(),
+                axis.title.x = element_blank(),
+                axis.title.y = element_blank(),
+                axis.ticks = element_blank())
+      }
       
     } else {
       

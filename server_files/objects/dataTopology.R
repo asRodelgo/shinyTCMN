@@ -1,7 +1,7 @@
 # Plot tSNE ---------------------
 
 output$plotTSNE <- renderPlot({
-  plotTSNE <- .tSNE_plot_All(input$colRegion,input$colPeriod,input$colCountry,input$colIndicator)
+  plotTSNE <- .tSNE_plot_All(input$colRegion,input$colPeriod,input$colCountry,input$colIndicator,input$centralMeasure)
   return(plotTSNE)
 })
 

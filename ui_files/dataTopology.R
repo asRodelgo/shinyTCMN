@@ -1,16 +1,27 @@
 # plot TSNE UI ----------
 
 fluidPage(
-  fluidRow(splitLayout(cellWidths = rep("22%", 4),
+  fluidRow(
+    column(6,h4("Filter by"),
+      splitLayout(cellWidths = rep("33%", 3),
                        selectInput('colPeriod', 'Period:', choices=c("All",sort(unique(data_tsne_sample$Period))),selectize=FALSE),
                        selectInput('colRegion', 'Region:', choices=c("All",sort(unique(data_tsne_sample$RegionShort))),selectize=FALSE),
-                       selectInput('colCountry', 'Country:', choices=c("All",sort(unique(data_tsne_sample$CountryShort))),selectize=FALSE),
-                       selectInput('colIndicator', 'Indicator:', choices=c("All",sort(names(data_tsne_sample)[c(6:ncol(data_tsne_sample))])),selectize=FALSE)
-  )
+                       selectInput('colCountry', 'Country:', choices=c("All",sort(unique(data_tsne_sample$CountryShort))),selectize=FALSE)
+      )
+    ),
+    column(3,h4("Color by"),
+           splitLayout(cellWidths = c("62%", "36%"),
+                       selectInput('colIndicator', 'Indicator:', choices=c("All",sort(names(data_tsne_sample)[c(6:ncol(data_tsne_sample))])),selectize=FALSE),
+                       radioButtons('centralMeasure', 'Centrality:', c("mean","median"))
+           )
+    ),
+    column(3,h4("Select variables to explore")
+           
+    )
   ),        
   br(),
-  div(style = "position:relative",plotOutput('plotTSNEdensities',height="150px")),
-  br(),
+  #div(style = "position:relative",plotOutput('plotTSNEdensities',height="150px")),
+  #br(),
   fluidRow(
     splitLayout(cellWidths = c("80%","20%"),
                 div(
