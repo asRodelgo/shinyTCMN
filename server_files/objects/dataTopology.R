@@ -27,12 +27,15 @@ output$hover_info <- renderUI({
       left_px <- -25*hover$range$left + left_pct * (hover$range$right - hover$range$left)
       top_px <- hover$range$top + top_pct * (hover$range$bottom - hover$range$top)
     }
-  } else if (top_pct >.75){
-    left_px <- hover$range$left + left_pct * (hover$range$right - hover$range$left)
-    top_px <- -15*hover$range$top + top_pct * (hover$range$bottom - hover$range$top)
-  } else{
-    left_px <- hover$range$left + left_pct * (hover$range$right - hover$range$left)
-    top_px <- hover$range$top + top_pct * (hover$range$bottom - hover$range$top)
+  } else {
+    
+    if (top_pct >.75){
+      left_px <- hover$range$left + left_pct * (hover$range$right - hover$range$left)
+      top_px <- -15*hover$range$top + top_pct * (hover$range$bottom - hover$range$top)
+    } else{
+      left_px <- hover$range$left + left_pct * (hover$range$right - hover$range$left)
+      top_px <- hover$range$top + top_pct * (hover$range$bottom - hover$range$top)
+    }
   }
   
   
@@ -78,11 +81,22 @@ output$plotRadarBrushed <- renderPlot({
   
 })
 
+output$plotBarchartBrushed <- renderPlot({
+  
+  brush <- input$plot_brush
+  pointsBrushed <- brushedPoints(.tSNE_plot_filter(input$colRegion,input$colPeriod,input$colCountry,
+                                                   input$colIndicator,input$explore_variables), brush)
+  
+  plotRadarBrushed <- .bar_chart(pointsBrushed,input$explore_variables)
+  
+  return(plotRadarBrushed)
+  
+})
 
 output$tableBrushed <- DT::renderDataTable({
   brush <- input$plot_brush
   pointsBrushed <- brushedPoints(.tSNE_plot_filter(input$colRegion,input$colPeriod,input$colCountry,
-                                                   input$colIndicator), brush)
-  tableBrushed <- .brushTable(pointsBrushed)
+                                                   input$colIndicator,input$explore_variables), brush)
+  tableBrushed <- .brushTable(pointsBrushed,input$explore_variables)
   return(tableBrushed)
 },options = list(dom = 't', pageLength = 25))

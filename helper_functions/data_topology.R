@@ -4,8 +4,10 @@
 # Data processing
 .filter_TCMN_data <- function(){
   
+  # read my selection of indicators
   tsne_indicators <- read.csv("data/TCMN_TSNEIndicators.csv", stringsAsFactors = FALSE)
   tsne_indicators <- dplyr::select(tsne_indicators, IndicatorShort, Subsection)
+  
   TCMN_data_selected <- merge(TCMN_data, tsne_indicators, by=c("IndicatorShort","Subsection"))
   data_filter <- TCMN_data_selected %>%
     filter(!grepl("M",Period) & CountryCode %in% countryNames$CountryCodeISO3 &

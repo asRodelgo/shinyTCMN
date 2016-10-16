@@ -10,16 +10,19 @@ fluidPage(
       )
     ),
     column(3,h4("Color by"),
-           splitLayout(cellWidths = c("62%", "36%"),
-                       selectInput('colIndicator', 'Indicator:', choices=c("All",sort(names(data_tsne_sample)[c(6:ncol(data_tsne_sample))])),selectize=FALSE),
-                       radioButtons('centralMeasure', 'Centrality:', c("mean","median"))
-           )
+           #splitLayout(cellWidths = c("62%", "36%"),
+                       selectInput('colIndicator', 'Indicator:', choices=c("All",sort(names(data_tsne_sample)[c(6:ncol(data_tsne_sample))])),selectize=FALSE)
+                       #radioButtons('centralMeasure', 'Centrality:', c("mean","median"))
+           #)
     ),
-    column(3,h4("Select variables to explore")
-           
+    column(3,h4("Select variables to explore"),
+           selectizeInput(
+             'explore_variables', 'Select up to 8 indicators:', choices = sort(names(data_tsne_sample)[c(6:ncol(data_tsne_sample))]),
+             multiple = TRUE, selected = indicator_selection_plots, options = list(maxItems = 8)
+           )
     )
   ),        
-  br(),
+  #br(),
   #div(style = "position:relative",plotOutput('plotTSNEdensities',height="150px")),
   #br(),
   fluidRow(
@@ -33,7 +36,7 @@ fluidPage(
                   uiOutput("hover_info")
                 ),
                 div(style = "position:relative",
-                    plotOutput('plotRadarBrushed')
+                    plotOutput('plotBarchartBrushed')
                 )#,
                 #div(style = "position:relative",
                 #    plotOutput('plotRadarBrushed_Def')
