@@ -9,8 +9,8 @@ output$plotTSNE <- renderPlot({
 # tooltip hover over scatterplot points: see https://gitlab.com/snippets/16220
 output$hover_info <- renderUI({
   hover <- input$plot_hover
-  point <- nearPoints(.tSNE_plot_filter_hover(input$colRegion,input$colPeriod,input$colCountry,
-                                        input$colIndicator), hover, threshold = 3, maxpoints = 1, addDist = TRUE)
+  point <- nearPoints(.tSNE_plot_filter_hover(input$colRegion,input$colPeriod,input$colCountry),
+                      hover, threshold = 3, maxpoints = 1, addDist = TRUE)
   
   if (nrow(point) == 0) return(NULL)
   # calculate point position INSIDE the image as percent of total dimensions
@@ -57,8 +57,8 @@ output$hover_info <- renderUI({
 output$plotTSNEdensities <- renderPlot({
   
   click <- input$plot_click
-  point <- nearPoints(.tSNE_plot_filter(input$colRegion,input$colPeriod,input$colCountry,
-                                        input$colIndicator), click, threshold = 3, maxpoints = 1, addDist = TRUE)
+  point <- nearPoints(.tSNE_plot_filter(input$colRegion,input$colPeriod,input$colCountry),
+                      click, threshold = 3, maxpoints = 1, addDist = TRUE)
   
   if (nrow(point) == 0){
     plotTSNEdensities <- .densityPlots(input$colRegion,input$colPeriod,input$colCountry,
@@ -73,8 +73,8 @@ output$plotTSNEdensities <- renderPlot({
 output$plotRadarBrushed <- renderPlot({
   
   brush <- input$plot_brush
-  pointsBrushed <- brushedPoints(.tSNE_plot_filter(input$colRegion,input$colPeriod,input$colCountry,
-                                                   input$colIndicator), brush)
+  pointsBrushed <- brushedPoints(.tSNE_plot_filter(input$colRegion,input$colPeriod,input$colCountry),
+                                 brush)
   
   plotRadarBrushed <- .radarPlot_base(pointsBrushed)
   
@@ -86,9 +86,9 @@ output$plotBarchartBrushed <- renderPlot({
   
   brush <- input$plot_brush
   pointsBrushed <- brushedPoints(.tSNE_plot_filter(input$colRegion,input$colPeriod,input$colCountry,
-                                                   input$colIndicator,input$explore_variables), brush)
+                                                   input$explore_variables), brush)
   
-  plotRadarBrushed <- .bar_chart(pointsBrushed,input$explore_variables)
+  plotRadarBrushed <- .bar_chart(pointsBrushed,input$colRegion,input$colPeriod,input$colCountry,input$explore_variables)
   
   return(plotRadarBrushed)
   
@@ -97,7 +97,7 @@ output$plotBarchartBrushed <- renderPlot({
 output$tableBrushed <- DT::renderDataTable({
   brush <- input$plot_brush
   pointsBrushed <- brushedPoints(.tSNE_plot_filter(input$colRegion,input$colPeriod,input$colCountry,
-                                                   input$colIndicator,input$explore_variables), brush)
+                                                   input$explore_variables), brush)
   tableBrushed <- .brushTable(pointsBrushed,input$explore_variables)
   return(tableBrushed)
 },options = list(dom = 't', pageLength = 25, paging = TRUE),rownames= FALSE)

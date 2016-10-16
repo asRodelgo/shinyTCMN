@@ -97,33 +97,39 @@
 }
 
 # Plot tsne chart ---------------------------------------------------------
-.tSNE_plot_filter <- function(colRegion,colPeriod,colCountry,colIndicator,selected_indicators){
+.tSNE_plot_filter <- function(colRegion,colPeriod,colCountry,selected_indicators){
   #
-  if (colCountry=="All") colCountry <- countries_list
-  if (colRegion=="All") colRegion <- regions_list
-  if (colPeriod=="All") colPeriod <- periods_list
-  
-  if (length(tsne_ready)>0){ # if data do stuff
-    tsne_ready_select <- tsne_ready %>%
-      dplyr::select(CountryCode, Period, RegionShort, 
-                    RegionShortIncome, CountryShort, x, y, 
-                    one_of(selected_indicators))
-      
-    # General Filters
-    tsne_points_filter <- tsne_ready_select %>%
-      filter(CountryShort %in% colCountry & RegionShort %in% colRegion & Period %in% colPeriod)
-    tsne_points_filter_out <- tsne_ready_select %>%
-      filter(!(CountryShort %in% colCountry & RegionShort %in% colRegion & Period %in% colPeriod))
+    if (colCountry=="All") colCountry <- countries_list
+    if (colRegion=="All") colRegion <- regions_list
+    if (colPeriod=="All") colPeriod <- periods_list
     
-  } else{ return()}
-  #plot(c(1,1),type="n", frame.plot = FALSE, axes=FALSE, ann=FALSE)
-  #graphics::text(1.5, 1,"Not enough data", col="red", cex=2)
+    
+    if (length(tsne_ready)>0){ # if data do stuff
+      if (!is.null(selected_indicators)){  # if at least 1 selected indicator
+        tsne_ready_select <- tsne_ready %>%
+            dplyr::select(CountryCode, Period, RegionShort, 
+                          RegionShortIncome, CountryShort, x, y, 
+                          one_of(selected_indicators))
+      } else { # no selected indicators    
+        tsne_ready_select <- tsne_ready %>%
+          dplyr::select(CountryCode, Period, RegionShort, 
+                        RegionShortIncome, CountryShort, x, y)
+      }  
+      # General Filters
+      tsne_points_filter <- tsne_ready_select %>%
+        filter(CountryShort %in% colCountry & RegionShort %in% colRegion & Period %in% colPeriod)
+      tsne_points_filter_out <- tsne_ready_select %>%
+        filter(!(CountryShort %in% colCountry & RegionShort %in% colRegion & Period %in% colPeriod))
+      
+    } else{ return()}
+    #plot(c(1,1),type="n", frame.plot = FALSE, axes=FALSE, ann=FALSE)
+    #graphics::text(1.5, 1,"Not enough data", col="red", cex=2)
   
   return(tsne_points_filter)
 }
 
 # Filters for hover over tooltips ---------------------------------------------------------
-.tSNE_plot_filter_hover <- function(colRegion,colPeriod,colCountry,colIndicator){
+.tSNE_plot_filter_hover <- function(colRegion,colPeriod,colCountry){
   #
   if (colCountry=="All") colCountry <- countries_list
   if (colRegion=="All") colRegion <- regions_list
@@ -333,44 +339,52 @@
 
 
 .brushTable <- function(brushPoints,selected_indicators){
-  # brushed points
-  brushPoints <- dplyr::select(brushPoints,Country=CountryShort, Period, one_of(selected_indicators))
-  #names(brushPoints) <- c("Country","Period",indicator_selection_plots_short)
-  # actual data filter
-  selected_TCMN_data <- .filter_TCMN_data()
-  # merge
-  brushPoints_actual <- merge(selected_TCMN_data,brushPoints[,c("Country","Period")], 
-                              by.x = c("CountryShort","Period"), by.y = c("Country","Period"))
-  brushPoints_actual <- brushPoints_actual %>%
-    dplyr::select(Country=CountryShort, Period, one_of(selected_indicators))
   
-  require(stringr) # to wrap label text
-  names(brushPoints_actual) <- gsub("_"," ",names(brushPoints_actual))
-  names(brushPoints_actual) <- str_wrap(names(brushPoints_actual), width = 25)  
-  
-  #names(brushPoints_actual) <- c("Country","Period",indicator_selection_plots_short)
-  brushPoints_actual[,c(3:ncol(brushPoints_actual))] <- round(brushPoints_actual[,c(3:ncol(brushPoints_actual))],2)
-  brushPoints_actual[is.na(brushPoints_actual)] <- "..."
-    #return(str(brushPoints))
-  brushPoints <- brushPoints_actual
+  if (!is.null(selected_indicators)){  
+    # brushed points
+    brushPoints <- dplyr::select(brushPoints,Country=CountryShort, Period, one_of(selected_indicators))
+    #names(brushPoints) <- c("Country","Period",indicator_selection_plots_short)
+    # actual data filter
+    selected_TCMN_data <- .filter_TCMN_data()
+    # merge
+    brushPoints_actual <- merge(selected_TCMN_data,brushPoints[,c("Country","Period")], 
+                                by.x = c("CountryShort","Period"), by.y = c("Country","Period"))
+    brushPoints_actual <- brushPoints_actual %>%
+      dplyr::select(Country=CountryShort, Period, one_of(selected_indicators))
+    
+    require(stringr) # to wrap label text
+    names(brushPoints_actual) <- gsub("_"," ",names(brushPoints_actual))
+    names(brushPoints_actual) <- str_wrap(names(brushPoints_actual), width = 25)  
+    
+    #names(brushPoints_actual) <- c("Country","Period",indicator_selection_plots_short)
+    brushPoints_actual[,c(3:ncol(brushPoints_actual))] <- round(brushPoints_actual[,c(3:ncol(brushPoints_actual))],2)
+    brushPoints_actual[is.na(brushPoints_actual)] <- "..."
+      #return(str(brushPoints))
+    brushPoints <- brushPoints_actual
+  } else {
+    brushPoints <- dplyr::select(brushPoints,Country=CountryShort, Period)
+  }  
+    
 }
 
 # Bar chart plot
-.bar_chart <- function(brushPoints,selected_indicators){      
+.bar_chart <- function(brushPoints,colRegion,colPeriod,colCountry,selected_indicators){      
   
   if (!(is.null(selected_indicators))){
-    #selected_indicators <- indicator_selection_plots
+    
+    tsne_ready_select <- .tSNE_plot_filter(colRegion,colPeriod,colCountry,selected_indicators)
+    
     if (length(selected_indicators)>1){
-      tsne_radar <- tsne_ready %>%
+      tsne_radar <- tsne_ready_select %>%
         dplyr::select(one_of(selected_indicators), CountryShort, Period) %>%
         mutate_at(selected_indicators, funs(max,mean)) %>%
         #filter(Season == colPeriod) %>%
         dplyr::select(-Period)
     } else { # introduce fictitious variable x to keep the _mean, _max structure when 
       # only 1 indicator is selected
-      tsne_radar <- tsne_ready %>%
+      tsne_radar <- tsne_ready_select %>%
         dplyr::select(one_of(selected_indicators),x, CountryShort, Period) %>%
-        mutate_at(c(selected_indicators,"x"), funs(max,mean)) %>%
+        mutate_at(c(selected_indicators,"x"), funs(mean)) %>%
         #filter(Season == colPeriod) %>%
         dplyr::select(-Period)
     }
@@ -400,14 +414,17 @@
         names(tsne_mean) <- gsub("_mean","",names(tsne_mean))
     
     }
-    
-    tsne_max <- tsne_radar %>%
-      dplyr::select(ends_with("_max")) %>%
-      distinct(.keep_all=TRUE) %>%
+      
+    tsne_max <- tsne_ready %>%
+      dplyr::select(one_of(selected_indicators), CountryShort, Period) %>%
+      mutate_at(selected_indicators, funs(max)) %>%
+      dplyr::select(-Period) %>%
+      #dplyr::select(ends_with("_max")) %>%
       mutate(CountryShort = "max") %>%
+      distinct(.keep_all=TRUE) %>%
       dplyr::select(CountryShort, everything())
     
-    names(tsne_max) <- gsub("_max","",names(tsne_max))
+    #names(tsne_max) <- gsub("_max","",names(tsne_max))
     
     tsne_radar <- bind_rows(tsne_mean,tsne_max)
     tsne_radar <- dplyr::select(tsne_radar, CountryShort, one_of(selected_indicators))
@@ -425,8 +442,8 @@
     ggplot(NULL,aes(x=Indicator,y=Observation)) +
       geom_bar(data=data_grey,color="#f1f3f3",fill = "#f1f3f3",stat="identity") +
       geom_bar(data=data_color,color="#22A6F5",fill="#22A6F5",stat="identity") +
-      #geom_text(data=data_color, aes(label=Observation,y=Observation - max(Observation)*.1),
-      #          size=6,color="white") + 
+      geom_text(data=data_color, aes(label=round(Observation,2),y=Observation + .05),
+                size=5,color="darkblue") + 
       coord_flip()+
       theme(legend.key=element_blank(),
             legend.title=element_blank(),
@@ -435,12 +452,12 @@
             panel.background = element_blank(),plot.title = element_text(lineheight=.5),
             axis.ticks.x = element_blank(),
             axis.text.x = element_blank(),
-            axis.text.y = element_text(size = 15)) + 
+            axis.text.y = element_text(size = 12)) + 
       labs(x="",y=""#,title="Top 5 constraints according to 2013 Enterprise Survey (in percent)"
       )
   } else{
     plot(c(1,1),type="n", frame.plot = FALSE, axes=FALSE, ann=FALSE)
-    graphics::text(1.5, 1,"Please select at least one indicator", col="red", cex=1)
+    graphics::text(1.5, 1,"No indicators selected", col="red", cex=1)
   }
 }
 
