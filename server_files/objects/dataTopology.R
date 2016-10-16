@@ -1,7 +1,8 @@
 # Plot tSNE ---------------------
 
 output$plotTSNE <- renderPlot({
-  plotTSNE <- .tSNE_plot_All(input$colRegion,input$colPeriod,input$colCountry,input$colIndicator,input$centralMeasure)
+  plotTSNE <- .tSNE_plot_All(input$colRegion,input$colPeriod,input$colCountry,input$colIndicator)
+                             #,input$centralMeasure)
   return(plotTSNE)
 })
 
@@ -99,4 +100,4 @@ output$tableBrushed <- DT::renderDataTable({
                                                    input$colIndicator,input$explore_variables), brush)
   tableBrushed <- .brushTable(pointsBrushed,input$explore_variables)
   return(tableBrushed)
-},options = list(dom = 't', pageLength = 25))
+},options = list(dom = 't', pageLength = 25, paging = TRUE),rownames= FALSE)

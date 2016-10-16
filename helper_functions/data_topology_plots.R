@@ -1,5 +1,5 @@
 # Plot tsne chart ---------------------------------------------------------
-.tSNE_plot_All <- function(colRegion,colPeriod,colCountry,colIndicator,centralMeasure){
+.tSNE_plot_All <- function(colRegion,colPeriod,colCountry,colIndicator,centralMeasure="mean"){
   # tsne_points contains pairs of coordinate points to plot
   # Parameters -----------
   # 
@@ -342,7 +342,7 @@
   brushPoints_actual <- merge(selected_TCMN_data,brushPoints[,c("Country","Period")], 
                               by.x = c("CountryShort","Period"), by.y = c("Country","Period"))
   brushPoints_actual <- brushPoints_actual %>%
-    dplyr::select(CountryShort, Period, one_of(selected_indicators))
+    dplyr::select(Country=CountryShort, Period, one_of(selected_indicators))
   
   require(stringr) # to wrap label text
   names(brushPoints_actual) <- gsub("_"," ",names(brushPoints_actual))
@@ -358,77 +358,90 @@
 # Bar chart plot
 .bar_chart <- function(brushPoints,selected_indicators){      
   
-  #selected_indicators <- indicator_selection_plots
+  if (!(is.null(selected_indicators))){
+    #selected_indicators <- indicator_selection_plots
+    if (length(selected_indicators)>1){
+      tsne_radar <- tsne_ready %>%
+        dplyr::select(one_of(selected_indicators), CountryShort, Period) %>%
+        mutate_at(selected_indicators, funs(max,mean)) %>%
+        #filter(Season == colPeriod) %>%
+        dplyr::select(-Period)
+    } else { # introduce fictitious variable x to keep the _mean, _max structure when 
+      # only 1 indicator is selected
+      tsne_radar <- tsne_ready %>%
+        dplyr::select(one_of(selected_indicators),x, CountryShort, Period) %>%
+        mutate_at(c(selected_indicators,"x"), funs(max,mean)) %>%
+        #filter(Season == colPeriod) %>%
+        dplyr::select(-Period)
+    }
+    #brushPoints <- filter(tsne_ready, CountryCode == "ALB")
+    brushPoints <- as.data.frame(brushPoints)
+    
+    if (nrow(brushPoints)>0){
+      #brushPoints <- merge(tsne_ready, brushPoints, by = c("Player","Season"))
+      tsne_mean <- brushPoints %>%
+        dplyr::select(one_of(selected_indicators), CountryShort, Period) %>%
+        mutate_at(selected_indicators, funs(mean)) %>%
+        #dplyr::select(ends_with("_mean")) %>%
+        mutate(CountryShort = "mean of selected") %>%
+        distinct(CountryShort, .keep_all=TRUE) %>%
+        dplyr::select(CountryShort, everything())
+      
+      names(tsne_mean) <- gsub("_mean","",names(tsne_mean))
+      
+    } else {
   
-  tsne_radar <- tsne_ready %>%
-    dplyr::select(one_of(selected_indicators), CountryShort, Period) %>%
-    mutate_at(selected_indicators, funs(max,mean)) %>%
-    #filter(Season == colPeriod) %>%
-    dplyr::select(-Period)
-  
-  #brushPoints <- filter(tsne_ready, Period == "2014")
-  brushPoints <- as.data.frame(brushPoints)
-  
-  if (nrow(brushPoints)>0){
-    #brushPoints <- merge(tsne_ready, brushPoints, by = c("Player","Season"))
-    tsne_mean <- brushPoints %>%
-      dplyr::select(one_of(selected_indicators), CountryShort, Period) %>%
-      mutate_at(selected_indicators, funs(mean)) %>%
-      #dplyr::select(ends_with("_mean")) %>%
-      mutate(CountryShort = "mean of selected") %>%
+        tsne_mean <- tsne_radar %>%
+          dplyr::select(ends_with("_mean")) %>%
+          distinct(.keep_all=TRUE) %>%
+          mutate(CountryShort = "mean of selected") %>%
+          dplyr::select(CountryShort, everything())
+        
+        names(tsne_mean) <- gsub("_mean","",names(tsne_mean))
+    
+    }
+    
+    tsne_max <- tsne_radar %>%
+      dplyr::select(ends_with("_max")) %>%
       distinct(.keep_all=TRUE) %>%
+      mutate(CountryShort = "max") %>%
       dplyr::select(CountryShort, everything())
     
-    names(tsne_mean) <- gsub("_mean","",names(tsne_mean))
+    names(tsne_max) <- gsub("_max","",names(tsne_max))
     
-  } else {
-    tsne_mean <- tsne_radar %>%
-      dplyr::select(ends_with("_mean")) %>%
-      distinct(.keep_all=TRUE) %>%
-      mutate(CountryShort = "mean of selected") %>%
-      dplyr::select(CountryShort, everything())
+    tsne_radar <- bind_rows(tsne_mean,tsne_max)
+    tsne_radar <- dplyr::select(tsne_radar, CountryShort, one_of(selected_indicators))
     
-    names(tsne_mean) <- gsub("_mean","",names(tsne_mean))
+    require(stringr) # to wrap label text
+    names(tsne_radar) <- gsub("_"," ",names(tsne_radar))
+    names(tsne_radar) <- str_wrap(names(tsne_radar), width = 20)  
+    
+    tsne_barchart <- gather(tsne_radar,Indicator,Observation,-CountryShort)
+      
+    data_color <- filter(tsne_barchart,!(CountryShort=="max"))
+    data_grey <- filter(tsne_barchart,CountryShort=="max")
+    
+    #data <- mutate(data, id = seq(1,nrow(data),1))
+    ggplot(NULL,aes(x=Indicator,y=Observation)) +
+      geom_bar(data=data_grey,color="#f1f3f3",fill = "#f1f3f3",stat="identity") +
+      geom_bar(data=data_color,color="#22A6F5",fill="#22A6F5",stat="identity") +
+      #geom_text(data=data_color, aes(label=Observation,y=Observation - max(Observation)*.1),
+      #          size=6,color="white") + 
+      coord_flip()+
+      theme(legend.key=element_blank(),
+            legend.title=element_blank(),
+            legend.position='none',
+            panel.border = element_blank(),
+            panel.background = element_blank(),plot.title = element_text(lineheight=.5),
+            axis.ticks.x = element_blank(),
+            axis.text.x = element_blank(),
+            axis.text.y = element_text(size = 15)) + 
+      labs(x="",y=""#,title="Top 5 constraints according to 2013 Enterprise Survey (in percent)"
+      )
+  } else{
+    plot(c(1,1),type="n", frame.plot = FALSE, axes=FALSE, ann=FALSE)
+    graphics::text(1.5, 1,"Please select at least one indicator", col="red", cex=1)
   }
-  
-  tsne_max <- tsne_radar %>%
-    dplyr::select(ends_with("_max")) %>%
-    distinct(.keep_all=TRUE) %>%
-    mutate(CountryShort = "max") %>%
-    dplyr::select(CountryShort, everything())
-  
-  names(tsne_max) <- gsub("_max","",names(tsne_max))
-  
-  tsne_radar <- bind_rows(tsne_mean,tsne_max)
-  tsne_radar <- dplyr::select(tsne_radar, CountryShort, one_of(selected_indicators))
-  
-  require(stringr) # to wrap label text
-  names(tsne_radar) <- gsub("_"," ",names(tsne_radar))
-  names(tsne_radar) <- str_wrap(names(tsne_radar), width = 25)  
-  
-  tsne_barchart <- gather(tsne_radar,Indicator,Observation,-CountryShort)
-    
-  data_color <- filter(tsne_barchart,!(CountryShort=="max"))
-  data_grey <- filter(tsne_barchart,CountryShort=="max")
-  
-  #data <- mutate(data, id = seq(1,nrow(data),1))
-  ggplot(NULL,aes(x=Indicator,y=Observation)) +
-    geom_bar(data=data_grey,color="#f1f3f3",fill = "#f1f3f3",stat="identity") +
-    geom_bar(data=data_color,color="#22A6F5",fill="#22A6F5",stat="identity") +
-    #geom_text(data=data_color, aes(label=Observation,y=Observation - max(Observation)*.1),
-    #          size=6,color="white") + 
-    coord_flip()+
-    theme(legend.key=element_blank(),
-          legend.title=element_blank(),
-          legend.position='none',
-          panel.border = element_blank(),
-          panel.background = element_blank(),plot.title = element_text(lineheight=.5),
-          axis.ticks.x = element_blank(),
-          axis.text.x = element_blank(),
-          axis.text.y = element_text(size = 15)) + 
-    labs(x="",y=""#,title="Top 5 constraints according to 2013 Enterprise Survey (in percent)"
-    )
-    
 }
 
 
