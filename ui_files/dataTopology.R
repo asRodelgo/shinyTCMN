@@ -40,8 +40,8 @@ fluidPage(
     ),
     column(3,h4("Select variables to explore"),
            selectizeInput(
-             'explore_variables', 'Select up to 8 indicators:', choices = sort(names(data_tsne_sample)[c(6:ncol(data_tsne_sample))]),
-             multiple = TRUE, selected = indicator_selection_plots, options = list(maxItems = 8)
+             'explore_variables', 'Select up to 10 indicators:', choices = sort(names(data_tsne_sample)[c(6:ncol(data_tsne_sample))]),
+             multiple = TRUE, selected = indicator_selection_plots, options = list(maxItems = 10)
            ),
            br(),
            div(style = "position:relative",

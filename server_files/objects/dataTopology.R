@@ -25,7 +25,7 @@ output$hover_info <- renderUI({
       left_px <- -25*hover$range$left + left_pct * (hover$range$right - hover$range$left)
       top_px <- -15*hover$range$top + top_pct * (hover$range$bottom - hover$range$top)
     } else {
-      left_px <- -25*hover$range$left + left_pct * (hover$range$right - hover$range$left)
+      left_px <- -15*hover$range$left + left_pct * (hover$range$right - hover$range$left)
       top_px <- hover$range$top + top_pct * (hover$range$bottom - hover$range$top)
     }
   } else {
