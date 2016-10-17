@@ -1,9 +1,26 @@
 # Plot tSNE ---------------------
+# Single zoomable plot (on left)
+ranges <- reactiveValues(x = NULL, y = NULL)
 
 output$plotTSNE <- renderPlot({
   plotTSNE <- .tSNE_plot_All(input$colRegion,input$colPeriod,input$colCountry,input$colIndicator)
                              #,input$centralMeasure)
+  plotTSNE <- plotTSNE + coord_cartesian(xlim = ranges$x, ylim = ranges$y)
   return(plotTSNE)
+})
+
+# When a double-click happens, check if there's a brush on the plot.
+# If so, zoom to the brush bounds; if not, reset the zoom.
+observeEvent(input$plot_dblclick, {
+  brush <- input$plot_brush
+  if (!is.null(brush)) {
+    ranges$x <- c(brush$xmin, brush$xmax)
+    ranges$y <- c(brush$ymin, brush$ymax)
+    
+  } else {
+    ranges$x <- NULL
+    ranges$y <- NULL
+  }
 })
 
 # tooltip hover over scatterplot points: see https://gitlab.com/snippets/16220
@@ -81,6 +98,12 @@ output$plotRadarBrushed <- renderPlot({
   return(plotRadarBrushed)
   
 })
+
+#output$plot1 <- renderPlot({
+#  ggplot(mtcars, aes(wt, mpg)) +
+#    geom_point() +
+#    coord_cartesian(xlim = ranges$x, ylim = ranges$y)
+#})
 
 output$plotBarchartBrushed <- renderPlot({
   

@@ -24,7 +24,8 @@ fluidPage(
                plotOutput('plotTSNE', 
                           hover = hoverOpts("plot_hover", delay = 100, delayType = "debounce"),
                           click = clickOpts("plot_click"),
-                          brush = brushOpts("plot_brush", delay = 100, delayType = "debounce")),
+                          brush = brushOpts("plot_brush", delay = 100, delayType = "debounce"),
+                          dblclick = "plot_dblclick"),
                uiOutput("hover_info")
              )
                          #,
