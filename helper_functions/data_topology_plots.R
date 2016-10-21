@@ -128,7 +128,16 @@
       }  
       # General Filters
       tsne_points_filter <- tsne_ready_select %>%
-        filter(CountryShort %in% colCountry & RegionShort %in% colRegion & Period %in% colPeriod)
+        filter(CountryShort %in% colCountry & RegionShort %in% colRegion & 
+                 Period %in% colPeriod) %>%
+        group_by(CountryShort,Period) %>%
+        mutate(group = ifelse(length(colRegion)>2,
+                              ifelse(length(colPeriod) == 2,
+                                     ifelse(length(colCountry)>2,Period,paste0(CountryShort," (",Period,")")),
+                                     ifelse(length(colCountry)>2,RegionShort,
+                                            ifelse(length(colPeriod)==1,paste0(CountryShort," (",Period,")"),CountryShort))),
+                              ifelse(length(colPeriod)>2,ifelse(length(colCountry)>2,RegionShort,CountryShort),
+                                     ifelse(length(colCountry)>2,paste0(RegionShort," (",Period,")"),paste0(CountryShort," (",Period,")")))))
       tsne_points_filter_out <- tsne_ready_select %>%
         filter(!(CountryShort %in% colCountry & RegionShort %in% colRegion & Period %in% colPeriod))
       
@@ -383,19 +392,20 @@
   
   if (!(is.null(selected_indicators))){
     
-    tsne_ready_select <- .tSNE_plot_filter(colRegion,colPeriod,colCountry,selected_indicators)
+    tsne_ready_select <- as.data.frame(.tSNE_plot_filter(colRegion,colPeriod,colCountry,selected_indicators))
     
     if (length(selected_indicators)>1){
       tsne_radar <- tsne_ready_select %>%
-        dplyr::select(one_of(selected_indicators), CountryShort, Period) %>%
+        group_by(group) %>%
+        dplyr::select(one_of(selected_indicators), CountryShort, Period,group) %>%
         mutate_at(selected_indicators, funs(max,mean)) %>%
         #filter(Season == colPeriod) %>%
         dplyr::select(-Period)
     } else { # introduce fictitious variable x to keep the _mean, _max structure when 
       # only 1 indicator is selected
       tsne_radar <- tsne_ready_select %>%
-        dplyr::select(one_of(selected_indicators),x, CountryShort, Period) %>%
-        mutate_at(c(selected_indicators,"x"), funs(mean)) %>%
+        dplyr::select(one_of(selected_indicators),x, CountryShort, Period,group) %>%
+        mutate_at(c(selected_indicators,"x"), funs(mean)) #%>%
         #filter(Season == colPeriod) %>%
         dplyr::select(-Period)
     }
@@ -405,7 +415,7 @@
     if (nrow(brushPoints)>0){
       #brushPoints <- merge(tsne_ready, brushPoints, by = c("Player","Season"))
       tsne_mean <- brushPoints %>%
-        dplyr::select(one_of(selected_indicators), CountryShort, Period) %>%
+        dplyr::select(one_of(selected_indicators), CountryShort, Period,RegionShort) %>%
         mutate_at(selected_indicators, funs(mean)) %>%
         #dplyr::select(ends_with("_mean")) %>%
         mutate(CountryShort = "mean of selected") %>%
@@ -417,44 +427,46 @@
     } else {
   
         tsne_mean <- tsne_radar %>%
-          dplyr::select(ends_with("_mean")) %>%
+          group_by(group) %>%
+          dplyr::select(ends_with("_mean"),group) %>%
           distinct(.keep_all=TRUE) %>%
-          mutate(CountryShort = "mean of selected") %>%
-          dplyr::select(CountryShort, everything())
+          #mutate(CountryShort = "mean of selected") %>%
+          dplyr::select(group, everything())
         
         names(tsne_mean) <- gsub("_mean","",names(tsne_mean))
     
     }
       
     tsne_max <- tsne_ready %>%
-      dplyr::select(one_of(selected_indicators), CountryShort, Period) %>%
+      #group_by(group) %>%
+      dplyr::select(one_of(selected_indicators)) %>%
       mutate_at(selected_indicators, funs(max)) %>%
-      dplyr::select(-Period) %>%
+      #dplyr::select(-Period) %>%
       #dplyr::select(ends_with("_max")) %>%
-      mutate(CountryShort = "max") %>%
+      mutate(group = "max") %>%
       distinct(.keep_all=TRUE) %>%
-      dplyr::select(CountryShort, everything())
+      dplyr::select(group,everything())
     
     #names(tsne_max) <- gsub("_max","",names(tsne_max))
     
     tsne_radar <- bind_rows(tsne_mean,tsne_max)
-    tsne_radar <- dplyr::select(tsne_radar, CountryShort, one_of(selected_indicators))
+    tsne_radar <- dplyr::select(tsne_radar, group, one_of(selected_indicators))
     
     require(stringr) # to wrap label text
     names(tsne_radar) <- gsub("_"," ",names(tsne_radar))
     names(tsne_radar) <- str_wrap(names(tsne_radar), width = 20)  
     
-    tsne_barchart <- gather(tsne_radar,Indicator,Observation,-CountryShort)
+    tsne_barchart <- gather(tsne_radar,Indicator,Observation,-group)
       
-    data_color <- filter(tsne_barchart,!(CountryShort=="max"))
-    data_grey <- filter(tsne_barchart,CountryShort=="max")
+    data_color <- filter(tsne_barchart,!(group=="max"))
+    data_grey <- filter(tsne_barchart,group=="max")
     
     #data <- mutate(data, id = seq(1,nrow(data),1))
     ggplot(NULL,aes(x=Indicator,y=Observation)) +
       geom_bar(data=data_grey,color="#f1f3f3",fill = "#f1f3f3",stat="identity") +
-      geom_bar(data=data_color,color="#22A6F5",fill="#22A6F5",stat="identity") +
-      geom_text(data=data_color, aes(label=round(Observation,2),y=Observation + .05),
-                size=5,color="darkblue") + 
+      geom_bar(data=data_color,aes(color=group,fill=group),stat="identity",position = "dodge") +
+      geom_text(data=data_color, aes(label=round(Observation,2),y=Observation + .05,group=group),
+                size=5,color="darkblue",position = position_dodge(width = 0.9)) + 
       coord_flip()+
       theme(legend.key=element_blank(),
             legend.title=element_blank(),
