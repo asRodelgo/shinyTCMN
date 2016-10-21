@@ -51,8 +51,7 @@ indicators_list <- names(data_tsne_sample)[7:ncol(data_tsne_sample)]
 #
 indicator_selection_plots <- c("Ease_of_Doing_Business","Control_of_Corruption","Unemployment_rate",
                                "Overall_score","MFN_Tariff_Simple_Average","Remittances_received_perc_of_GDP",
-                               "Manufac",
-                               "Exports","Imports","Income_per_capita_USDollars")
+                               "Manufac","Income_per_capita_USDollars")
 indicator_selection_plots_short <- c("Ease_DB","Corruption","Unemployed",
                                "LPI","MFN_Tariff","Remittances",
                                "Manufac",
