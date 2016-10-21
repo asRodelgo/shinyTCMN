@@ -6,28 +6,32 @@ fluidPage(
            fluidRow(
              column(9,h4("Filter by"),
                 splitLayout(cellWidths = rep("33%", 3),
-                                 selectInput('colPeriod', 'Period:', choices=c("All",sort(unique(data_tsne_sample$Period))),selectize=FALSE),
-                                 selectInput('colRegion', 'Region:', choices=c("All",sort(unique(data_tsne_sample$RegionShort))),selectize=FALSE),
-                                 selectInput('colCountry', 'Country:', choices=c("All",sort(unique(data_tsne_sample$CountryShort))),selectize=FALSE)
+                                 selectizeInput('colPeriod', 'Period:', choices=c("All",sort(unique(data_tsne_sample$Period))),
+                                                selected=NULL,multiple=TRUE,options = list(maxItems = 2,dropdownParent = 'body')),
+                                 selectizeInput('colRegion', 'Region:', choices=c("All",sort(unique(data_tsne_sample$RegionShort))),
+                                                selected=NULL,multiple=TRUE,options = list(maxItems = 2,dropdownParent = 'body')),
+                                 selectizeInput('colCountry', 'Country:', choices=c("All",sort(unique(data_tsne_sample$CountryShort))),
+                                               selected=NULL,multiple=TRUE,options = list(maxItems = 2,dropdownParent = 'body'))
                 )
              ),
              column(3,h4("Color by"),
                     #splitLayout(cellWidths = c("62%", "36%"),
-                    selectInput('colIndicator', 'Indicator:', choices=c("All",sort(names(data_tsne_sample)[c(6:ncol(data_tsne_sample))])),selectize=FALSE)
+                    selectizeInput('colIndicator', 'Indicator:', choices=c("All",sort(names(data_tsne_sample)[c(6:ncol(data_tsne_sample))])),
+                                   options = list(dropdownParent = 'body'))
                     #radioButtons('centralMeasure', 'Centrality:', c("mean","median"))
                     #)
              )
            ),
            fluidRow(
-             div(
-               style = "position:relative",
-               plotOutput('plotTSNE', 
+             #div(
+               #style = "position:relative",
+               plotOutput('plotTSNE', height = "600px",
                           hover = hoverOpts("plot_hover", delay = 100, delayType = "debounce"),
                           click = clickOpts("plot_click"),
                           brush = brushOpts("plot_brush", delay = 100, delayType = "debounce"),
                           dblclick = "plot_dblclick"),
                uiOutput("hover_info")
-             )
+             #)
                          #,
                          #div(style = "position:relative",
                          #    plotOutput('plotRadarBrushed_Def')

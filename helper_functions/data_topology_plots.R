@@ -10,9 +10,9 @@
   # ----------------------
   #
   # ------------------------------------
-  if (colCountry=="All") colCountry <- countries_list
-  if (colRegion=="All") colRegion <- regions_list
-  if (colPeriod=="All") colPeriod <- periods_list
+  if (colCountry=="All" || is.null(colCountry)) colCountry <- countries_list
+  if (colRegion=="All" || is.null(colRegion)) colRegion <- regions_list
+  if (colPeriod=="All" || is.null(colPeriod)) colPeriod <- periods_list
   #
   if (length(tsne_ready)>0){ # if data do stuff
     par(mar=c(0,0,0,0))
@@ -23,7 +23,17 @@
     # General Filters
     tsne_points_filter <- tsne_ready_plot %>%
       filter(CountryShort %in% colCountry & RegionShort %in% colRegion 
-             & Period %in% colPeriod)
+             & Period %in% colPeriod) %>%
+      group_by(CountryShort,Period) %>%
+      mutate(group = ifelse(length(colRegion)>2,
+                        ifelse(length(colPeriod) == 2,
+                               ifelse(length(colCountry)>2,Period,paste0(CountryShort," (",Period,")")),
+                               ifelse(length(colCountry)>2,RegionShort,
+                                      ifelse(length(colPeriod)==1,paste0(CountryShort," (",Period,")"),CountryShort))),
+                     ifelse(length(colPeriod)>2,ifelse(length(colCountry)>2,RegionShort,CountryShort),
+                            ifelse(length(colCountry)>2,paste0(RegionShort," (",Period,")"),paste0(CountryShort," (",Period,")")))))
+    
+    
     centroid <- data.frame(x=(mean(tsne_points_filter$x)),y=mean(tsne_points_filter$y))
     
     tsne_points_filter_out <- tsne_ready_plot %>%
@@ -69,7 +79,8 @@
     } else {
       
       ggplot(NULL, aes(x,y)) +  
-        geom_point(data=tsne_points_filter,color = "blue",size=2) +
+        #geom_point(data=tsne_points_filter,aes(group=CountryShort,color = CountryShort),size=2) +
+        geom_point(data=tsne_points_filter,aes(group=group,color = group),size=2) +
         geom_point(data=tsne_points_filter_out,color=alpha("lightgrey",0.1)) +
         geom_point(data=centroid,color="red",size=3) + 
         theme(legend.key=element_blank(),
@@ -99,9 +110,9 @@
 # Plot tsne chart ---------------------------------------------------------
 .tSNE_plot_filter <- function(colRegion,colPeriod,colCountry,selected_indicators){
   #
-    if (colCountry=="All") colCountry <- countries_list
-    if (colRegion=="All") colRegion <- regions_list
-    if (colPeriod=="All") colPeriod <- periods_list
+  if (colCountry=="All" || is.null(colCountry)) colCountry <- countries_list
+  if (colRegion=="All" || is.null(colRegion)) colRegion <- regions_list
+  if (colPeriod=="All" || is.null(colPeriod)) colPeriod <- periods_list
     
     
     if (length(tsne_ready)>0){ # if data do stuff
@@ -131,9 +142,9 @@
 # Filters for hover over tooltips ---------------------------------------------------------
 .tSNE_plot_filter_hover <- function(colRegion,colPeriod,colCountry){
   #
-  if (colCountry=="All") colCountry <- countries_list
-  if (colRegion=="All") colRegion <- regions_list
-  if (colPeriod=="All") colPeriod <- periods_list
+  if (colCountry=="All" || is.null(colCountry)) colCountry <- countries_list
+  if (colRegion=="All" || is.null(colRegion)) colRegion <- regions_list
+  if (colPeriod=="All" || is.null(colPeriod)) colPeriod <- periods_list
   
   if (length(tsne_ready)>0){ # if data do stuff
     tsne_ready_select <- tsne_ready %>%
