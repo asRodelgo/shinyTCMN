@@ -50,7 +50,8 @@ fluidPage(
            ),
            br(),
            div(style = "position:relative",
-               plotOutput('plotBarchartBrushed')
+               #plotOutput('plotBarchartBrushed')
+               plotOutput('plotBoxplotBrushed')
            )
     )
   )        

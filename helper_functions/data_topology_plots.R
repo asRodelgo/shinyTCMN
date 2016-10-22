@@ -505,7 +505,7 @@
 }
 
 # Box plots
-.boxPlots <- function(colRegion,colPeriod,colCountry,colIndicator,clickCountry,clickPeriod,selected_indicators){      
+.boxPlots <- function(brushPoints,colRegion,colPeriod,colCountry,selected_indicators,clickCountry,clickPeriod){      
   
   # cloud of points on top of boxplots
   tsne_points_filter <- as.data.frame(.tSNE_plot_filter(colRegion,colPeriod,colCountry,selected_indicators))
@@ -520,26 +520,60 @@
   tsne_ready_gather$indicator <- gsub("_"," ",tsne_ready_gather$indicator)
   tsne_ready_gather$indicator <- str_wrap(tsne_ready_gather$indicator, width = 20)  
   
-  if (is.null(clickCountry)){
+  #plot(c(1,1),type="n", frame.plot = FALSE, axes=FALSE, ann=FALSE)
+  ##graphics::text(1.5, 1,nrow(brushPoints), col="red", cex=1)
+  #graphics::text(1.5, 0.8,paste(clickCountry,"Ubabu"), col="red", cex=1)
+  
+  if (paste0(clickPeriod," ")==" "){ #no click
     
-    ggplot(data=tsne_ready_gather,aes(indicator,value)) + 
-      geom_boxplot(color="darkgrey") +  
-      geom_jitter(data=tsne_points_filter,aes(group=group,color=group)) +  
-      coord_flip() +
-      theme(legend.key=element_blank(),
-            legend.title=element_blank(),
-            legend.position="top",
-            panel.border = element_blank(),
-            panel.background = element_blank(),
-            plot.title = element_text(lineheight=.5),
-            #axis.text.x = element_blank(),
-            #axis.text.y = element_blank(),
-            axis.title.x = element_blank(),
-            axis.title.y = element_blank()
-            #axis.ticks = element_blank()
-      )
+    brushPoints <- as.data.frame(brushPoints)
     
-  } else {
+    if (nrow(brushPoints)>0){ #brush
+      
+      brushPoints <- dplyr::select(brushPoints,group,one_of(selected_indicators))
+      brushPoints <- gather(brushPoints, indicator, value, -group)
+      brushPoints$indicator <- gsub("_"," ",brushPoints$indicator)
+      brushPoints$indicator <- str_wrap(brushPoints$indicator, width = 20)  
+      
+      ggplot(data=tsne_ready_gather,aes(indicator,value)) + 
+        geom_boxplot(color="darkgrey") +  
+        geom_jitter(data=tsne_points_filter,aes(group=group,color=group),alpha=0.5,width=0.7) +  
+        geom_jitter(data=brushPoints,aes(group=group,color=group),width=0.7,size=2) +  
+        coord_flip() +
+        theme(legend.key=element_blank(),
+              legend.title=element_blank(),
+              legend.position="top",
+              panel.border = element_blank(),
+              panel.background = element_blank(),
+              plot.title = element_text(lineheight=.5),
+              #axis.text.x = element_blank(),
+              #axis.text.y = element_blank(),
+              axis.title.x = element_blank(),
+              axis.title.y = element_blank()
+              #axis.ticks = element_blank()
+              )
+    } else{ # no brush, no click
+      
+      ggplot(data=tsne_ready_gather,aes(indicator,value)) + 
+        geom_boxplot(color="darkgrey") +  
+        geom_jitter(data=tsne_points_filter,aes(group=group,color=group),width=0.7) +  
+        coord_flip() +
+        theme(legend.key=element_blank(),
+              legend.title=element_blank(),
+              legend.position="top",
+              panel.border = element_blank(),
+              panel.background = element_blank(),
+              plot.title = element_text(lineheight=.5),
+              #axis.text.x = element_blank(),
+              #axis.text.y = element_blank(),
+              axis.title.x = element_blank(),
+              axis.title.y = element_blank()
+              #axis.ticks = element_blank()
+        )
+      
+    }  
+    
+  } else { #click
     
     selectedPoint <- tsne_points_filter %>%
       filter(CountryShort == clickCountry, Period == clickPeriod) %>%
@@ -547,7 +581,7 @@
     
     ggplot(data=tsne_ready_gather,aes(indicator,value)) + 
       geom_boxplot(color="darkgrey") +  
-      geom_jitter(data=tsne_points_filter,aes(group=group,color=group),alpha=0.5,width=0.5) + 
+      geom_jitter(data=tsne_points_filter,aes(group=group,color=group),alpha=0.5,width=0.7) + 
       geom_point(data=selectedPoint,aes(fill=paste0(CountryShort," (",Period,")")),color="red",size=4) +
       coord_flip() +
       theme(legend.key=element_blank(),

@@ -117,6 +117,23 @@ output$plotBarchartBrushed <- renderPlot({
   
 })
 
+output$plotBoxplotBrushed <- renderPlot({
+  
+  brush <- input$plot_brush
+  pointsBrushed <- brushedPoints(.tSNE_plot_filter(input$colRegion,input$colPeriod,input$colCountry,
+                                                   input$explore_variables), brush)
+  click <- input$plot_click
+  point <- nearPoints(.tSNE_plot_filter(input$colRegion,input$colPeriod,input$colCountry,
+                                        input$explore_variables), click, threshold = 3, 
+                                        maxpoints = 1, addDist = TRUE)
+  
+  boxplotBrushed <- .boxPlots(pointsBrushed,input$colRegion,input$colPeriod,input$colCountry,
+                              input$explore_variables,point$CountryShort,point$Period)
+  
+  return(boxplotBrushed)
+  
+})
+
 output$tableBrushed <- DT::renderDataTable({
   brush <- input$plot_brush
   pointsBrushed <- brushedPoints(.tSNE_plot_filter(input$colRegion,input$colPeriod,input$colCountry,
