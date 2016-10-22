@@ -49,10 +49,17 @@ fluidPage(
              multiple = TRUE, selected = indicator_selection_plots, options = list(maxItems = 10)
            ),
            br(),
-           div(style = "position:relative",
-               #plotOutput('plotBarchartBrushed')
-               plotOutput('plotBoxplotBrushed')
-           )
+           radioButtons('pickChart', 'Select chart:', c("box plot","bar chart"),
+                        selected = "box plot", inline = TRUE),
+           conditionalPanel(
+             condition = "input.pickChart == 'box plot'", plotOutput('plotBoxplotBrushed')),
+           conditionalPanel(
+             condition = "input.pickChart == 'bar chart'", plotOutput('plotBarchartBrushed'))
+#            ),
+#            div(style = "position:relative",
+#                #plotOutput('plotBarchartBrushed')
+#                plotOutput('plotBoxplotBrushed')
+#            )
     )
   )        
   #br(),

@@ -489,7 +489,7 @@
       coord_flip()+
       theme(legend.key=element_blank(),
             legend.title=element_blank(),
-            legend.position="bottom",
+            legend.position="top",
             legend.key.size = unit(0.5, "cm"),
             panel.border = element_blank(),
             panel.background = element_blank(),plot.title = element_text(lineheight=.5),
@@ -512,13 +512,23 @@
   tsne_points_filter <- gather(tsne_points_filter, indicator, value, -CountryCode,-CountryShort,-RegionShortIncome,-RegionShort,-Period,-x,-y,-group)
   tsne_points_filter$indicator <- gsub("_"," ",tsne_points_filter$indicator)
   tsne_points_filter$indicator <- str_wrap(tsne_points_filter$indicator, width = 20)  
+  tsne_points_filter$group <- str_wrap(tsne_points_filter$group,width=10)
   
   # boxplots
   tsne_ready_gather <- gather(tsne_ready, indicator, value, -CountryCode,-CountryShort,-RegionShortIncome,-RegionShort,-Period,-x,-y)
   #tsne_points_filter <- filter(tsne_points_filter, indicator %in% selected_indicators)
   tsne_ready_gather <- filter(tsne_ready_gather, indicator %in% selected_indicators)
   tsne_ready_gather$indicator <- gsub("_"," ",tsne_ready_gather$indicator)
-  tsne_ready_gather$indicator <- str_wrap(tsne_ready_gather$indicator, width = 20)  
+  tsne_ready_gather$indicator <- str_wrap(tsne_ready_gather$indicator, width = 20)
+  extremes_high <- tsne_ready_gather %>%
+    group_by(indicator) %>%
+    filter(value==max(value)) %>%
+    distinct(value,.keep_all=TRUE)
+  extremes_low <- tsne_ready_gather %>%
+    group_by(indicator) %>%
+    filter(value==min(value)) %>%
+    distinct(value,.keep_all=TRUE)
+  #tsne_ready_gather$group <- str_wrap(tsne_ready_gather$group,width=10)
   
   #plot(c(1,1),type="n", frame.plot = FALSE, axes=FALSE, ann=FALSE)
   ##graphics::text(1.5, 1,nrow(brushPoints), col="red", cex=1)
@@ -533,12 +543,15 @@
       brushPoints <- dplyr::select(brushPoints,group,one_of(selected_indicators))
       brushPoints <- gather(brushPoints, indicator, value, -group)
       brushPoints$indicator <- gsub("_"," ",brushPoints$indicator)
-      brushPoints$indicator <- str_wrap(brushPoints$indicator, width = 20)  
+      brushPoints$indicator <- str_wrap(brushPoints$indicator, width = 20)
+      brushPoints$group <- str_wrap(brushPoints$group,width=10)
       
       ggplot(data=tsne_ready_gather,aes(indicator,value)) + 
         geom_boxplot(color="darkgrey") +  
-        geom_jitter(data=tsne_points_filter,aes(group=group,color=group),alpha=0.5,width=0.7) +  
-        geom_jitter(data=brushPoints,aes(group=group,color=group),width=0.7,size=2) +  
+        geom_jitter(data=tsne_points_filter,aes(group=group,color=group),alpha=0.2,width=0.7) +  
+        geom_jitter(data=brushPoints,aes(group=group,color=group),width=0.7) +  
+        geom_text(data=extremes_high,aes(label=str_wrap(paste0(CountryShort," (",Period,")"),width=10)),color="darkgrey",size=2,nudge_x = 0.3,show.legend = FALSE) +
+        geom_text(data=extremes_low,aes(label=str_wrap(paste0(CountryShort," (",Period,")"),width=10)),color="darkgrey",size=2,nudge_x = 0.3,show.legend = FALSE) +
         coord_flip() +
         theme(legend.key=element_blank(),
               legend.title=element_blank(),
@@ -556,7 +569,9 @@
       
       ggplot(data=tsne_ready_gather,aes(indicator,value)) + 
         geom_boxplot(color="darkgrey") +  
-        geom_jitter(data=tsne_points_filter,aes(group=group,color=group),width=0.7) +  
+        geom_jitter(data=tsne_points_filter,aes(group=group,color=group),width=0.7) +
+        geom_text(data=extremes_high,aes(label=str_wrap(paste0(CountryShort," (",Period,")"),width=10)),color="darkgrey",size=2,nudge_x = 0.3,show.legend = FALSE) +
+        geom_text(data=extremes_low,aes(label=str_wrap(paste0(CountryShort," (",Period,")"),width=10)),color="darkgrey",size=2,nudge_x = 0.3,show.legend = FALSE) +
         coord_flip() +
         theme(legend.key=element_blank(),
               legend.title=element_blank(),
@@ -582,7 +597,9 @@
     ggplot(data=tsne_ready_gather,aes(indicator,value)) + 
       geom_boxplot(color="darkgrey") +  
       geom_jitter(data=tsne_points_filter,aes(group=group,color=group),alpha=0.5,width=0.7) + 
-      geom_point(data=selectedPoint,aes(fill=paste0(CountryShort," (",Period,")")),color="red",size=4) +
+      geom_point(data=selectedPoint,aes(fill=paste0(CountryShort," (",Period,")")),color="blue",size=4) +
+      geom_text(data=extremes_high,aes(label=str_wrap(paste0(CountryShort," (",Period,")"),width=10)),color="darkgrey",size=2,nudge_x = 0.3,show.legend = FALSE) +
+      geom_text(data=extremes_low,aes(label=str_wrap(paste0(CountryShort," (",Period,")"),width=10)),color="darkgrey",size=2,nudge_x = 0.3,show.legend = FALSE) +
       coord_flip() +
       theme(legend.key=element_blank(),
             legend.title=element_blank(),
