@@ -360,7 +360,8 @@
   
   # add the min column and transpose
   tsne_radar <- t(tsne_radar)
-  tsne_radar <- tsne_radar[-1,]
+  tsne_radar_labels <- row.names(tsne_radar)[-1]
+  tsne_radar_groups <- tsne_radar[1,]
   tsne_radar <- as.data.frame(tsne_radar)
   tsne_radar <- mutate_all(tsne_radar, funs(as.numeric(as.character(.))))
   tsne_radar <- tsne_radar %>%
@@ -370,7 +371,7 @@
   # plot
   radarchart(tsne_radar, axistype=1, caxislabels=c(" "," ",".5"," "," "), centerzero = FALSE,seg=4,
              plty=c(1),plwd=c(5),pcol=c("green"),pdensity=c(0),
-             cglwd=2,axislabcol="red", vlabels=indicator_selection_plots_short, cex.main=1,cex=2.5)  
+             cglwd=2,axislabcol="red", vlabels=tsne_radar_labels, cex.main=1,cex=2.5)  
   
 }
 
@@ -503,4 +504,66 @@
   }
 }
 
-
+# Box plots
+.boxPlots <- function(colRegion,colPeriod,colCountry,colIndicator,clickCountry,clickPeriod,selected_indicators){      
+  
+  # cloud of points on top of boxplots
+  tsne_points_filter <- as.data.frame(.tSNE_plot_filter(colRegion,colPeriod,colCountry,selected_indicators))
+  tsne_points_filter <- gather(tsne_points_filter, indicator, value, -CountryCode,-CountryShort,-RegionShortIncome,-RegionShort,-Period,-x,-y,-group)
+  tsne_points_filter$indicator <- gsub("_"," ",tsne_points_filter$indicator)
+  tsne_points_filter$indicator <- str_wrap(tsne_points_filter$indicator, width = 20)  
+  
+  # boxplots
+  tsne_ready_gather <- gather(tsne_ready, indicator, value, -CountryCode,-CountryShort,-RegionShortIncome,-RegionShort,-Period,-x,-y)
+  #tsne_points_filter <- filter(tsne_points_filter, indicator %in% selected_indicators)
+  tsne_ready_gather <- filter(tsne_ready_gather, indicator %in% selected_indicators)
+  tsne_ready_gather$indicator <- gsub("_"," ",tsne_ready_gather$indicator)
+  tsne_ready_gather$indicator <- str_wrap(tsne_ready_gather$indicator, width = 20)  
+  
+  if (is.null(clickCountry)){
+    
+    ggplot(data=tsne_ready_gather,aes(indicator,value)) + 
+      geom_boxplot(color="darkgrey") +  
+      geom_jitter(data=tsne_points_filter,aes(group=group,color=group)) +  
+      coord_flip() +
+      theme(legend.key=element_blank(),
+            legend.title=element_blank(),
+            legend.position="top",
+            panel.border = element_blank(),
+            panel.background = element_blank(),
+            plot.title = element_text(lineheight=.5),
+            #axis.text.x = element_blank(),
+            #axis.text.y = element_blank(),
+            axis.title.x = element_blank(),
+            axis.title.y = element_blank()
+            #axis.ticks = element_blank()
+      )
+    
+  } else {
+    
+    selectedPoint <- tsne_points_filter %>%
+      filter(CountryShort == clickCountry, Period == clickPeriod) %>%
+      dplyr::select(CountryShort,Period,indicator, value)
+    
+    ggplot(data=tsne_ready_gather,aes(indicator,value)) + 
+      geom_boxplot(color="darkgrey") +  
+      geom_jitter(data=tsne_points_filter,aes(group=group,color=group),alpha=0.5,width=0.5) + 
+      geom_point(data=selectedPoint,aes(fill=paste0(CountryShort," (",Period,")")),color="red",size=4) +
+      coord_flip() +
+      theme(legend.key=element_blank(),
+            legend.title=element_blank(),
+            legend.position="top",
+            panel.border = element_blank(),
+            panel.background = element_blank(),
+            plot.title = element_text(lineheight=.5),
+            #axis.text.x = element_blank(),
+            #axis.text.y = element_blank(),
+            axis.title.x = element_blank(),
+            axis.title.y = element_blank()
+            #axis.ticks = element_blank()
+      )
+    
+  }
+  
+  
+}

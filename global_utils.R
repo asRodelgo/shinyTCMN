@@ -4,6 +4,7 @@ library(dplyr) # manipulate data
 library(ggplot2) # charts
 library(data.table) # fast operations
 library(tidyr) # transform data
+library(stringr) # manipulate strings
 library(xtable) # LaTeX tables
 library(fmsb) # radar charts
 require(treemap) # treemap charts
