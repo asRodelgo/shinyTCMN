@@ -1,5 +1,5 @@
 # Plot tsne chart ---------------------------------------------------------
-.tSNE_plot_All <- function(colRegion,colPeriod,colCountry,colIndicator,centralMeasure="mean"){
+.tSNE_plot_All <- function(colRegion,colPeriod,colCountry,colIndicator,centralMeasure="mean",showLabels=FALSE){
   # tsne_points contains pairs of coordinate points to plot
   # Parameters -----------
   # 
@@ -78,22 +78,41 @@
       
     } else {
       
-      ggplot(NULL, aes(x,y)) +  
-        #geom_point(data=tsne_points_filter,aes(group=CountryShort,color = CountryShort),size=2) +
-        geom_point(data=tsne_points_filter,aes(group=group,color = group),size=2) +
-        geom_point(data=tsne_points_filter_out,color=alpha("lightgrey",0.1)) +
-        geom_point(data=centroid,color="red",size=3) + 
-        theme(legend.key=element_blank(),
-              legend.title=element_blank(),
-              #legend.text = element_blank(),
-              legend.position = "top",
-              panel.border = element_blank(),
-              panel.background = element_blank(),
-              axis.text.x = element_blank(),
-              axis.text.y = element_blank(),
-              axis.title.x = element_blank(),
-              axis.title.y = element_blank(),
-              axis.ticks = element_blank())
+      if (showLabels){ # show names and year of countries
+        ggplot(NULL, aes(x,y)) +  
+          #geom_point(data=tsne_points_filter,aes(group=CountryShort,color = CountryShort),size=2) +
+          geom_point(data=tsne_points_filter,aes(group=group,color = group),size=2) +
+          geom_point(data=tsne_points_filter_out,color=alpha("lightgrey",0.1)) +
+          geom_point(data=centroid,color="red",size=3) + 
+          geom_text(data=tsne_points_filter,aes(label=str_wrap(paste0(CountryShort," (",Period,")"))),color="grey",nudge_y=0.1)+
+          theme(legend.key=element_blank(),
+                legend.title=element_blank(),
+                #legend.text = element_blank(),
+                legend.position = "top",
+                panel.border = element_blank(),
+                panel.background = element_blank(),
+                axis.text.x = element_blank(),
+                axis.text.y = element_blank(),
+                axis.title.x = element_blank(),
+                axis.title.y = element_blank(),
+                axis.ticks = element_blank())
+      } else {
+        ggplot(NULL, aes(x,y)) +  
+          geom_point(data=tsne_points_filter,aes(group=group,color = group),size=2) +
+          geom_point(data=tsne_points_filter_out,color=alpha("lightgrey",0.1)) +
+          geom_point(data=centroid,color="red",size=3) + 
+          theme(legend.key=element_blank(),
+                legend.title=element_blank(),
+                #legend.text = element_blank(),
+                legend.position = "top",
+                panel.border = element_blank(),
+                panel.background = element_blank(),
+                axis.text.x = element_blank(),
+                axis.text.y = element_blank(),
+                axis.title.x = element_blank(),
+                axis.title.y = element_blank(),
+                axis.ticks = element_blank())
+      }
     }
     
     #plot(tsne_points,type = "p", pch = 19, axes=FALSE, frame.plot = FALSE, xlab = "",ylab = "",col = tsne_ready$colorDots); 
@@ -149,7 +168,7 @@
 }
 
 # Filters for hover over tooltips ---------------------------------------------------------
-.tSNE_plot_filter_hover <- function(colRegion,colPeriod,colCountry){
+.tSNE_plot_filter_hover <- function(colRegion,colPeriod,colCountry,selected_indicators){
   #
   if (colCountry=="All" || is.null(colCountry)) colCountry <- countries_list
   if (colRegion=="All" || is.null(colRegion)) colRegion <- regions_list
@@ -159,7 +178,7 @@
     tsne_ready_select <- tsne_ready %>%
       dplyr::select(CountryCode, Period, RegionShort, 
                     RegionShortIncome, CountryShort, x, y, 
-                    everything())
+                    one_of(selected_indicators))
     
     # General Filters
     tsne_points_filter <- tsne_ready_select %>%
@@ -507,6 +526,7 @@
 # Box plots
 .boxPlots <- function(brushPoints,colRegion,colPeriod,colCountry,selected_indicators,clickCountry,clickPeriod){      
   
+  #set.seed(123) # to fix the jitter across different plots
   # cloud of points on top of boxplots
   tsne_points_filter <- as.data.frame(.tSNE_plot_filter(colRegion,colPeriod,colCountry,selected_indicators))
   tsne_points_filter <- gather(tsne_points_filter, indicator, value, -CountryCode,-CountryShort,-RegionShortIncome,-RegionShort,-Period,-x,-y,-group)
@@ -548,10 +568,10 @@
       
       ggplot(data=tsne_ready_gather,aes(indicator,value)) + 
         geom_boxplot(color="darkgrey") +  
-        geom_jitter(data=tsne_points_filter,aes(group=group,color=group),alpha=0.2,width=0.7) +  
+        geom_jitter(data=tsne_points_filter,aes(group=group,color=group),alpha=0.1,width=0.7) +  
         geom_jitter(data=brushPoints,aes(group=group,color=group),width=0.7) +  
-        geom_text(data=extremes_high,aes(label=str_wrap(paste0(CountryShort," (",Period,")"),width=10)),color="darkgrey",size=2,nudge_x = 0.3,show.legend = FALSE) +
-        geom_text(data=extremes_low,aes(label=str_wrap(paste0(CountryShort," (",Period,")"),width=10)),color="darkgrey",size=2,nudge_x = 0.3,show.legend = FALSE) +
+        geom_text(data=extremes_high,aes(label=str_wrap(paste0(CountryShort," (",Period,")"),width=10)),color="darkgrey",size=2.5,nudge_x = 0.3,nudge_y=-0.1,show.legend = FALSE) +
+        geom_text(data=extremes_low,aes(label=str_wrap(paste0(CountryShort," (",Period,")"),width=10)),color="darkgrey",size=2.5,nudge_x = 0.3,nudge_y=0.1,show.legend = FALSE) +
         coord_flip() +
         theme(legend.key=element_blank(),
               legend.title=element_blank(),
@@ -570,8 +590,8 @@
       ggplot(data=tsne_ready_gather,aes(indicator,value)) + 
         geom_boxplot(color="darkgrey") +  
         geom_jitter(data=tsne_points_filter,aes(group=group,color=group),width=0.7) +
-        geom_text(data=extremes_high,aes(label=str_wrap(paste0(CountryShort," (",Period,")"),width=10)),color="darkgrey",size=2,nudge_x = 0.3,show.legend = FALSE) +
-        geom_text(data=extremes_low,aes(label=str_wrap(paste0(CountryShort," (",Period,")"),width=10)),color="darkgrey",size=2,nudge_x = 0.3,show.legend = FALSE) +
+        geom_text(data=extremes_high,aes(label=str_wrap(paste0(CountryShort," (",Period,")"),width=10)),color="darkgrey",size=2.5,nudge_x = 0.3,nudge_y=-0.1,show.legend = FALSE) +
+        geom_text(data=extremes_low,aes(label=str_wrap(paste0(CountryShort," (",Period,")"),width=10)),color="darkgrey",size=2.5,nudge_x = 0.3,nudge_y=0.1,show.legend = FALSE) +
         coord_flip() +
         theme(legend.key=element_blank(),
               legend.title=element_blank(),
@@ -598,8 +618,8 @@
       geom_boxplot(color="darkgrey") +  
       geom_jitter(data=tsne_points_filter,aes(group=group,color=group),alpha=0.5,width=0.7) + 
       geom_point(data=selectedPoint,aes(fill=paste0(CountryShort," (",Period,")")),color="blue",size=4) +
-      geom_text(data=extremes_high,aes(label=str_wrap(paste0(CountryShort," (",Period,")"),width=10)),color="darkgrey",size=2,nudge_x = 0.3,show.legend = FALSE) +
-      geom_text(data=extremes_low,aes(label=str_wrap(paste0(CountryShort," (",Period,")"),width=10)),color="darkgrey",size=2,nudge_x = 0.3,show.legend = FALSE) +
+      geom_text(data=extremes_high,aes(label=str_wrap(paste0(CountryShort," (",Period,")"),width=10)),color="darkgrey",size=2.5,nudge_x = 0.3,nudge_y=-0.1,show.legend = FALSE) +
+      geom_text(data=extremes_low,aes(label=str_wrap(paste0(CountryShort," (",Period,")"),width=10)),color="darkgrey",size=2.5,nudge_x = 0.3,nudge_y=0.1,show.legend = FALSE) +
       coord_flip() +
       theme(legend.key=element_blank(),
             legend.title=element_blank(),

@@ -5,7 +5,12 @@ ranges <- reactiveValues(x = NULL, y = NULL)
 output$plotTSNE <- renderPlot({
   plotTSNE <- .tSNE_plot_All(input$colRegion,input$colPeriod,input$colCountry,input$colIndicator)
                              #,input$centralMeasure)
-  plotTSNE <- plotTSNE + coord_cartesian(xlim = ranges$x, ylim = ranges$y)
+  if (!is.null(ranges$x)){
+    plotTSNE <- .tSNE_plot_All(input$colRegion,input$colPeriod,input$colCountry,input$colIndicator,showLabels=TRUE)+ 
+      coord_cartesian(xlim = ranges$x, ylim = ranges$y)
+  } else {
+    plotTSNE <- plotTSNE + coord_cartesian(xlim = ranges$x, ylim = ranges$y)
+  }
   return(plotTSNE)
 })
 
@@ -26,7 +31,8 @@ observeEvent(input$plot_dblclick, {
 # tooltip hover over scatterplot points: see https://gitlab.com/snippets/16220
 output$hover_info <- renderUI({
   hover <- input$plot_hover
-  point <- nearPoints(.tSNE_plot_filter_hover(input$colRegion,input$colPeriod,input$colCountry),
+  point <- nearPoints(.tSNE_plot_filter_hover(input$colRegion,input$colPeriod,input$colCountry,
+                                              input$explore_variables),
                       hover, threshold = 3, maxpoints = 1, addDist = TRUE)
   
   if (nrow(point) == 0) return(NULL)
@@ -64,10 +70,15 @@ output$hover_info <- renderUI({
                   "left:", left_px + 2, "px; top:", top_px + 2, "px;")
   
   # actual tooltip created as wellPanel
+  panel_input <- ""
+  for (i in 1:length(input$explore_variables)){
+    panel_input <- paste0(panel_input,input$explore_variables[i],": ",eval(parse(text=paste0("point$",input$explore_variables[i]))),"<br/>")
+  }
+  
   wellPanel(
     style = style,
-    p(HTML(paste0(point$CountryShort, "<br/>",point$RegionShort," - ",point$Period,"<br/>",
-                  input$colIndicator,": ",eval(parse(text=paste0("point$",input$colIndicator))))))
+    p(HTML(paste0(point$CountryShort," - ",point$Period,"<br/><br/>",
+                  "<div class='text' style='color:grey; font-size:8px;'>",panel_input,"</div>")))
   )
 })
 
