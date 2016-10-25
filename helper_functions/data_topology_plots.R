@@ -532,7 +532,7 @@
   tsne_points_filter <- gather(tsne_points_filter, indicator, value, -CountryCode,-CountryShort,-RegionShortIncome,-RegionShort,-Period,-x,-y,-group)
   tsne_points_filter$indicator <- gsub("_"," ",tsne_points_filter$indicator)
   tsne_points_filter$indicator <- str_wrap(tsne_points_filter$indicator, width = 20)  
-  tsne_points_filter$group <- str_wrap(tsne_points_filter$group,width=10)
+  tsne_points_filter$group <- str_wrap(tsne_points_filter$group,width=12)
   
   # boxplots
   tsne_ready_gather <- gather(tsne_ready, indicator, value, -CountryCode,-CountryShort,-RegionShortIncome,-RegionShort,-Period,-x,-y)
@@ -564,14 +564,14 @@
       brushPoints <- gather(brushPoints, indicator, value, -group)
       brushPoints$indicator <- gsub("_"," ",brushPoints$indicator)
       brushPoints$indicator <- str_wrap(brushPoints$indicator, width = 20)
-      brushPoints$group <- str_wrap(brushPoints$group,width=10)
+      brushPoints$group <- str_wrap(brushPoints$group,width=12)
       
       ggplot(data=tsne_ready_gather,aes(indicator,value)) + 
         geom_boxplot(color="darkgrey") +  
-        geom_jitter(data=tsne_points_filter,aes(group=group,color=group),alpha=0.1,width=0.7) +  
+        geom_jitter(data=tsne_points_filter,aes(group=group,color=group),alpha=0.01,width=0.7) +  
         geom_jitter(data=brushPoints,aes(group=group,color=group),width=0.7) +  
-        geom_text(data=extremes_high,aes(label=str_wrap(paste0(CountryShort," (",Period,")"),width=10)),color="darkgrey",size=2.5,nudge_x = 0.3,nudge_y=-0.1,show.legend = FALSE) +
-        geom_text(data=extremes_low,aes(label=str_wrap(paste0(CountryShort," (",Period,")"),width=10)),color="darkgrey",size=2.5,nudge_x = 0.3,nudge_y=0.1,show.legend = FALSE) +
+        geom_text(data=extremes_high,aes(label=str_wrap(paste0(CountryShort," (",Period,")"),width=12)),color="darkgrey",size=3,nudge_x = 0.35,nudge_y=-0.05,show.legend = FALSE) +
+        geom_text(data=extremes_low,aes(label=str_wrap(paste0(CountryShort," (",Period,")"),width=12)),color="darkgrey",size=3,nudge_x = 0.35,nudge_y=0.05,show.legend = FALSE) +           
         coord_flip() +
         theme(legend.key=element_blank(),
               legend.title=element_blank(),
@@ -590,8 +590,8 @@
       ggplot(data=tsne_ready_gather,aes(indicator,value)) + 
         geom_boxplot(color="darkgrey") +  
         geom_jitter(data=tsne_points_filter,aes(group=group,color=group),width=0.7) +
-        geom_text(data=extremes_high,aes(label=str_wrap(paste0(CountryShort," (",Period,")"),width=10)),color="darkgrey",size=2.5,nudge_x = 0.3,nudge_y=-0.1,show.legend = FALSE) +
-        geom_text(data=extremes_low,aes(label=str_wrap(paste0(CountryShort," (",Period,")"),width=10)),color="darkgrey",size=2.5,nudge_x = 0.3,nudge_y=0.1,show.legend = FALSE) +
+        geom_text(data=extremes_high,aes(label=str_wrap(paste0(CountryShort," (",Period,")"),width=12)),color="darkgrey",size=3,nudge_x = 0.35,nudge_y=-0.05,show.legend = FALSE) +
+        geom_text(data=extremes_low,aes(label=str_wrap(paste0(CountryShort," (",Period,")"),width=12)),color="darkgrey",size=3,nudge_x = 0.35,nudge_y=0.05,show.legend = FALSE) +      
         coord_flip() +
         theme(legend.key=element_blank(),
               legend.title=element_blank(),
@@ -618,8 +618,8 @@
       geom_boxplot(color="darkgrey") +  
       geom_jitter(data=tsne_points_filter,aes(group=group,color=group),alpha=0.5,width=0.7) + 
       geom_point(data=selectedPoint,aes(fill=paste0(CountryShort," (",Period,")")),color="blue",size=4) +
-      geom_text(data=extremes_high,aes(label=str_wrap(paste0(CountryShort," (",Period,")"),width=10)),color="darkgrey",size=2.5,nudge_x = 0.3,nudge_y=-0.1,show.legend = FALSE) +
-      geom_text(data=extremes_low,aes(label=str_wrap(paste0(CountryShort," (",Period,")"),width=10)),color="darkgrey",size=2.5,nudge_x = 0.3,nudge_y=0.1,show.legend = FALSE) +
+      geom_text(data=extremes_high,aes(label=str_wrap(paste0(CountryShort," (",Period,")"),width=12)),color="darkgrey",size=3,nudge_x = 0.35,nudge_y=-0.05,show.legend = FALSE) +
+      geom_text(data=extremes_low,aes(label=str_wrap(paste0(CountryShort," (",Period,")"),width=12)),color="darkgrey",size=3,nudge_x = 0.35,nudge_y=0.05,show.legend = FALSE) +      
       coord_flip() +
       theme(legend.key=element_blank(),
             legend.title=element_blank(),

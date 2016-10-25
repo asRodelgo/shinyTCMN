@@ -78,7 +78,7 @@ output$hover_info <- renderUI({
   wellPanel(
     style = style,
     p(HTML(paste0(point$CountryShort," - ",point$Period,"<br/><br/>",
-                  "<div class='text' style='color:grey; font-size:8px;'>",panel_input,"</div>")))
+                  "<div class='text' style='color:grey; font-size:12px;'>",panel_input,"</div>")))
   )
 })
 
@@ -154,3 +154,10 @@ output$tableBrushed <- DT::renderDataTable({
   tableBrushed <- .brushTable(pointsBrushed,input$explore_variables)
   return(tableBrushed)
 },options = list(dom = 't', pageLength = 25, paging = TRUE),rownames= FALSE)
+
+# observeEvent(input$help, {
+#   showModal(modalDialog(
+#     title = "Important message",
+#     "This is an important message!"
+#   ))
+# })

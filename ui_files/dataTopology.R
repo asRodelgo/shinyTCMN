@@ -25,12 +25,15 @@ fluidPage(
            fluidRow(
              #div(
                #style = "position:relative",
-               plotOutput('plotTSNE', height = "600px",
-                          hover = hoverOpts("plot_hover", delay = 100, delayType = "debounce"),
-                          click = clickOpts("plot_click"),
-                          brush = brushOpts("plot_brush", delay = 100, delayType = "debounce"),
-                          dblclick = "plot_dblclick"),
-               uiOutput("hover_info")
+             actionLink('help_click',"Help"),
+             #shinyBS::bsModal('popupHelp', "How does it work?", 'help_click', size = "large",p("This is a test window")),
+             bsTooltip('help_click', "This message is so cool","bottom", "click",options = list(container = "body")),
+             plotOutput('plotTSNE', height = "600px",
+                        hover = hoverOpts("plot_hover", delay = 100, delayType = "debounce"),
+                        click = clickOpts("plot_click"),
+                        brush = brushOpts("plot_brush", delay = 100, delayType = "debounce"),
+                        dblclick = "plot_dblclick"),
+             uiOutput("hover_info")
              #)
                          #,
                          #div(style = "position:relative",
@@ -49,12 +52,13 @@ fluidPage(
              multiple = TRUE, selected = indicator_selection_plots, options = list(maxItems = 10)
            ),
            br(),
-           radioButtons('pickChart', 'Select chart:', c("box plot","bar chart"),
-                        selected = "box plot", inline = TRUE),
-           conditionalPanel(
-             condition = "input.pickChart == 'box plot'", plotOutput('plotBoxplotBrushed')),
-           conditionalPanel(
-             condition = "input.pickChart == 'bar chart'", plotOutput('plotBarchartBrushed'))
+           plotOutput('plotBoxplotBrushed')
+           #radioButtons('pickChart', 'Select chart:', c("box plot","bar chart"),
+          #              selected = "box plot", inline = TRUE),
+           #conditionalPanel(
+          #   condition = "input.pickChart == 'box plot'", plotOutput('plotBoxplotBrushed')),
+          # conditionalPanel(
+          #   condition = "input.pickChart == 'bar chart'", plotOutput('plotBarchartBrushed'))
 #            ),
 #            div(style = "position:relative",
 #                #plotOutput('plotBarchartBrushed')
