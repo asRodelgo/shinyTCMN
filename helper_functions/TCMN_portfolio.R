@@ -145,7 +145,7 @@
   data <- dataTC[!duplicated(dataTC$PROJ_ID),]
   # Attach a link to Project ID
   data <- mutate(data, PROJ_ID = 
-                   paste0('<a href=',url,'>',PROJ_ID,'</a>'))
+                   paste0('<a href=',url,' target="_blank" >',PROJ_ID,'</a>'))
   data <- select(data, -url)
   
   # scale Expenses to thousands 

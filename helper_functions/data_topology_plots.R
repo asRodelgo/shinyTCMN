@@ -408,7 +408,7 @@
                                 by.x = c("CountryShort","Period"), by.y = c("Country","Period"))
     brushPoints_actual <- brushPoints_actual %>%
       dplyr::select(Country=CountryShort, CountryCode,Period, one_of(selected_indicators)) %>%
-      mutate(Country = paste0('<a href=',country_url,CountryCode,'>',Country,'</a>')) %>%
+      mutate(Country = paste0('<a href=',country_url,CountryCode,' target="_blank" >',Country,'</a>')) %>%
       dplyr::select(-CountryCode)
     
     require(stringr) # to wrap label text

@@ -51,9 +51,9 @@ fluidPage(
                          #)
            ),
            fluidRow(
-             div(style = "position:relative",
-               dataTableOutput('tableBrushed')
-             )
+             #div(style = "position:relative",
+               DT::dataTableOutput('tableBrushed')
+             #)
            )
     ),
     column(3,h4("Select variables to explore"),
