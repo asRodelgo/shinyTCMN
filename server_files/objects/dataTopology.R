@@ -154,11 +154,20 @@ output$tableBrushed <- DT::renderDataTable({
   tableBrushed <- .brushTable(pointsBrushed,input$explore_variables)
   return(tableBrushed)
 },options = list(dom = 't',pageLength = 25, paging = TRUE),rownames= FALSE,escape=FALSE)
-#dom = 't', 
 
-# observeEvent(input$help, {
-#   showModal(modalDialog(
-#     title = "Important message",
-#     "This is an important message!"
-#   ))
-# })
+# update country selector with region selector
+
+observe({
+  if (is.null(input$colRegion)){
+    region <- regions_list
+  } else{
+    region <- input$colRegion
+  }
+  updateSelectizeInput(session, "colCountry",
+                    choices=sort(unique(filter(data_tsne_sample, RegionShort %in% region)$CountryShort)), 
+                    selected=NULL)
+                    #,options = list(maxItems = 2,dropdownParent = 'body'))
+  
+})  
+
+
