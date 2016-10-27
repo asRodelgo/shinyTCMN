@@ -418,6 +418,16 @@
     #names(brushPoints_actual) <- c("Country","Period",indicator_selection_plots_short)
     brushPoints_actual[,c(3:ncol(brushPoints_actual))] <- round(brushPoints_actual[,c(3:ncol(brushPoints_actual))],2)
     brushPoints_actual[is.na(brushPoints_actual)] <- "..."
+    
+    ## Testing hrefs for indicators
+#     count_rows <- nrow(brushPoints_actual)
+#     thisRow <- 1
+#     while (thisRow <= count_rows){
+#       brushPoints_actual[thisRow,3] <- paste0('<a href=',indicator_url,'corr.scr',' target="_blank" >',brushPoints_actual[thisRow,3],'</a>')
+#       thisRow <- thisRow + 1
+#     }
+    ## end of testing
+    
       #return(str(brushPoints))
     brushPoints <- brushPoints_actual
   } else {

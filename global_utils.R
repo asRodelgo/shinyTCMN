@@ -63,6 +63,8 @@ selected_TCMN_data <- filter(TCMN_data, IndicatorShort %in% indicator_selection_
 
 # Datascope URLs
 country_url <- "http://datascope.amida-demo.com/countries/"
+indicator_url <- "http://datascope.amida-demo.com/indicators/"
+tsne_url <- "http://distill.pub/2016/misread-tsne/"
 # ---------------
 
 # avoid conflict with inline::code if rstan is loaded
