@@ -396,10 +396,10 @@
 
 
 .brushTable <- function(brushPoints,selected_indicators){
-  
+    
   if (!is.null(selected_indicators)){  
     # brushed points
-    brushPoints <- dplyr::select(brushPoints,Country=CountryShort, Period, one_of(selected_indicators))
+    brushPoints <- dplyr::select(brushPoints,Country=CountryShort, CountryCode, Period, one_of(selected_indicators))
     #names(brushPoints) <- c("Country","Period",indicator_selection_plots_short)
     # actual data filter
     selected_TCMN_data <- .filter_TCMN_data()
@@ -407,7 +407,9 @@
     brushPoints_actual <- merge(selected_TCMN_data,brushPoints[,c("Country","Period")], 
                                 by.x = c("CountryShort","Period"), by.y = c("Country","Period"))
     brushPoints_actual <- brushPoints_actual %>%
-      dplyr::select(Country=CountryShort, Period, one_of(selected_indicators))
+      dplyr::select(Country=CountryShort, CountryCode,Period, one_of(selected_indicators)) %>%
+      mutate(Country = paste0('<a href=',country_url,CountryCode,'>',Country,'</a>')) %>%
+      dplyr::select(-CountryCode)
     
     require(stringr) # to wrap label text
     names(brushPoints_actual) <- gsub("_"," ",names(brushPoints_actual))
@@ -421,7 +423,7 @@
   } else {
     brushPoints <- dplyr::select(brushPoints,Country=CountryShort, Period)
   }  
-    
+  return(brushPoints)  
 }
 
 # Bar chart plot

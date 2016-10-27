@@ -25,9 +25,19 @@ fluidPage(
            fluidRow(
              #div(
                #style = "position:relative",
-             actionLink('help_click',"Help"),
-             #shinyBS::bsModal('popupHelp', "How does it work?", 'help_click', size = "large",p("This is a test window")),
-             bsTooltip('help_click', "This message is so cool","bottom", "click",options = list(container = "body")),
+             actionLink('help_click',"How does this work?"),
+             #bsModal('popupHelp', "How does it work?", 'help_click', size = "large", uiOutput('help_text')),
+             bsPopover('help_click', "Help",content = paste0("<p>The cloud of points represents a projection of 40 indicators in 2 dimensions using tSNE.",
+                                                             "Each of the points corresponds to a country and a year.</p>",
+                                                             "<p>Basic controls:</p><p>",
+                                                             "1. hover over a point for country stats</p><p>",
+                                                             "2. click on a point for placement on boxplots</p><p>",
+                                                             "3. brush over a group of points to activate the table and placement on boxplots</p><p>",
+                                                             "4. brush and double click over a group of points to zoom in</p><p>",
+                                                             "5. use filter selectors to visualize different elements on cloud</p><p>",
+                                                             "6. use color selector to visualize level values for an indicator</p><p>",
+                                                             "7. select up to 10 indicators to display on table, tooltip and boxplot</p>"), trigger = 'click'),
+             
              plotOutput('plotTSNE', height = "600px",
                         hover = hoverOpts("plot_hover", delay = 100, delayType = "debounce"),
                         click = clickOpts("plot_click"),
@@ -42,7 +52,7 @@ fluidPage(
            ),
            fluidRow(
              div(style = "position:relative",
-               DT::dataTableOutput('tableBrushed')
+               dataTableOutput('tableBrushed')
              )
            )
     ),

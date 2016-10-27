@@ -147,13 +147,14 @@ output$plotBoxplotBrushed <- renderPlot({
   
 })
 
-output$tableBrushed <- DT::renderDataTable({
+output$tableBrushed <- renderDataTable({
   brush <- input$plot_brush
   pointsBrushed <- brushedPoints(.tSNE_plot_filter(input$colRegion,input$colPeriod,input$colCountry,
                                                    input$explore_variables), brush)
   tableBrushed <- .brushTable(pointsBrushed,input$explore_variables)
   return(tableBrushed)
-},options = list(dom = 't', pageLength = 25, paging = TRUE),rownames= FALSE)
+},options = list(dom = 't',pageLength = 25, paging = TRUE),rownames= FALSE)
+#dom = 't', 
 
 # observeEvent(input$help, {
 #   showModal(modalDialog(
