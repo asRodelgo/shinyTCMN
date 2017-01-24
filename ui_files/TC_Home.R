@@ -7,7 +7,9 @@ fluidPage(
   column(8,h4("The Trade and Competitiveness Data and Operations Snapshots project consists of a full cycle of data collection, processing and dissemination of key T&C indicators taken from more than 12 data sources and selected by the regional country leaders and lead economists in the field.", 
      style="color:#646464;text-align:center;left:100px;right:100px")),
   column(2),
-  br(),br(),
+  br(),
+  column(12,h3("** This site is no longer updated. Please visit: "), h3(a("TCdata360",href = "http://tcdata360.worldbank.org")), style="color:#FF0000;text-align: center"),
+  br(),
   column(12,h4("Select a country and start exploring!", style="color:#3399ff;text-align: center"),
     align="center",
     selectInput('inCouSelHome', NULL, choices=c("Select a country",countryNames$Country), selected = 'Select a country', selectize=FALSE)
